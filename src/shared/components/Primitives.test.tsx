@@ -34,11 +34,12 @@ describe('componentes fundamentais', () => {
     const { container } = render(
       <>
         <Badge accessibleLabel="2 itens na sacola">2</Badge>
-        <Skeleton width={120} height={20} />
+        <Skeleton className="skeleton--test" />
       </>,
     )
 
     expect(screen.getByLabelText('2 itens na sacola')).toBeInTheDocument()
     expect(container.querySelector('.skeleton')).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('.skeleton')).toHaveClass('skeleton--test')
   })
 })

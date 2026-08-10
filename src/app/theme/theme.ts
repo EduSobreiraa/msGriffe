@@ -20,6 +20,5 @@ export function getInitialTheme(): Theme {
 
 export function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme
-  document.documentElement.style.colorScheme = theme
   window.localStorage.setItem(THEME_STORAGE_KEY, theme)
 }

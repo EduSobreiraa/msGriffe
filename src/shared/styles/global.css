@@ -29,6 +29,10 @@ body {
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
 button,
 a {
   font: inherit;

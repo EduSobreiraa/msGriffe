@@ -21,8 +21,7 @@ export function useMobileMenu() {
   useEffect(() => {
     if (!isOpen) return
 
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    document.body.classList.add('mobile-menu-open')
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -33,7 +32,7 @@ export function useMobileMenu() {
     document.addEventListener('keydown', handleKeyDown)
 
     return () => {
-      document.body.style.overflow = previousOverflow
+      document.body.classList.remove('mobile-menu-open')
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [close, isOpen])

@@ -31,7 +31,7 @@ npm run build
 npm run preview
 ```
 
-A cobertura mínima exigida é de 75% para branches e 80% para funções, linhas e statements.
+A cobertura mínima exigida é de 85% para branches e 90% para funções, linhas e statements.
 
 O build de produção é gerado em `dist/`.
 
@@ -54,7 +54,9 @@ Build command: npm run build
 Build output directory: dist
 ```
 
-O arquivo `public/_redirects` garante o fallback da aplicação para rotas acessadas diretamente.
+O arquivo `public/_redirects` garante o fallback da aplicação para rotas acessadas diretamente. O arquivo `public/_headers` aplica CSP e headers defensivos no Cloudflare Pages.
+
+A CSP atual permite conexões somente com a própria origem. Quando a API real for habilitada, seu domínio público deverá ser incluído explicitamente em `connect-src`; curingas não devem ser usados para contornar essa configuração.
 
 ## Documentação
 

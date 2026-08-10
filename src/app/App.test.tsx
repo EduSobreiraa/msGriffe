@@ -48,14 +48,14 @@ describe('App', () => {
     fireEvent.click(menuButton)
 
     expect(menuButton).toHaveAttribute('aria-expanded', 'true')
-    expect(document.body).toHaveStyle({ overflow: 'hidden' })
+    expect(document.body).toHaveClass('mobile-menu-open')
 
     fireEvent.keyDown(document, { key: 'Escape' })
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Abrir menu' })).toHaveFocus()
     })
-    expect(document.body.style.overflow).toBe('')
+    expect(document.body).not.toHaveClass('mobile-menu-open')
   })
 
   it('fecha o menu móvel pelo backdrop', () => {
@@ -69,7 +69,7 @@ describe('App', () => {
       'aria-expanded',
       'false',
     )
-    expect(document.body.style.overflow).toBe('')
+    expect(document.body).not.toHaveClass('mobile-menu-open')
   })
 
   it('fecha o menu móvel depois de navegar', () => {

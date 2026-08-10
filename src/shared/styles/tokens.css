@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --color-background: #090909;
   --color-background-deep: #050505;
   --color-surface: #121212;
@@ -20,6 +21,7 @@
 }
 
 :root[data-theme='light'] {
+  color-scheme: light;
   --color-background: #f8f8f7;
   --color-background-deep: #fff;
   --color-surface: #fff;

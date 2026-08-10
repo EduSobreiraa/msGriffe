@@ -28,7 +28,7 @@ Pendente → Em andamento → Concluída
 | --- | --- | --- |
 | F0 — Fundação técnica | Concluída em 2026-08-07 | React, TypeScript, Vite, qualidade e Cloudflare Pages preparados. |
 | F1 — Design system e vitrine | Concluída em 2026-08-07 | Página inicial modular, responsiva, acessível e testada. |
-| F2 — Catálogo, busca e produto | Em andamento | Jornada pública de descoberta de produtos completa. |
+| F2 — Catálogo, busca e produto | Concluída em 2026-08-09 | Jornada pública de descoberta de produtos completa. |
 | F3 — Carrinho e checkout visual | Pendente | Jornada demonstrável de preparação da compra. |
 | F4 — Conta e pós-compra | Pendente | Área do cliente, autenticação visual e pedidos. |
 | F5 — Painel do vendedor | Pendente | Operação administrativa demonstrável. |
@@ -89,7 +89,7 @@ Limitações intencionais ao final da F1:
 
 ## F2 — Catálogo, busca e produto
 
-Estado: **em andamento**.
+Estado: **concluída em 9 de agosto de 2026**.
 
 Objetivo: construir catálogo, filtros, ordenação, busca, categorias e detalhes usando contratos que permitam substituir dados simulados pela API sem reescrever a interface.
 
@@ -114,7 +114,7 @@ Dependências e limites:
 | F2.7 | Estados e resiliência | Concluída | Ausência de imagem, item inexistente e recuperação de falhas. |
 | F2.8 | Acessibilidade e SEO | Concluída | Foco, metadados, headings e conteúdo rastreável por rota. |
 | F2.9 | Testes da jornada | Concluída | Jornada e contratos críticos cobertos proporcionalmente ao risco. |
-| F2.10 | Encerramento da F2 | Pendente | Quality gate, smoke test e revisão desktop/mobile. |
+| F2.10 | Encerramento da F2 | Concluída | Quality gate, smoke test e revisão multitelas. |
 
 ### Registro F2.1
 
@@ -174,6 +174,52 @@ Registro:
 - revisão headless com `?busca=premium` concluída em 1440×1000 e 390×844;
 - encerramento com 44 testes, 97,89% de statements, 91,28% de branches, 98,16% de funções e 97,72% de linhas;
 - lint e build aprovados e zero vulnerabilidades no npm audit.
+
+### F2.10 — Encerramento da F2
+
+Estado: **concluída em 9 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F2.10.1 | Congelar o escopo entregue | Concluída | Capacidades, limites e pendências da F2 ficam registrados sem antecipar a F3. |
+| F2.10.2 | Reforçar Cloudflare Pages | Concluída | Build inclui fallback SPA e headers defensivos compatíveis com a aplicação. |
+| F2.10.3 | Revisar segurança OWASP | Concluída | Exposição, dependências, navegação e conteúdo público passam por checklist proporcional ao risco. |
+| F2.10.4 | Executar smoke test | Concluída | Raiz, catálogo, categorias, produto, rota inexistente e assets respondem no preview de produção. |
+| F2.10.5 | Validar múltiplas telas | Concluída | Jornadas críticas são verificadas em 390, 768, 1024 e 1440 px. |
+| F2.10.6 | Executar quality gate final | Concluída | Lint, testes, cobertura, build e audit permanecem aprovados. |
+| F2.10.7 | Encerrar e versionar | Concluída | F2 e F2.10 ficam concluídas, documentação atualizada e commit próprio criado. |
+
+Escopo:
+
+- revisar entregas e limitações intencionais da jornada pública;
+- configurar headers de segurança no artefato do Cloudflare Pages;
+- validar fallback de SPA e acessos diretos no build final;
+- revisar catálogo e produto em mobile, tablet, notebook e desktop;
+- registrar métricas, riscos remanescentes e passagem para F3;
+- criar commit exclusivo após todas as verificações.
+
+Registro:
+
+- escopo público da F2 congelado em catálogo, busca, filtros, categorias, detalhes, variantes e estados resilientes;
+- carrinho, checkout, autenticação e regras comerciais autoritativas permanecem fora da F2;
+- `_headers` adiciona CSP estrita, HSTS, proteção contra framing e MIME sniffing, política de referência e restrições de capacidades;
+- estilos inline funcionais foram removidos para evitar `unsafe-inline` na CSP;
+- futura API deverá ser autorizada explicitamente em `connect-src`, sem curingas;
+- busca por padrões de segredo e APIs de injeção não encontrou ocorrências no código da aplicação;
+- smoke test aprovou raiz, catálogo, categorias, categoria, produto, 404 da SPA e placeholder por acesso direto;
+- `_redirects` e `_headers` confirmados no artefato final do Cloudflare Pages;
+- matriz visual aprovada em 390×844, 768×1024, 1024×900 e 1440×1000;
+- build final possui aproximadamente 1 MB total, JavaScript de 234 KB e CSS de 22 KB antes de gzip;
+- encerramento com 67 testes, 98,02% de statements, 90,4% de branches, 98,86% de funções e 98,31% de linhas;
+- lint, build e audit aprovados, com zero vulnerabilidades conhecidas.
+
+Resultado da F2:
+
+- jornada navegável da vitrine ao catálogo, categoria e detalhe;
+- contratos e adaptadores simulados isolam a futura API;
+- URLs representam busca, filtros, ordenação e paginação;
+- acessibilidade, SEO, resiliência, segurança do frontend e responsividade possuem verificações automatizadas ou registradas;
+- a próxima fase pode implementar carrinho e checkout visual sem transferir regras financeiras autoritativas ao navegador.
 
 ### F2.5 — Categorias
 

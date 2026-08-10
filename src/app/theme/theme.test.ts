@@ -12,7 +12,6 @@ describe('tema da aplicação', () => {
   afterEach(() => {
     window.localStorage.clear()
     delete document.documentElement.dataset.theme
-    document.documentElement.style.colorScheme = ''
     vi.unstubAllGlobals()
   })
 
@@ -33,7 +32,6 @@ describe('tema da aplicação', () => {
     applyTheme('light')
 
     expect(document.documentElement.dataset.theme).toBe('light')
-    expect(document.documentElement.style.colorScheme).toBe('light')
     expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light')
   })
 })

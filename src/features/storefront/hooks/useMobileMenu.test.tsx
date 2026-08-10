@@ -15,7 +15,7 @@ function MobileMenuHarness() {
 describe('useMobileMenu', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
-    document.body.style.overflow = ''
+    document.body.classList.remove('mobile-menu-open')
   })
 
   it('fecha o menu quando a viewport muda para desktop', () => {
@@ -49,6 +49,6 @@ describe('useMobileMenu', () => {
     })
 
     expect(screen.getByRole('button', { name: 'Fechado' })).toBeInTheDocument()
-    expect(document.body.style.overflow).toBe('')
+    expect(document.body).not.toHaveClass('mobile-menu-open')
   })
 })
