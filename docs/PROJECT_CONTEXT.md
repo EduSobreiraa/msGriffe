@@ -2,7 +2,7 @@
 
 > Documento inicial de decisões do produto e da arquitetura.
 >
-> Última atualização: 7 de agosto de 2026.
+> Última atualização: 9 de agosto de 2026.
 
 ## 1. Visão geral
 
@@ -348,9 +348,20 @@ Enquanto as pendências não forem resolvidas:
 - valores monetários não devem usar ponto flutuante binário;
 - datas devem ser armazenadas com referência temporal inequívoca e exibidas no fuso aplicável;
 - mudanças importantes neste contexto devem atualizar este documento e registrar a data da decisão;
-- nenhuma pendência comercial deve ser silenciosamente convertida em regra definitiva pela implementação.
+- nenhuma pendência comercial deve ser silenciosamente convertida em regra definitiva pela implementação;
+- frontend e backend devem seguir SOLID, modularização por responsabilidade e baixo acoplamento;
+- componentes, serviços, casos de uso e módulos devem observar principalmente o princípio da responsabilidade única;
+- regras de negócio devem permanecer independentes de frameworks, banco de dados e provedores externos;
+- toda nova subfase de produção deve começar com um plano documentado, passos hierárquicos, critérios de aceite e acompanhamento de estado;
+- segurança deve ser revisada continuamente com base no OWASP Top 10 e, conforme o risco, nos controles aplicáveis do OWASP ASVS;
+- dependências, entradas, autenticação, autorização, sessões, segredos, headers e integrações externas devem fazer parte do quality gate de segurança;
+- mudanças de interface devem ser verificadas em mobile, tablet, notebook e desktop, considerando pelo menos 360–390 px, 768 px, 1024 px e 1440 px quando aplicável;
+- cada etapa de produção concluída deve gerar um commit somente após código, testes, build, segurança, responsividade e documentação aplicáveis estarem aprovados;
+- commits não devem incluir segredos, arquivos de ambiente locais, dependências instaladas, cobertura ou artefatos de build.
 
-O roteiro incremental de construção está registrado em [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md), com as subfases **F0–F6** para frontend e **B0–B7** para backend.
+O planejamento, andamento e histórico das fases estão centralizados em [`ROADMAP.md`](./ROADMAP.md), cobrindo **F0–F6** para frontend e **B0–B7** para backend.
+
+As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCIPLES.md`](./ARCHITECTURE_PRINCIPLES.md).
 
 ## 16. Histórico de decisões
 
@@ -364,4 +375,10 @@ O roteiro incremental de construção está registrado em [`IMPLEMENTATION_PLAN.
 | 2026-08-07 | Ambientes local, staging e produção. |
 | 2026-08-07 | Cloudflare Pages como plataforma de hospedagem do frontend. |
 | 2026-08-07 | Implementação organizada em frontend (F0–F6) antes do backend (B0–B7). |
+| 2026-08-07 | SOLID e responsabilidade única adotados como princípios obrigatórios no frontend e backend. |
+| 2026-08-07 | Plano detalhado e versionado passa a ser obrigatório antes de iniciar cada nova subfase de produção. |
+| 2026-08-07 | Wouter adotado para roteamento do frontend após remoção do React Router por alertas de segurança nas versões disponíveis. |
 | 2026-08-07 | Retenção de 14 dias restrita a logs transitórios elegíveis. |
+| 2026-08-09 | OWASP Top 10 e controles aplicáveis do ASVS adotados como referência permanente de segurança. |
+| 2026-08-09 | Validação responsiva passa a cobrir mobile, tablet, notebook e desktop conforme o impacto da etapa. |
+| 2026-08-09 | Cada etapa concluída deve receber commit próprio após aprovação do quality gate. |
