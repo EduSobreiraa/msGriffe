@@ -1,7 +1,6 @@
 import { useRef, type RefObject } from 'react'
 import { Link } from 'wouter'
 import { routes } from '../../../app/routes'
-import { Button } from '../../../shared/components/Button'
 import { IconButton } from '../../../shared/components/IconButton'
 import { formatCurrency } from '../../../shared/lib/formatters'
 import { useModalDialog } from '../../../shared/hooks/useModalDialog'
@@ -91,7 +90,13 @@ export function CartDrawer({ isOpen, onClose, triggerRef }: CartDrawerProps) {
                 <strong>{formatCurrency(totals.displaySubtotal)}</strong>
               </div>
               <p>Estimativa local. Valores serão confirmados no checkout.</p>
-              <Button disabled fullWidth>Ir para o carrinho em breve</Button>
+              <Link
+                className="button button--primary button--medium button--full-width"
+                href={routes.cart}
+                onClick={onClose}
+              >
+                Ver sacola
+              </Link>
             </footer>
           </>
         )}

@@ -426,7 +426,7 @@ Limites de segurança:
 | F3.1 | Fundação do carrinho | Concluída | Domínio, persistência validada e provider independentes da interface. |
 | F3.2 | Adição e feedback | Concluída | Variante selecionada entra na sacola e o cabeçalho informa a quantidade. |
 | F3.3 | Drawer da sacola | Concluída | Resumo lateral acessível permite revisar e alterar itens. |
-| F3.4 | Página do carrinho | Pendente | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
+| F3.4 | Página do carrinho | Concluída | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
 | F3.5 | Cálculos demonstrativos | Pendente | Subtotal, descontos, frete estimado e total usam serviço substituível. |
 | F3.6 | Identificação progressiva | Pendente | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
 | F3.7 | Endereço e entrega | Pendente | Coleta e seleção visual de entrega têm validação e estados definidos. |
@@ -507,6 +507,44 @@ Registro:
 - matriz visual aprovada em 390×1200, 768×1200, 1024×900 e 1440×1000;
 - varredura não encontrou APIs de injeção ou padrões de segredo e o npm audit permaneceu limpo;
 - encerramento com 86 testes, 97,25% de statements, 90,06% de branches, 98,69% de funções e 98,2% de linhas;
+- lint e build de produção aprovados e zero vulnerabilidades no npm audit.
+
+### F3.4 — Página do carrinho
+
+Estado: **concluída em 9 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.4.1 | Definir rota e metadados | Concluída | `/sacola` possui título, descrição e destino estável no frontend. |
+| F3.4.2 | Reutilizar item da sacola | Concluída | Página altera quantidade e remove itens sem duplicar regra de domínio. |
+| F3.4.3 | Implementar resumo | Concluída | Quantidade e subtotal demonstrativo ficam claros, sem afirmar valor autoritativo. |
+| F3.4.4 | Implementar estado vazio | Concluída | Página vazia orienta retorno ao catálogo sem becos sem saída. |
+| F3.4.5 | Conectar drawer | Concluída | Drawer cheio oferece navegação para a página e encerra o modal corretamente. |
+| F3.4.6 | Garantir responsividade e acessibilidade | Concluída | Hierarquia, foco e layout funcionam por teclado e na matriz multitelas. |
+| F3.4.7 | Testar, revisar e versionar | Concluída | Jornada, OWASP, qualidade, build e commit próprio são aprovados. |
+
+Escopo:
+
+- criar a rota própria `/sacola` sem iniciar checkout ou coletar dados pessoais;
+- reutilizar `CartLineItem` e as ações do provider;
+- apresentar itens e resumo demonstrativo em regiões semanticamente identificadas;
+- manter a operação financeira futura desabilitada e explicitamente sinalizada;
+- oferecer estados cheio e vazio com caminhos claros para continuar comprando;
+- preservar os limites e a validação de persistência definidos na F3.1.
+
+Registro:
+
+- rota `/sacola` foi adicionada à composição principal com título, descrição, canonical e `noindex, nofollow`;
+- `CartPage` mantém somente responsabilidade de apresentação e orquestra as ações já expostas pelo provider;
+- `CartLineItem` é compartilhado entre drawer e página, sem duplicar limites, cálculo ou persistência;
+- estado cheio apresenta região de produtos, quantidade, subtotal demonstrativo e resumo separado;
+- checkout permanece desabilitado e valores locais são identificados como estimativas sujeitas à confirmação do backend;
+- estados cheio e vazio oferecem retorno ao catálogo, e o drawer cheio navega para a página fechando o diálogo;
+- testes cobrem rota, metadados, estados, quantidade, subtotal, remoção, persistência e jornada drawer–página;
+- acessibilidade automatizada foi aprovada na página cheia e a navegação de rota mantém gerenciamento de foco;
+- estados cheio e vazio foram revisados em 390×1200, 768×1200, 1024×900 e 1440×1000;
+- varredura não encontrou APIs de injeção ou persistência de dados sensíveis e o npm audit permaneceu limpo;
+- encerramento com 89 testes, 97,44% de statements, 90,15% de branches, 99,13% de funções e 98,22% de linhas;
 - lint e build de produção aprovados e zero vulnerabilidades no npm audit.
 
 ### F3.2 — Adição e feedback

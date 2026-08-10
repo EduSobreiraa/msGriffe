@@ -64,6 +64,10 @@ describe('CartDrawer', () => {
     await waitFor(() => expect(closeButtons[1]).toHaveFocus())
     expect(document.body).toHaveClass('modal-open')
     expect(screen.getByText('Subtotal · 1 item')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ver sacola' })).toHaveAttribute(
+      'href',
+      '/sacola',
+    )
 
     fireEvent.click(
       screen.getByRole('button', { name: 'Aumentar quantidade de Camiseta Boss' }),
