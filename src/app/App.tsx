@@ -1,21 +1,24 @@
 import { AppRoutes } from './AppRoutes'
-import { catalogReader, categoryReader } from './dependencies'
+import { cartRepository, catalogReader, categoryReader } from './dependencies'
 import { CatalogProvider } from '../features/catalog/presentation/CatalogProvider'
 import { CategoryProvider } from '../features/catalog/presentation/CategoryProvider'
 import { Header } from '../features/storefront/components/Header'
 import { WhatsAppLink } from '../features/storefront/components/WhatsAppLink'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { RouteAccessibility } from './RouteAccessibility'
+import { CartProvider } from '../features/cart/presentation/CartProvider'
 
 export function App() {
   return (
     <ThemeProvider>
       <CatalogProvider reader={catalogReader}>
         <CategoryProvider reader={categoryReader}>
-          <Header />
-          <RouteAccessibility />
-          <AppRoutes />
-          <WhatsAppLink />
+          <CartProvider repository={cartRepository}>
+            <Header />
+            <RouteAccessibility />
+            <AppRoutes />
+            <WhatsAppLink />
+          </CartProvider>
         </CategoryProvider>
       </CatalogProvider>
     </ThemeProvider>

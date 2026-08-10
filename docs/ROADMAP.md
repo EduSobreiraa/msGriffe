@@ -29,7 +29,7 @@ Pendente → Em andamento → Concluída
 | F0 — Fundação técnica | Concluída em 2026-08-07 | React, TypeScript, Vite, qualidade e Cloudflare Pages preparados. |
 | F1 — Design system e vitrine | Concluída em 2026-08-07 | Página inicial modular, responsiva, acessível e testada. |
 | F2 — Catálogo, busca e produto | Concluída em 2026-08-09 | Jornada pública de descoberta de produtos completa. |
-| F3 — Carrinho e checkout visual | Pendente | Jornada demonstrável de preparação da compra. |
+| F3 — Carrinho e checkout visual | Em andamento | Jornada demonstrável de preparação da compra. |
 | F4 — Conta e pós-compra | Pendente | Área do cliente, autenticação visual e pedidos. |
 | F5 — Painel do vendedor | Pendente | Operação administrativa demonstrável. |
 | F6 — Integração preparada e qualidade | Pendente | Contratos estabilizados e frontend pronto para API real. |
@@ -408,7 +408,69 @@ Registro:
 
 ## F3 — Carrinho e checkout visual
 
-Estado: **pendente**.
+Estado: **em andamento**.
+
+Objetivo: construir uma jornada demonstrável de preparação da compra com estado local não sensível e contratos substituíveis, sem afirmar que cálculos ou pagamentos são autoritativos antes do backend.
+
+Limites de segurança:
+
+- nenhum dado sensível, credencial, token, CPF, endereço ou pagamento será persistido no navegador;
+- preços e totais locais são apenas demonstrativos e deverão ser recalculados pelo backend;
+- conteúdo recuperado do armazenamento local será tratado como entrada não confiável;
+- ações financeiras continuarão simuladas e explicitamente identificadas.
+
+### Andamento da F3
+
+| ID | Entrega | Estado | Critério principal |
+| --- | --- | --- | --- |
+| F3.1 | Fundação do carrinho | Concluída | Domínio, persistência validada e provider independentes da interface. |
+| F3.2 | Adição e feedback | Pendente | Variante selecionada entra na sacola e o cabeçalho informa a quantidade. |
+| F3.3 | Drawer da sacola | Pendente | Resumo lateral acessível permite revisar e alterar itens. |
+| F3.4 | Página do carrinho | Pendente | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
+| F3.5 | Cálculos demonstrativos | Pendente | Subtotal, descontos, frete estimado e total usam serviço substituível. |
+| F3.6 | Identificação progressiva | Pendente | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
+| F3.7 | Endereço e entrega | Pendente | Coleta e seleção visual de entrega têm validação e estados definidos. |
+| F3.8 | Cupom, pagamento e revisão | Pendente | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
+| F3.9 | Estados simulados do pedido | Pendente | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
+| F3.10 | Encerramento da F3 | Pendente | Jornadas, OWASP, multitelas, smoke test e commit final aprovados. |
+
+### F3.1 — Fundação do carrinho
+
+Estado: **concluída em 9 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.1.1 | Definir modelos do carrinho | Concluída | Modelos não dependem de React, armazenamento ou futura API. |
+| F3.1.2 | Implementar operações puras | Concluída | Adição, quantidade e remoção são imutáveis, limitadas e testáveis. |
+| F3.1.3 | Definir porta de persistência | Concluída | Interface pequena permite trocar `localStorage` por backend. |
+| F3.1.4 | Criar adapter local seguro | Concluída | Dados inválidos, versões desconhecidas e JSON malformado são descartados. |
+| F3.1.5 | Criar provider e hook | Concluída | Estado e ações são injetados sem acoplar componentes ao adapter. |
+| F3.1.6 | Integrar composição | Concluída | Aplicação inicializa a sacola sem alterar ainda a jornada visual. |
+| F3.1.7 | Testar, validar e versionar | Concluída | Domínio, adapter, provider, quality gate e commit próprio são aprovados. |
+
+Escopo:
+
+- armazenar somente snapshots públicos necessários dos itens;
+- limitar quantidades para reduzir abuso e estados inviáveis;
+- validar toda leitura do armazenamento local;
+- persistir mudanças de forma isolada;
+- preparar as ações de adicionar, alterar e remover para a F3.2–F3.4;
+- manter a UI atual sem habilitar prematuramente a compra.
+
+Registro:
+
+- modelos armazenam apenas snapshots públicos de produto, variante e quantidade;
+- operações puras adicionam, incrementam, limitam, alteram, removem e calculam totais sem mutação;
+- subtotal demonstrativo é acumulado em centavos para evitar erro de ponto flutuante;
+- quantidade por item é limitada a dez unidades;
+- porta `CartRepository` mantém domínio e provider independentes do `localStorage`;
+- adapter versionado limita tamanho e número de itens e rejeita JSON, texto, IDs, duplicatas, caminhos, preços e quantidades inválidos;
+- falha ou bloqueio do armazenamento não interrompe o estado em memória;
+- `CartProvider` expõe ações e totais por hook e foi integrado na composição da aplicação;
+- nenhum dado pessoal, credencial ou informação de pagamento é persistido;
+- etapa sem alteração visual; permanece válida a matriz multitelas da F2.10;
+- encerramento com 79 testes, 97,4% de statements, 90,9% de branches, 98,06% de funções e 98,16% de linhas;
+- lint e build aprovados e zero vulnerabilidades no npm audit.
 
 - sacola em drawer e página;
 - quantidades e variantes;
