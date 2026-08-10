@@ -425,7 +425,7 @@ Limites de segurança:
 | --- | --- | --- | --- |
 | F3.1 | Fundação do carrinho | Concluída | Domínio, persistência validada e provider independentes da interface. |
 | F3.2 | Adição e feedback | Concluída | Variante selecionada entra na sacola e o cabeçalho informa a quantidade. |
-| F3.3 | Drawer da sacola | Pendente | Resumo lateral acessível permite revisar e alterar itens. |
+| F3.3 | Drawer da sacola | Concluída | Resumo lateral acessível permite revisar e alterar itens. |
 | F3.4 | Página do carrinho | Pendente | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
 | F3.5 | Cálculos demonstrativos | Pendente | Subtotal, descontos, frete estimado e total usam serviço substituível. |
 | F3.6 | Identificação progressiva | Pendente | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
@@ -472,6 +472,43 @@ Registro:
 - encerramento com 79 testes, 97,4% de statements, 90,9% de branches, 98,06% de funções e 98,16% de linhas;
 - lint e build aprovados e zero vulnerabilidades no npm audit.
 
+### F3.3 — Drawer da sacola
+
+Estado: **concluída em 9 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.3.1 | Definir comportamento modal | Concluída | Foco entra, fica contido, fecha por Escape e retorna ao acionador. |
+| F3.3.2 | Criar item reutilizável | Concluída | Imagem, variante, preço, quantidade e remoção ficam isolados do drawer. |
+| F3.3.3 | Implementar resumo lateral | Concluída | Sacola cheia apresenta itens e subtotal demonstrativo. |
+| F3.3.4 | Implementar estado vazio | Concluída | Sacola vazia orienta retorno ao catálogo e fecha o drawer ao navegar. |
+| F3.3.5 | Habilitar cabeçalho | Concluída | Botão global abre o drawer e mantém quantidade e nome acessível. |
+| F3.3.6 | Proteger interação de fundo | Concluída | Backdrop e bloqueio de rolagem evitam interação acidental fora do contexto. |
+| F3.3.7 | Testar, revisar e versionar | Concluída | Teclado, operações, OWASP, multitelas e commit próprio são aprovados. |
+
+Escopo:
+
+- abrir o drawer pelo botão global da sacola;
+- listar snapshots públicos persistidos;
+- aumentar, reduzir e remover itens pelos casos de uso do provider;
+- exibir subtotal apenas como estimativa local;
+- não coletar dados pessoais nem iniciar checkout nesta etapa;
+- preparar componentes reutilizáveis para a página completa da F3.4.
+
+Registro:
+
+- `useModalDialog` concentra entrada, contenção e retorno de foco, fechamento por `Escape`, bloqueio de rolagem e isolamento do conteúdo de fundo;
+- `CartLineItem` isola imagem, variante, preço, alteração limitada de quantidade e remoção para reutilização na F3.4;
+- drawer apresenta lista, subtotal demonstrativo e ação futura de checkout explicitamente indisponível;
+- estado vazio conduz ao catálogo e encerra o contexto modal;
+- botão global da sacola abre o drawer e preserva nome acessível com a quantidade atual;
+- fundo recebe backdrop e `inert` enquanto o diálogo está aberto, reduzindo interação acidental e navegação de teclado fora do modal;
+- testes cobrem abertura, fechamento, retorno e contenção de foco, `Escape`, estado vazio, itens, quantidade, remoção e acessibilidade automatizada;
+- matriz visual aprovada em 390×1200, 768×1200, 1024×900 e 1440×1000;
+- varredura não encontrou APIs de injeção ou padrões de segredo e o npm audit permaneceu limpo;
+- encerramento com 86 testes, 97,25% de statements, 90,06% de branches, 98,69% de funções e 98,2% de linhas;
+- lint e build de produção aprovados e zero vulnerabilidades no npm audit.
+
 ### F3.2 — Adição e feedback
 
 Estado: **concluída em 9 de agosto de 2026**.
@@ -504,7 +541,7 @@ Registro:
 - confirmação usa região `status` e preserva o foco do usuário;
 - espaço do feedback permanece reservado para evitar salto visual;
 - badge do cabeçalho soma quantidades e usa singular/plural no nome acessível;
-- botão do cabeçalho permanece sem ação até o drawer da F3.3;
+- nesta etapa, o botão do cabeçalho permaneceu sem ação até a entrega do drawer na F3.3;
 - cards continuam sem adição rápida para não presumir cor ou tamanho;
 - varredura não encontrou APIs de injeção ou padrões de segredo e o npm audit permaneceu limpo;
 - matriz visual aprovada em 390×1200, 768×1200, 1024×900 e 1440×1000;

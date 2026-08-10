@@ -6,14 +6,19 @@ import { PrimaryNavigation } from './PrimaryNavigation'
 import { Link } from 'wouter'
 import { routes } from '../../../app/routes'
 import { useCart } from '../../cart/presentation/useCart'
+import { CartDrawer } from '../../cart/components/CartDrawer'
+import { useCallback, useRef, useState } from 'react'
 
 export function Header() {
   const { close, isOpen, toggle, triggerRef } = useMobileMenu()
   const { totals } = useCart()
+  const [cartOpen, setCartOpen] = useState(false)
+  const bagButtonRef = useRef<HTMLButtonElement>(null)
+  const closeCart = useCallback(() => setCartOpen(false), [])
   const itemLabel = totals.totalItems === 1 ? 'item' : 'itens'
   const bagLabel = totals.totalItems === 0
-    ? 'Sacola disponível em breve'
-    : `Sacola com ${totals.totalItems} ${itemLabel}; visualização disponível em breve`
+    ? 'Abrir sacola, vazia'
+    : `Abrir sacola, ${totals.totalItems} ${itemLabel}`
 
   return (
     <>
@@ -49,11 +54,12 @@ export function Header() {
               disabled
             />
             <IconButton
+              ref={bagButtonRef}
               className="bag-action"
               icon="bag"
               label={bagLabel}
-              title="Sacola disponível em breve"
-              disabled
+              title="Abrir sacola"
+              onClick={() => setCartOpen(true)}
             >
               <Badge
                 className="bag-action__count"
@@ -82,6 +88,7 @@ export function Header() {
           onClick={() => close()}
         />
       )}
+      <CartDrawer isOpen={cartOpen} onClose={closeCart} triggerRef={bagButtonRef} />
     </>
   )
 }

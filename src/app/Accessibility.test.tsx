@@ -52,3 +52,17 @@ describe('acessibilidade da jornada de catálogo', () => {
     expect(await getAccessibilityViolations()).toEqual([])
   })
 })
+
+describe('acessibilidade da sacola', () => {
+  it('não possui violações estruturais conhecidas com o drawer aberto', async () => {
+    window.history.replaceState(null, '', '/produtos/camiseta-boss')
+    render(<App />)
+
+    await screen.findByRole('heading', { name: 'Camiseta Boss' })
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar à sacola' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir sacola, 1 item' }))
+
+    expect(screen.getByRole('dialog', { name: 'Sacola' })).toBeInTheDocument()
+    expect(await getAccessibilityViolations()).toEqual([])
+  })
+})

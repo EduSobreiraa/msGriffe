@@ -179,12 +179,16 @@ describe('App', () => {
 
     expect(
       screen.getByRole('button', {
-        name: 'Sacola com 1 item; visualização disponível em breve',
+        name: 'Abrir sacola, 1 item',
       }),
-    ).toBeDisabled()
+    ).toBeEnabled()
     expect(screen.getByLabelText('1 item na sacola')).toHaveTextContent('1')
     expect(window.localStorage.getItem('msgriffe-cart')).toContain(
       'camiseta-boss-preto-p',
     )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir sacola, 1 item' }))
+    expect(screen.getByRole('dialog', { name: 'Sacola' })).toBeInTheDocument()
+    expect(screen.getByText('Subtotal · 1 item')).toBeInTheDocument()
   })
 })
