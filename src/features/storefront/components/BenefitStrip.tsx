@@ -3,10 +3,9 @@ import type { StoreBenefit } from '../types'
 
 interface BenefitStripProps {
   items: StoreBenefit[]
-  variant?: 'full' | 'contained'
 }
 
-export function BenefitStrip({ items, variant = 'full' }: BenefitStripProps) {
+export function BenefitStrip({ items }: BenefitStripProps) {
   const content = (
     <div className="benefit-strip__grid">
       {items.map((item) => (
@@ -22,10 +21,6 @@ export function BenefitStrip({ items, variant = 'full' }: BenefitStripProps) {
       ))}
     </div>
   )
-
-  if (variant === 'contained') {
-    return <div className="benefit-strip benefit-strip--contained">{content}</div>
-  }
 
   return (
     <section className="benefit-strip benefit-strip--full" aria-label="Benefícios da loja">

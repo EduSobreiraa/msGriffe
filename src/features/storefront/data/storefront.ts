@@ -14,26 +14,3 @@ export const primaryBenefits: StoreBenefit[] = [
   },
   { icon: 'headset', title: 'ATENDIMENTO', text: 'Suporte dedicado' },
 ]
-
-export const secondaryBenefits: StoreBenefit[] = [
-  {
-    icon: 'shield',
-    title: 'COMPRA SEGURA',
-    text: 'Ambiente criptografado',
-  },
-  {
-    icon: 'headset',
-    title: 'ATENDIMENTO VIA WHATSAPP',
-    text: 'Tire suas dúvidas',
-  },
-  {
-    icon: 'refresh',
-    title: 'TROCA FÁCIL',
-    text: 'Consulte nossa política',
-  },
-  {
-    icon: 'card',
-    title: 'PARCELE EM ATÉ 12X',
-    text: 'Nos cartões de crédito',
-  },
-]

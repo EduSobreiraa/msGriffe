@@ -17,6 +17,8 @@ describe('App', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Destaques' })).toBeInTheDocument()
     expect(await screen.findByText('Camiseta Boss')).toBeInTheDocument()
+    expect(screen.queryByText('COMPRA SEGURA')).not.toBeInTheDocument()
+    expect(screen.queryByText('ATENDIMENTO VIA WHATSAPP')).not.toBeInTheDocument()
     expect(
       screen.getByRole('img', {
         name: 'Camiseta e shorts masculinos em destaque',

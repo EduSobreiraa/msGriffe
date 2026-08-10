@@ -1,8 +1,6 @@
 import { ProductCard } from '../../catalog/components/ProductCard'
 import { useCatalogProducts } from '../../catalog/presentation/useCatalogProducts'
 import { Skeleton } from '../../../shared/components/Skeleton'
-import { secondaryBenefits } from '../data/storefront'
-import { BenefitStrip } from './BenefitStrip'
 
 export function FeaturedProductsSection() {
   const products = useCatalogProducts({
@@ -36,8 +34,6 @@ export function FeaturedProductsSection() {
             Não foi possível carregar os produtos em destaque.
           </p>
         )}
-
-        <BenefitStrip items={secondaryBenefits} variant="contained" />
       </div>
     </section>
   )
