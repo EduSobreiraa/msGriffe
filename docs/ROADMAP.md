@@ -424,7 +424,7 @@ Limites de segurança:
 | ID | Entrega | Estado | Critério principal |
 | --- | --- | --- | --- |
 | F3.1 | Fundação do carrinho | Concluída | Domínio, persistência validada e provider independentes da interface. |
-| F3.2 | Adição e feedback | Pendente | Variante selecionada entra na sacola e o cabeçalho informa a quantidade. |
+| F3.2 | Adição e feedback | Concluída | Variante selecionada entra na sacola e o cabeçalho informa a quantidade. |
 | F3.3 | Drawer da sacola | Pendente | Resumo lateral acessível permite revisar e alterar itens. |
 | F3.4 | Página do carrinho | Pendente | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
 | F3.5 | Cálculos demonstrativos | Pendente | Subtotal, descontos, frete estimado e total usam serviço substituível. |
@@ -470,6 +470,45 @@ Registro:
 - nenhum dado pessoal, credencial ou informação de pagamento é persistido;
 - etapa sem alteração visual; permanece válida a matriz multitelas da F2.10;
 - encerramento com 79 testes, 97,4% de statements, 90,9% de branches, 98,06% de funções e 98,16% de linhas;
+- lint e build aprovados e zero vulnerabilidades no npm audit.
+
+### F3.2 — Adição e feedback
+
+Estado: **concluída em 9 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.2.1 | Controlar variante selecionada | Concluída | Página conhece exatamente a combinação escolhida e nunca presume variante indisponível. |
+| F3.2.2 | Mapear produto para carrinho | Concluída | Snapshot público contém apenas campos permitidos pelo domínio do carrinho. |
+| F3.2.3 | Habilitar ação no detalhe | Concluída | Botão adiciona a variante disponível e respeita o limite do domínio. |
+| F3.2.4 | Exibir feedback acessível | Concluída | Confirmação é visível e anunciada sem modal ou interrupção de foco. |
+| F3.2.5 | Atualizar badge global | Concluída | Cabeçalho reflete a soma das quantidades persistidas. |
+| F3.2.6 | Preservar limites dos cards | Concluída | Cards continuam navegando ao detalhe sem escolher variante automaticamente. |
+| F3.2.7 | Testar, revisar e versionar | Concluída | Interação, persistência, OWASP, multitelas e commit próprio são aprovados. |
+
+Escopo:
+
+- tornar o seletor de variantes controlado pela página;
+- adicionar somente variantes existentes e disponíveis;
+- persistir apenas snapshot público já validado na F3.1;
+- confirmar a ação por região `status`;
+- refletir quantidade no cabeçalho sem abrir ainda o drawer;
+- manter preço e disponibilidade como informações demonstrativas.
+
+Registro:
+
+- `ProductVariantSelector` passou a ser controlado e informa sempre o ID exato da combinação;
+- `ProductPurchasePanel` concentra seleção, mapeamento, adição e feedback sem transferir persistência à página;
+- somente variante existente e disponível habilita a ação;
+- snapshot contém ID, slug, nome, imagem, preço demonstrativo, cor, tamanho e ID da variante;
+- confirmação usa região `status` e preserva o foco do usuário;
+- espaço do feedback permanece reservado para evitar salto visual;
+- badge do cabeçalho soma quantidades e usa singular/plural no nome acessível;
+- botão do cabeçalho permanece sem ação até o drawer da F3.3;
+- cards continuam sem adição rápida para não presumir cor ou tamanho;
+- varredura não encontrou APIs de injeção ou padrões de segredo e o npm audit permaneceu limpo;
+- matriz visual aprovada em 390×1200, 768×1200, 1024×900 e 1440×1000;
+- encerramento com 81 testes, 97,31% de statements, 90,62% de branches, 98,11% de funções e 98,22% de linhas;
 - lint e build aprovados e zero vulnerabilidades no npm audit.
 
 - sacola em drawer e página;

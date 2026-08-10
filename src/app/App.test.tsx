@@ -169,4 +169,22 @@ describe('App', () => {
       routes.categories,
     )
   })
+
+  it('reflete no cabeçalho a variante adicionada pelo detalhe', async () => {
+    window.history.replaceState(null, '', routes.product('camiseta-boss'))
+    render(<App />)
+
+    await screen.findByRole('heading', { name: 'Camiseta Boss' })
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar à sacola' }))
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Sacola com 1 item; visualização disponível em breve',
+      }),
+    ).toBeDisabled()
+    expect(screen.getByLabelText('1 item na sacola')).toHaveTextContent('1')
+    expect(window.localStorage.getItem('msgriffe-cart')).toContain(
+      'camiseta-boss-preto-p',
+    )
+  })
 })

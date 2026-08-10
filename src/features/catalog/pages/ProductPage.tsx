@@ -5,10 +5,10 @@ import { Button } from '../../../shared/components/Button'
 import { Skeleton } from '../../../shared/components/Skeleton'
 import { formatCurrency } from '../../../shared/lib/formatters'
 import { ProductGallery } from '../components/ProductGallery'
-import { ProductVariantSelector } from '../components/ProductVariantSelector'
 import { useProductDetails } from '../presentation/useProductDetails'
 import { useDocumentMetadata } from '../../../shared/hooks/useDocumentMetadata'
 import { ProductStructuredData } from '../components/ProductStructuredData'
+import { ProductPurchasePanel } from '../components/ProductPurchasePanel'
 
 type ProductPageProps = RouteComponentProps<{ productSlug: string }>
 
@@ -53,14 +53,7 @@ export function ProductPage({ params }: ProductPageProps) {
               </p>
               <p className="product-info__description">{product.description}</p>
 
-              <ProductVariantSelector variants={product.variants} />
-
-              <Button disabled fullWidth>
-                Adicionar à sacola em breve
-              </Button>
-              <p className="product-info__notice">
-                A compra será habilitada na fase de carrinho e checkout.
-              </p>
+              <ProductPurchasePanel product={product} />
             </section>
           </div>
         </div>

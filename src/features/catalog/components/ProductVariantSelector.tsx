@@ -1,30 +1,31 @@
-import { useState } from 'react'
 import type { ProductVariant } from '../domain/Product'
 
 interface ProductVariantSelectorProps {
   variants: ProductVariant[]
+  selectedVariantId: string
+  onChange(variantId: string): void
 }
 
 function unique(values: string[]) {
   return [...new Set(values)]
 }
 
-export function ProductVariantSelector({ variants }: ProductVariantSelectorProps) {
-  const firstAvailable = variants.find((variant) => variant.available) ?? variants[0]
-  const [color, setColor] = useState(firstAvailable?.color ?? '')
-  const [size, setSize] = useState(firstAvailable?.size ?? '')
+export function ProductVariantSelector({
+  onChange,
+  selectedVariantId,
+  variants,
+}: ProductVariantSelectorProps) {
+  const selectedVariant = variants.find((variant) => variant.id === selectedVariantId)
+  const color = selectedVariant?.color ?? ''
+  const size = selectedVariant?.size ?? ''
   const colors = unique(variants.map((variant) => variant.color))
   const sizes = unique(variants.map((variant) => variant.size))
-  const selectedVariant = variants.find(
-    (variant) => variant.color === color && variant.size === size,
-  )
 
   const selectColor = (nextColor: string) => {
-    setColor(nextColor)
     const matchingVariant = variants.find(
       (variant) => variant.color === nextColor && variant.size === size && variant.available,
     ) ?? variants.find((variant) => variant.color === nextColor && variant.available)
-    if (matchingVariant) setSize(matchingVariant.size)
+    if (matchingVariant) onChange(matchingVariant.id)
   }
 
   return (
@@ -59,7 +60,12 @@ export function ProductVariantSelector({ variants }: ProductVariantSelectorProps
                 className="product-option product-option--size"
                 disabled={!available}
                 key={option}
-                onClick={() => setSize(option)}
+                onClick={() => {
+                  const variant = variants.find(
+                    (item) => item.color === color && item.size === option && item.available,
+                  )
+                  if (variant) onChange(variant.id)
+                }}
                 type="button"
               >
                 {option}

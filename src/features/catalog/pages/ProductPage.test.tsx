@@ -4,11 +4,23 @@ import type { CatalogReader } from '../application/CatalogReader'
 import { MockCatalogAdapter } from '../adapters/MockCatalogAdapter'
 import { CatalogProvider } from '../presentation/CatalogProvider'
 import { ProductPage } from './ProductPage'
+import { CartProvider } from '../../cart/presentation/CartProvider'
+import type { CartRepository } from '../../cart/application/CartRepository'
 
-function renderProduct(reader: CatalogReader, slug = 'camiseta-boss') {
+function renderProduct(
+  reader: CatalogReader,
+  slug = 'camiseta-boss',
+  repository: CartRepository = {
+    load: vi.fn().mockReturnValue({ items: [] }),
+    save: vi.fn(),
+    clear: vi.fn(),
+  },
+) {
   return render(
     <CatalogProvider reader={reader}>
-      <ProductPage params={{ productSlug: slug }} />
+      <CartProvider repository={repository}>
+        <ProductPage params={{ productSlug: slug }} />
+      </CartProvider>
     </CatalogProvider>,
   )
 }
@@ -22,7 +34,34 @@ describe('ProductPage', () => {
     expect(screen.getByText('ou 12x de R$ 8,32')).toBeInTheDocument()
     expect(screen.getByRole('group', { name: /Cor:/ })).toBeInTheDocument()
     expect(screen.getByRole('group', { name: /Tamanho:/ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Adicionar à sacola em breve' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Adicionar à sacola' })).toBeEnabled()
+  })
+
+  it('adiciona exatamente a variante selecionada e informa o resultado', async () => {
+    const repository: CartRepository = {
+      load: vi.fn().mockReturnValue({ items: [] }),
+      save: vi.fn(),
+      clear: vi.fn(),
+    }
+    renderProduct(new MockCatalogAdapter(), 'camiseta-boss', repository)
+    await screen.findByRole('heading', { name: 'Camiseta Boss' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cinza' }))
+    fireEvent.click(screen.getByRole('button', { name: 'M' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Adicionar à sacola' }))
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Camiseta Boss, cor Cinza, tamanho M, adicionado à sacola.',
+    )
+    expect(repository.save).toHaveBeenLastCalledWith({
+      items: [
+        expect.objectContaining({
+          id: 'camiseta-boss-cinza-m',
+          quantity: 1,
+          variant: expect.objectContaining({ color: 'Cinza', size: 'M' }),
+        }),
+      ],
+    })
   })
 
   it('apresenta produto inexistente', async () => {

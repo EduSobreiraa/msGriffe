@@ -1105,6 +1105,15 @@ a:focus-visible {
   color: var(--color-muted);
 }
 
+.product-info__feedback {
+  min-height: 24px;
+  margin: 12px 0 0;
+  color: #27864b;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 .product-info__installment {
   margin: 0;
   font-size: 0.9rem;

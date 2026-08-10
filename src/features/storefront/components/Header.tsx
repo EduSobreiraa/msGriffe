@@ -5,9 +5,15 @@ import { useMobileMenu } from '../hooks/useMobileMenu'
 import { PrimaryNavigation } from './PrimaryNavigation'
 import { Link } from 'wouter'
 import { routes } from '../../../app/routes'
+import { useCart } from '../../cart/presentation/useCart'
 
 export function Header() {
   const { close, isOpen, toggle, triggerRef } = useMobileMenu()
+  const { totals } = useCart()
+  const itemLabel = totals.totalItems === 1 ? 'item' : 'itens'
+  const bagLabel = totals.totalItems === 0
+    ? 'Sacola disponível em breve'
+    : `Sacola com ${totals.totalItems} ${itemLabel}; visualização disponível em breve`
 
   return (
     <>
@@ -45,12 +51,15 @@ export function Header() {
             <IconButton
               className="bag-action"
               icon="bag"
-              label="Sacola disponível em breve"
+              label={bagLabel}
               title="Sacola disponível em breve"
               disabled
             >
-              <Badge className="bag-action__count" accessibleLabel="0 itens na sacola">
-                0
+              <Badge
+                className="bag-action__count"
+                accessibleLabel={`${totals.totalItems} ${itemLabel} na sacola`}
+              >
+                {totals.totalItems}
               </Badge>
             </IconButton>
             <IconButton

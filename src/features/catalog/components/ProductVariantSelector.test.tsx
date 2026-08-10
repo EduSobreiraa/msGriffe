@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
+import { useState } from 'react'
 import { ProductVariantSelector } from './ProductVariantSelector'
 
 const variants = [
@@ -11,7 +12,18 @@ const variants = [
 
 describe('ProductVariantSelector', () => {
   it('seleciona cor e impede tamanho indisponível na combinação', () => {
-    render(<ProductVariantSelector variants={variants} />)
+    function Harness() {
+      const [selectedVariantId, setSelectedVariantId] = useState('preto-p')
+      return (
+        <ProductVariantSelector
+          variants={variants}
+          selectedVariantId={selectedVariantId}
+          onChange={setSelectedVariantId}
+        />
+      )
+    }
+
+    render(<Harness />)
 
     fireEvent.click(screen.getByRole('button', { name: 'G' }))
     expect(screen.getByRole('button', { name: 'G' })).toHaveAttribute(
