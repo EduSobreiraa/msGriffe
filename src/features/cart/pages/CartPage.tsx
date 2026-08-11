@@ -6,7 +6,7 @@ import { CartLineItem } from '../components/CartLineItem'
 import { useCart } from '../presentation/useCart'
 
 export function CartPage() {
-  const { cart, removeItem, totals, updateQuantity } = useCart()
+  const { cart, pricing, removeItem, totals, updateQuantity } = useCart()
   useDocumentMetadata({
     title: 'Sacola | MS Griffe',
     description: 'Revise os produtos selecionados na sua sacola MS Griffe.',
@@ -51,13 +51,36 @@ export function CartPage() {
 
             <aside className="cart-page__summary" aria-labelledby="cart-summary-title">
               <h2 id="cart-summary-title">Resumo</h2>
-              <div>
-                <span>Subtotal · {totals.totalItems} {itemLabel}</span>
-                <strong>{formatCurrency(totals.displaySubtotal)}</strong>
-              </div>
-              <p>
-                Estimativa local. Preços, descontos, entrega e disponibilidade serão
-                confirmados antes do pagamento.
+              <dl className="cart-page__summary-lines">
+                <div>
+                  <dt>Subtotal · {totals.totalItems} {itemLabel}</dt>
+                  <dd>{formatCurrency(pricing.displaySubtotal)}</dd>
+                </div>
+                <div>
+                  <dt>
+                    Desconto demonstrativo
+                    {pricing.discountPercentage > 0
+                      ? ` · ${pricing.discountPercentage * 100}%`
+                      : ''}
+                  </dt>
+                  <dd>− {formatCurrency(pricing.displayDiscount)}</dd>
+                </div>
+                <div>
+                  <dt>Frete padrão estimado</dt>
+                  <dd>
+                    {pricing.shippingIsFree
+                      ? 'Grátis'
+                      : formatCurrency(pricing.displayShipping)}
+                  </dd>
+                </div>
+                <div className="cart-page__summary-total">
+                  <dt>Total demonstrativo</dt>
+                  <dd>{formatCurrency(pricing.displayTotal)}</dd>
+                </div>
+              </dl>
+              <p className="cart-page__summary-notice">
+                Simulação do frontend, não constitui oferta. O backend confirmará preços,
+                descontos, entrega, estoque e total antes do pagamento.
               </p>
               <button className="button button--primary button--medium button--full-width" disabled type="button">
                 Continuar em breve

@@ -4,6 +4,7 @@ import type { CartRepository } from '../application/CartRepository'
 import type { Cart } from '../domain/Cart'
 import { CartProvider } from '../presentation/CartProvider'
 import { CartPage } from './CartPage'
+import { testCartPricingService } from '../../../test/cartPricingService'
 
 const cartWithItem: Cart = {
   items: [
@@ -30,7 +31,7 @@ function renderPage(initialCart: Cart) {
   }
 
   render(
-    <CartProvider repository={repository}>
+    <CartProvider pricingService={testCartPricingService} repository={repository}>
       <CartPage />
     </CartProvider>,
   )
@@ -60,6 +61,10 @@ describe('CartPage', () => {
 
     expect(screen.getByText('Subtotal · 1 item')).toBeInTheDocument()
     expect(screen.getAllByText('R$ 89,90')).toHaveLength(2)
+    expect(screen.getByText('R$ 19,90')).toBeInTheDocument()
+    expect(screen.getByText('R$ 109,80')).toBeInTheDocument()
+    expect(screen.getByText('− R$ 0,00')).toBeInTheDocument()
+    expect(screen.getByText(/não constitui oferta/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Continuar em breve' })).toBeDisabled()
 
     fireEvent.click(
@@ -67,6 +72,18 @@ describe('CartPage', () => {
     )
     expect(screen.getByText('Subtotal · 2 itens')).toBeInTheDocument()
     expect(screen.getByText('R$ 179,80')).toBeInTheDocument()
+    expect(screen.getByText('R$ 199,70')).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Aumentar quantidade de Camiseta Boss' }),
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Aumentar quantidade de Camiseta Boss' }),
+    )
+    expect(screen.getByText('Desconto demonstrativo · 5%')).toBeInTheDocument()
+    expect(screen.getByText('− R$ 17,98')).toBeInTheDocument()
+    expect(screen.getByText('Grátis')).toBeInTheDocument()
+    expect(screen.getByText('R$ 341,62')).toBeInTheDocument()
 
     fireEvent.click(
       screen.getByRole('button', {

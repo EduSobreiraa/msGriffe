@@ -5,6 +5,7 @@ import type { CartRepository } from '../application/CartRepository'
 import type { Cart } from '../domain/Cart'
 import { CartProvider } from '../presentation/CartProvider'
 import { CartDrawer } from './CartDrawer'
+import { testCartPricingService } from '../../../test/cartPricingService'
 
 const cartWithItem: Cart = {
   items: [
@@ -48,7 +49,7 @@ function renderDrawer(initialCart: Cart) {
   }
 
   render(
-    <CartProvider repository={repository}>
+    <CartProvider pricingService={testCartPricingService} repository={repository}>
       <Harness />
     </CartProvider>,
   )

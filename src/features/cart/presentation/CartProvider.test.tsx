@@ -3,14 +3,16 @@ import { describe, expect, it, vi } from 'vitest'
 import type { CartRepository } from '../application/CartRepository'
 import { CartProvider } from './CartProvider'
 import { useCart } from './useCart'
+import { testCartPricingService } from '../../../test/cartPricingService'
 
 function CartHarness() {
-  const { addItem, cart, clear, totals, updateQuantity } = useCart()
+  const { addItem, cart, clear, pricing, totals, updateQuantity } = useCart()
   const firstItem = cart.items[0]
 
   return (
     <div>
       <span>{totals.totalItems} itens</span>
+      <span>Total {pricing.displayTotal}</span>
       <button
         type="button"
         onClick={() =>
@@ -44,16 +46,18 @@ describe('CartProvider', () => {
       clear: vi.fn(),
     }
     render(
-      <CartProvider repository={repository}>
+      <CartProvider pricingService={testCartPricingService} repository={repository}>
         <CartHarness />
       </CartProvider>,
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Adicionar' }))
     expect(screen.getByText('1 itens')).toBeInTheDocument()
+    expect(screen.getByText('Total 109.8')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Alterar' }))
     expect(screen.getByText('3 itens')).toBeInTheDocument()
+    expect(screen.getByText('Total 276.11')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Limpar' }))
     expect(screen.getByText('0 itens')).toBeInTheDocument()

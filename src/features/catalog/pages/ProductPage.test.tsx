@@ -5,6 +5,7 @@ import { MockCatalogAdapter } from '../adapters/MockCatalogAdapter'
 import { CatalogProvider } from '../presentation/CatalogProvider'
 import { ProductPage } from './ProductPage'
 import { CartProvider } from '../../cart/presentation/CartProvider'
+import { testCartPricingService } from '../../../test/cartPricingService'
 import type { CartRepository } from '../../cart/application/CartRepository'
 
 function renderProduct(
@@ -18,7 +19,7 @@ function renderProduct(
 ) {
   return render(
     <CatalogProvider reader={reader}>
-      <CartProvider repository={repository}>
+      <CartProvider pricingService={testCartPricingService} repository={repository}>
         <ProductPage params={{ productSlug: slug }} />
       </CartProvider>
     </CatalogProvider>,

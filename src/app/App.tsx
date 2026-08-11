@@ -1,5 +1,10 @@
 import { AppRoutes } from './AppRoutes'
-import { cartRepository, catalogReader, categoryReader } from './dependencies'
+import {
+  cartPricingService,
+  cartRepository,
+  catalogReader,
+  categoryReader,
+} from './dependencies'
 import { CatalogProvider } from '../features/catalog/presentation/CatalogProvider'
 import { CategoryProvider } from '../features/catalog/presentation/CategoryProvider'
 import { Header } from '../features/storefront/components/Header'
@@ -13,7 +18,10 @@ export function App() {
     <ThemeProvider>
       <CatalogProvider reader={catalogReader}>
         <CategoryProvider reader={categoryReader}>
-          <CartProvider repository={cartRepository}>
+          <CartProvider
+            pricingService={cartPricingService}
+            repository={cartRepository}
+          >
             <Header />
             <RouteAccessibility />
             <AppRoutes />

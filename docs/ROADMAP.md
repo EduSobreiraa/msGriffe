@@ -427,7 +427,7 @@ Limites de segurança:
 | F3.2 | Adição e feedback | Concluída | Variante selecionada entra na sacola e o cabeçalho informa a quantidade. |
 | F3.3 | Drawer da sacola | Concluída | Resumo lateral acessível permite revisar e alterar itens. |
 | F3.4 | Página do carrinho | Concluída | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
-| F3.5 | Cálculos demonstrativos | Pendente | Subtotal, descontos, frete estimado e total usam serviço substituível. |
+| F3.5 | Cálculos demonstrativos | Concluída | Subtotal, descontos, frete estimado e total usam serviço substituível. |
 | F3.6 | Identificação progressiva | Pendente | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
 | F3.7 | Endereço e entrega | Pendente | Coleta e seleção visual de entrega têm validação e estados definidos. |
 | F3.8 | Cupom, pagamento e revisão | Pendente | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
@@ -545,6 +545,52 @@ Registro:
 - estados cheio e vazio foram revisados em 390×1200, 768×1200, 1024×900 e 1440×1000;
 - varredura não encontrou APIs de injeção ou persistência de dados sensíveis e o npm audit permaneceu limpo;
 - encerramento com 89 testes, 97,44% de statements, 90,15% de branches, 99,13% de funções e 98,22% de linhas;
+- lint e build de produção aprovados e zero vulnerabilidades no npm audit.
+
+### F3.5 — Cálculos demonstrativos
+
+Estado: **concluída em 11 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.5.1 | Definir contrato de precificação | Concluída | Interface recebe o carrinho e devolve valores sem depender de React ou infraestrutura. |
+| F3.5.2 | Implementar simulador configurável | Concluída | Regras provisórias operam em centavos, com limites válidos e testes de borda. |
+| F3.5.3 | Injetar serviço no provider | Concluída | Componentes consomem resumo calculado sem conhecer o adapter utilizado. |
+| F3.5.4 | Evoluir resumo da página | Concluída | Subtotal, desconto, frete estimado e total exibem origem demonstrativa inequívoca. |
+| F3.5.5 | Manter resumo do drawer enxuto | Concluída | Drawer continua rápido e não antecipa regras detalhadas da página. |
+| F3.5.6 | Garantir responsividade e acessibilidade | Concluída | Valores e avisos mantêm hierarquia legível por teclado e na matriz multitelas. |
+| F3.5.7 | Testar, revisar e versionar | Concluída | Domínio, integração, OWASP, qualidade, build e commit próprio são aprovados. |
+
+Escopo:
+
+- criar uma porta substituível para o futuro cálculo autoritativo do backend;
+- calcular internamente em centavos e arredondar de forma determinística;
+- usar regras locais explicitamente demonstrativas, sem constituir oferta comercial;
+- limitar percentuais e valores configuráveis para evitar estados inválidos;
+- não coletar CEP, dados pessoais ou forma de pagamento nesta etapa;
+- manter o backend como responsável final por preço, desconto, frete, estoque e total.
+
+Regras provisórias da simulação:
+
+- desconto demonstrativo de 5% a partir de R$ 200,00;
+- frete padrão estimado de R$ 19,90;
+- frete demonstrativo gratuito a partir de R$ 300,00;
+- regras deverão ser substituídas após definição comercial do vendedor e integração com o backend.
+
+Registro:
+
+- `CartPricingService` define uma porta pequena, independente de React, persistência e infraestrutura;
+- `DemonstrationCartPricingService` recebe regras por construtor e rejeita percentuais, limites e valores monetários inválidos;
+- subtotal, desconto, frete e total são calculados em centavos com arredondamento determinístico;
+- carrinho vazio não gera frete, desconto ou total artificiais;
+- provider recebe o serviço por injeção e expõe o resultado sem acoplar componentes ao adapter demonstrativo;
+- página apresenta lista semântica de valores, desconto aplicado, frete estimado ou gratuito e total demonstrativo;
+- aviso declara que a simulação do frontend não constitui oferta e que o backend confirmará todos os valores;
+- drawer permaneceu com subtotal enxuto e direciona à página para detalhes;
+- testes cobrem carrinho vazio, frete padrão, desconto, arredondamento, frete gratuito, regras inválidas e atualização reativa;
+- matriz visual aprovada em 390×1200, 768×1200, 1024×900 e 1440×1000;
+- varredura não encontrou APIs de injeção ou persistência de dados sensíveis e o npm audit permaneceu limpo;
+- encerramento com 94 testes, 97,5% de statements, 90,55% de branches, 99,14% de funções e 98,27% de linhas;
 - lint e build de produção aprovados e zero vulnerabilidades no npm audit.
 
 ### F3.2 — Adição e feedback

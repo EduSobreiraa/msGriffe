@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
 import type { CartRepository } from '../application/CartRepository'
+import type { CartPricingService } from '../application/CartPricingService'
 import type { AddCartItemInput } from '../domain/Cart'
 import {
   addCartItem,
@@ -11,10 +12,11 @@ import {
 import { CartContext } from './CartContext'
 
 interface CartProviderProps extends PropsWithChildren {
+  pricingService: CartPricingService
   repository: CartRepository
 }
 
-export function CartProvider({ children, repository }: CartProviderProps) {
+export function CartProvider({ children, pricingService, repository }: CartProviderProps) {
   const [cart, setCart] = useState(() => repository.load())
 
   useEffect(() => {
@@ -42,12 +44,13 @@ export function CartProvider({ children, repository }: CartProviderProps) {
     () => ({
       cart,
       totals: calculateCartTotals(cart),
+      pricing: pricingService.calculate(cart),
       addItem,
       updateQuantity,
       removeItem,
       clear,
     }),
-    [addItem, cart, clear, removeItem, updateQuantity],
+    [addItem, cart, clear, pricingService, removeItem, updateQuantity],
   )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

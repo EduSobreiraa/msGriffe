@@ -1418,25 +1418,45 @@ a:focus-visible {
   border-bottom: 1px solid var(--color-border);
 }
 
-.cart-page__summary > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-top: 22px;
+.cart-page__summary-lines {
+  margin: 0;
+  padding: 14px 0 4px;
 }
 
-.cart-page__summary span {
+.cart-page__summary-lines > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+}
+
+.cart-page__summary-lines dt {
   color: var(--color-muted);
   font-size: 0.85rem;
 }
 
-.cart-page__summary strong {
-  font-size: 1.3rem;
+.cart-page__summary-lines dd {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-.cart-page__summary p {
+.cart-page__summary-lines .cart-page__summary-total {
+  margin-top: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
+.cart-page__summary-total dt,
+.cart-page__summary-total dd {
+  color: var(--color-text);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.cart-page__summary .cart-page__summary-notice {
   margin: 10px 0 20px;
   color: var(--color-muted);
   font-size: 0.76rem;
