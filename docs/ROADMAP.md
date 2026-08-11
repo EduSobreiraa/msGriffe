@@ -572,10 +572,12 @@ Escopo:
 
 Regras provisórias da simulação:
 
-- desconto demonstrativo de 5% a partir de R$ 200,00;
-- frete padrão estimado de R$ 19,90;
-- frete demonstrativo gratuito a partir de R$ 300,00;
+- `PROV-001`: desconto demonstrativo de 5% a partir de R$ 200,00;
+- `PROV-002`: frete padrão estimado de R$ 19,90;
+- `PROV-003`: frete demonstrativo gratuito a partir de R$ 300,00;
 - regras deverão ser substituídas após definição comercial do vendedor e integração com o backend.
+
+O estado e os responsáveis por essas decisões estão centralizados no checklist da seção 14.3 de [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md).
 
 Registro:
 

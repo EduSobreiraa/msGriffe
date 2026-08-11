@@ -338,6 +338,20 @@ O sistema deverá observar finalidade, necessidade, transparência, segurança e
 9. Definição exata do escopo do MVP.
 10. Estratégia para indisponibilidade do Mercado Pago.
 
+### 14.3 Decisões provisórias implementadas e obrigatórias para revisão
+
+Esta lista funciona como checklist de homologação. Uma implementação aparecer como concluída no `ROADMAP` não transforma uma regra provisória em decisão comercial definitiva.
+
+| ID | Implementação provisória | Estado | Validar com | Momento limite para revisão |
+| --- | --- | --- | --- | --- |
+| PROV-001 | Desconto demonstrativo de 5% para subtotal a partir de R$ 200,00. | Aguardando validação | Vendedor | Antes da integração autoritativa de preços e promoções. |
+| PROV-002 | Frete padrão demonstrativo de R$ 19,90. | Aguardando validação | Vendedor e definição técnica do serviço de frete | Antes da integração de cálculo por CEP. |
+| PROV-003 | Frete demonstrativo gratuito para subtotal a partir de R$ 300,00. | Aguardando validação | Vendedor | Antes da integração autoritativa de frete e promoções. |
+
+As regras `PROV-001`–`PROV-003` existem apenas para tornar o frontend demonstrável. Elas não constituem oferta, não devem ser publicadas como política comercial aprovada e deverão ser removidas ou substituídas pelos valores confirmados.
+
+Novas decisões provisórias que afetem comportamento, segurança, integrações, dados ou regras comerciais deverão receber um identificador nesta tabela, responsável pela validação e momento limite de revisão.
+
 ## 15. Premissas de implementação
 
 Enquanto as pendências não forem resolvidas:
@@ -349,6 +363,7 @@ Enquanto as pendências não forem resolvidas:
 - datas devem ser armazenadas com referência temporal inequívoca e exibidas no fuso aplicável;
 - mudanças importantes neste contexto devem atualizar este documento e registrar a data da decisão;
 - nenhuma pendência comercial deve ser silenciosamente convertida em regra definitiva pela implementação;
+- decisões provisórias implementadas devem ser adicionadas ao checklist da seção 14.3 e permanecer abertas até validação explícita;
 - frontend e backend devem seguir SOLID, modularização por responsabilidade e baixo acoplamento;
 - componentes, serviços, casos de uso e módulos devem observar principalmente o princípio da responsabilidade única;
 - regras de negócio devem permanecer independentes de frameworks, banco de dados e provedores externos;
@@ -382,3 +397,4 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-09 | OWASP Top 10 e controles aplicáveis do ASVS adotados como referência permanente de segurança. |
 | 2026-08-09 | Validação responsiva passa a cobrir mobile, tablet, notebook e desktop conforme o impacto da etapa. |
 | 2026-08-09 | Cada etapa concluída deve receber commit próprio após aprovação do quality gate. |
+| 2026-08-11 | Decisões provisórias implementadas passam a integrar um checklist obrigatório de revisão, com responsável e prazo de validação. |
