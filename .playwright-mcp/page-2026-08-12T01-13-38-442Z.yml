@@ -1,0 +1,72 @@
+- generic [ref=f1e2]:
+  - link "Ir para o conteúdo principal" [ref=f1e3] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "Página inicial da MS Griffe" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - img "MS Griffe" [ref=f1e7]
+      - navigation "Navegação principal" [ref=f1e8]:
+        - link "INÍCIO" [ref=f1e9] [cursor=pointer]:
+          - /url: /
+        - link "PRODUTOS" [ref=f1e10] [cursor=pointer]:
+          - /url: /produtos
+        - link "CATEGORIAS" [ref=f1e11] [cursor=pointer]:
+          - /url: /categorias
+        - generic "Disponível em breve" [ref=f1e12]: SOBRE NÓS
+        - generic "Disponível em breve" [ref=f1e13]: CONTATO
+      - generic [ref=f1e14]:
+        - button "Ativar tema escuro" [ref=f1e15] [cursor=pointer]
+        - button "Busca disponível em breve" [disabled] [ref=f1e18]
+        - button "Conta disponível em breve" [disabled] [ref=f1e22]
+        - button "Abrir sacola, vazia" [ref=f1e26] [cursor=pointer]:
+          - generic "0 itens na sacola" [ref=f1e30]: "0"
+  - paragraph [ref=f1e31]
+  - main [ref=f1e32]:
+    - generic [ref=f1e33]:
+      - generic [ref=f1e34]:
+        - paragraph [ref=f1e35]: Catálogo
+        - heading "Todos os produtos" [active] [level=1] [ref=f1e36]
+        - generic [ref=f1e37]: Confira todas as peças disponíveis em nossa loja.
+      - search [ref=f1e38]:
+        - generic [ref=f1e39]: Buscar produtos
+        - searchbox "Buscar produtos" [ref=f1e40]
+        - button "Buscar" [ref=f1e41] [cursor=pointer]
+      - generic "Ferramentas do catálogo" [ref=f1e42]:
+        - button "Filtrar" [ref=f1e43] [cursor=pointer]
+        - paragraph [ref=f1e46]: 12 produtos
+        - generic [ref=f1e47]:
+          - generic [ref=f1e48]: Ordenar produtos
+          - combobox "Ordenar produtos" [ref=f1e49]:
+            - option "Mais recentes" [selected]
+            - option "Menor preço"
+            - option "Maior preço"
+            - 'option "Nome: A–Z"'
+      - generic [ref=f1e180]:
+        - article [ref=f1e181]:
+          - link "Ver detalhes de Short Boss Azul Premium" [ref=f1e182] [cursor=pointer]:
+            - /url: /produtos/short-boss-azul-premium
+          - generic [ref=f1e183]:
+            - generic [ref=f1e184]:
+              - heading [level=2] [ref=f1e185]:
+                - link "Short Boss Azul Premium" [ref=f1e186] [cursor=pointer]:
+                  - /url: /produtos/short-boss-azul-premium
+              - generic [ref=f1e187]: R$ 89,90
+              - generic [ref=f1e188]: 12x de R$ 8,32
+            - button "Sacola disponível em breve para Short Boss Azul Premium" [disabled] [ref=f1e189]
+        - article [ref=f1e193]:
+          - link "Ver detalhes de Short Boss Cinza Premium" [ref=f1e194] [cursor=pointer]:
+            - /url: /produtos/short-boss-cinza-premium
+          - generic [ref=f1e195]:
+            - generic [ref=f1e196]:
+              - heading [level=2] [ref=f1e197]:
+                - link "Short Boss Cinza Premium" [ref=f1e198] [cursor=pointer]:
+                  - /url: /produtos/short-boss-cinza-premium
+              - generic [ref=f1e199]: R$ 89,90
+              - generic [ref=f1e200]: 12x de R$ 8,32
+            - button "Sacola disponível em breve para Short Boss Cinza Premium" [disabled] [ref=f1e201]
+      - navigation "Paginação do catálogo" [ref=f1e205]:
+        - button "Página anterior" [ref=f1e206] [cursor=pointer]
+        - button "Página 1" [ref=f1e209] [cursor=pointer]: "1"
+        - button "Página 2" [ref=f1e210] [cursor=pointer]: "2"
+        - button "Próxima página" [disabled] [ref=f1e211]

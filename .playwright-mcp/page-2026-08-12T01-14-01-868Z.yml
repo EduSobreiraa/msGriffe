@@ -1,0 +1,63 @@
+- generic [ref=f2e2]:
+  - link "Ir para o conteúdo principal" [ref=f2e3] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - banner [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - link "Página inicial da MS Griffe" [ref=f2e6] [cursor=pointer]:
+        - /url: /
+        - img "MS Griffe" [ref=f2e7]
+      - navigation "Navegação principal" [ref=f2e8]:
+        - link "INÍCIO" [ref=f2e9] [cursor=pointer]:
+          - /url: /
+        - link "PRODUTOS" [ref=f2e10] [cursor=pointer]:
+          - /url: /produtos
+        - link "CATEGORIAS" [ref=f2e11] [cursor=pointer]:
+          - /url: /categorias
+        - generic "Disponível em breve" [ref=f2e12]: SOBRE NÓS
+        - generic "Disponível em breve" [ref=f2e13]: CONTATO
+      - generic [ref=f2e14]:
+        - button "Ativar tema escuro" [ref=f2e15] [cursor=pointer]
+        - button "Busca disponível em breve" [disabled] [ref=f2e18]
+        - button "Conta disponível em breve" [disabled] [ref=f2e22]
+        - button "Abrir sacola, vazia" [ref=f2e26] [cursor=pointer]:
+          - generic "0 itens na sacola" [ref=f2e30]: "0"
+  - paragraph [ref=f2e31]
+  - main [ref=f2e32]:
+    - generic [ref=f2e33]:
+      - navigation "Navegação estrutural" [ref=f2e34]:
+        - link "Produtos" [ref=f2e35] [cursor=pointer]:
+          - /url: /produtos
+        - generic [ref=f2e36]: /
+        - link "Camisetas" [ref=f2e37] [cursor=pointer]:
+          - /url: /categorias/camisetas
+        - generic [ref=f2e38]: /
+        - generic [ref=f2e39]: Camiseta Boss
+      - generic [ref=f2e40]:
+        - region "Galeria de Camiseta Boss" [ref=f2e41]:
+          - img "Camiseta Boss" [ref=f2e43]
+        - region [ref=f2e44]:
+          - paragraph [ref=f2e45]: Camisetas
+          - heading "Camiseta Boss" [level=1] [ref=f2e46]
+          - paragraph [ref=f2e47]: R$ 89,90
+          - paragraph [ref=f2e48]: ou 12x de R$ 8,32
+          - paragraph [ref=f2e49]: Camiseta masculina Boss em tecido confortável.
+          - generic [ref=f2e50]:
+            - group [ref=f2e51]:
+              - generic [ref=f2e52]:
+                - text: "Cor:"
+                - strong [ref=f2e53]: Preto
+              - generic [ref=f2e54]:
+                - button "Preto" [pressed] [ref=f2e55] [cursor=pointer]
+                - button "Cinza" [ref=f2e56] [cursor=pointer]
+            - group [ref=f2e57]:
+              - generic [ref=f2e58]:
+                - text: "Tamanho:"
+                - strong [ref=f2e59]: P
+              - generic [ref=f2e60]:
+                - button "P" [pressed] [ref=f2e61] [cursor=pointer]
+                - button "M" [ref=f2e62] [cursor=pointer]
+                - button "G" [ref=f2e63] [cursor=pointer]
+            - paragraph [ref=f2e64]: Disponível
+          - button "Adicionar à sacola" [ref=f2e65] [cursor=pointer]
+          - status [ref=f2e66]
+          - paragraph [ref=f2e67]: Preços e disponibilidade serão confirmados no checkout.

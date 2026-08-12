@@ -1,0 +1,150 @@
+- generic [ref=f9e2]:
+  - link "Ir para o conteúdo principal" [ref=f9e3] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - banner [ref=f9e4]:
+    - generic [ref=f9e5]:
+      - link "Página inicial da MS Griffe" [ref=f9e6] [cursor=pointer]:
+        - /url: /
+        - img "MS Griffe" [ref=f9e7]
+      - generic [ref=f9e8]:
+        - button "Ativar tema claro" [ref=f9e9] [cursor=pointer]
+        - button "Abrir sacola, 2 itens" [ref=f9e13] [cursor=pointer]:
+          - generic "2 itens na sacola" [ref=f9e17]: "2"
+        - button "Abrir menu" [ref=f9e18] [cursor=pointer]
+  - paragraph [ref=f9e21]
+  - main [ref=f9e22]:
+    - generic [ref=f9e23]:
+      - generic [ref=f9e24]:
+        - paragraph [ref=f9e25]: Catálogo
+        - heading "Todos os produtos" [level=1] [ref=f9e26]
+        - generic [ref=f9e27]: Confira todas as peças disponíveis em nossa loja.
+      - search [ref=f9e28]:
+        - generic [ref=f9e29]: Buscar produtos
+        - searchbox "Buscar produtos" [ref=f9e30]
+        - button "Buscar" [ref=f9e31] [cursor=pointer]
+      - generic "Ferramentas do catálogo" [ref=f9e32]:
+        - button "Filtrar" [ref=f9e33] [cursor=pointer]
+        - paragraph [ref=f9e36]: 12 produtos
+        - generic [ref=f9e37]:
+          - generic [ref=f9e38]: Ordenar produtos
+          - combobox "Ordenar produtos" [ref=f9e39]:
+            - option "Mais recentes" [selected]
+            - option "Menor preço"
+            - option "Maior preço"
+            - 'option "Nome: A–Z"'
+      - generic [ref=f9e40]:
+        - article [ref=f9e41]:
+          - link "Ver detalhes de Camiseta Boss" [ref=f9e42] [cursor=pointer]:
+            - /url: /produtos/camiseta-boss
+          - generic [ref=f9e43]:
+            - generic [ref=f9e44]:
+              - heading [level=2] [ref=f9e45]:
+                - link "Camiseta Boss" [ref=f9e46] [cursor=pointer]:
+                  - /url: /produtos/camiseta-boss
+              - generic [ref=f9e47]: R$ 89,90
+              - generic [ref=f9e48]: 12x de R$ 8,32
+            - button "Sacola disponível em breve para Camiseta Boss" [disabled] [ref=f9e49]
+        - article [ref=f9e53]:
+          - link "Ver detalhes de Short Boss Azul" [ref=f9e54] [cursor=pointer]:
+            - /url: /produtos/short-boss-azul
+          - generic [ref=f9e55]:
+            - generic [ref=f9e56]:
+              - heading [level=2] [ref=f9e57]:
+                - link "Short Boss Azul" [ref=f9e58] [cursor=pointer]:
+                  - /url: /produtos/short-boss-azul
+              - generic [ref=f9e59]: R$ 79,90
+              - generic [ref=f9e60]: 12x de R$ 7,39
+            - button "Sacola disponível em breve para Short Boss Azul" [disabled] [ref=f9e61]
+        - article [ref=f9e65]:
+          - link "Ver detalhes de Short Boss Cinza" [ref=f9e66] [cursor=pointer]:
+            - /url: /produtos/short-boss-cinza
+          - generic [ref=f9e67]:
+            - generic [ref=f9e68]:
+              - heading [level=2] [ref=f9e69]:
+                - link "Short Boss Cinza" [ref=f9e70] [cursor=pointer]:
+                  - /url: /produtos/short-boss-cinza
+              - generic [ref=f9e71]: R$ 79,90
+              - generic [ref=f9e72]: 12x de R$ 7,39
+            - button "Sacola disponível em breve para Short Boss Cinza" [disabled] [ref=f9e73]
+        - article [ref=f9e77]:
+          - link "Ver detalhes de Camiseta Faixa Refletiva" [ref=f9e78] [cursor=pointer]:
+            - /url: /produtos/camiseta-faixa-refletiva
+          - generic [ref=f9e79]:
+            - generic [ref=f9e80]:
+              - heading [level=2] [ref=f9e81]:
+                - link "Camiseta Faixa Refletiva" [ref=f9e82] [cursor=pointer]:
+                  - /url: /produtos/camiseta-faixa-refletiva
+              - generic [ref=f9e83]: R$ 89,90
+              - generic [ref=f9e84]: 12x de R$ 8,32
+            - button "Sacola disponível em breve para Camiseta Faixa Refletiva" [disabled] [ref=f9e85]
+        - article [ref=f9e89]:
+          - link "Ver detalhes de Camiseta Boss Essential" [ref=f9e90] [cursor=pointer]:
+            - /url: /produtos/camiseta-boss-essential
+          - generic [ref=f9e91]:
+            - generic [ref=f9e92]:
+              - heading [level=2] [ref=f9e93]:
+                - link "Camiseta Boss Essential" [ref=f9e94] [cursor=pointer]:
+                  - /url: /produtos/camiseta-boss-essential
+              - generic [ref=f9e95]: R$ 84,90
+              - generic [ref=f9e96]: 12x de R$ 7,86
+            - button "Sacola disponível em breve para Camiseta Boss Essential" [disabled] [ref=f9e97]
+        - article [ref=f9e101]:
+          - link "Ver detalhes de Camiseta Boss Refletiva" [ref=f9e102] [cursor=pointer]:
+            - /url: /produtos/camiseta-boss-refletiva
+          - generic [ref=f9e103]:
+            - generic [ref=f9e104]:
+              - heading [level=2] [ref=f9e105]:
+                - link "Camiseta Boss Refletiva" [ref=f9e106] [cursor=pointer]:
+                  - /url: /produtos/camiseta-boss-refletiva
+              - generic [ref=f9e107]: R$ 94,90
+              - generic [ref=f9e108]: 12x de R$ 8,78
+            - button "Sacola disponível em breve para Camiseta Boss Refletiva" [disabled] [ref=f9e109]
+        - article [ref=f9e113]:
+          - link "Ver detalhes de Short Boss Azul Classic" [ref=f9e114] [cursor=pointer]:
+            - /url: /produtos/short-boss-azul-classic
+          - generic [ref=f9e115]:
+            - generic [ref=f9e116]:
+              - heading [level=2] [ref=f9e117]:
+                - link "Short Boss Azul Classic" [ref=f9e118] [cursor=pointer]:
+                  - /url: /produtos/short-boss-azul-classic
+              - generic [ref=f9e119]: R$ 82,90
+              - generic [ref=f9e120]: 12x de R$ 7,67
+            - button "Sacola disponível em breve para Short Boss Azul Classic" [disabled] [ref=f9e121]
+        - article [ref=f9e125]:
+          - link "Ver detalhes de Short Boss Cinza Classic" [ref=f9e126] [cursor=pointer]:
+            - /url: /produtos/short-boss-cinza-classic
+          - generic [ref=f9e127]:
+            - generic [ref=f9e128]:
+              - heading [level=2] [ref=f9e129]:
+                - link "Short Boss Cinza Classic" [ref=f9e130] [cursor=pointer]:
+                  - /url: /produtos/short-boss-cinza-classic
+              - generic [ref=f9e131]: R$ 82,90
+              - generic [ref=f9e132]: 12x de R$ 7,67
+            - button "Sacola disponível em breve para Short Boss Cinza Classic" [disabled] [ref=f9e133]
+        - article [ref=f9e137]:
+          - link "Ver detalhes de Camiseta Boss Premium" [ref=f9e138] [cursor=pointer]:
+            - /url: /produtos/camiseta-boss-premium
+          - generic [ref=f9e139]:
+            - generic [ref=f9e140]:
+              - heading [level=2] [ref=f9e141]:
+                - link "Camiseta Boss Premium" [ref=f9e142] [cursor=pointer]:
+                  - /url: /produtos/camiseta-boss-premium
+              - generic [ref=f9e143]: R$ 109,90
+              - generic [ref=f9e144]: 12x de R$ 10,16
+            - button "Sacola disponível em breve para Camiseta Boss Premium" [disabled] [ref=f9e145]
+        - article [ref=f9e149]:
+          - link "Ver detalhes de Camiseta Faixa Premium" [ref=f9e150] [cursor=pointer]:
+            - /url: /produtos/camiseta-faixa-premium
+          - generic [ref=f9e151]:
+            - generic [ref=f9e152]:
+              - heading [level=2] [ref=f9e153]:
+                - link "Camiseta Faixa Premium" [ref=f9e154] [cursor=pointer]:
+                  - /url: /produtos/camiseta-faixa-premium
+              - generic [ref=f9e155]: R$ 99,90
+              - generic [ref=f9e156]: 12x de R$ 9,24
+            - button "Sacola disponível em breve para Camiseta Faixa Premium" [disabled] [ref=f9e157]
+      - navigation "Paginação do catálogo" [ref=f9e161]:
+        - button "Página anterior" [disabled] [ref=f9e162]
+        - button "Página 1" [ref=f9e165] [cursor=pointer]: "1"
+        - button "Página 2" [ref=f9e166] [cursor=pointer]: "2"
+        - button "Próxima página" [ref=f9e167] [cursor=pointer]

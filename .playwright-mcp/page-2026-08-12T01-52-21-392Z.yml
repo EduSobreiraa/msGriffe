@@ -1,0 +1,15 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: DP
+    - generic [ref=e6]: Spark Inteligência Corporativa
+    - heading "Disciplina PRO" [level=1] [ref=e7]
+    - paragraph [ref=e8]: Acesse seus programas de desenvolvimento.
+    - generic [ref=e9]:
+      - text: E-mail
+      - textbox "E-mail" [ref=e10]:
+        - /placeholder: voce@empresa.com.br
+    - generic [ref=e11]:
+      - text: Senha
+      - textbox "Senha" [ref=e12]:
+        - /placeholder: ••••••••
+    - button "Entrar" [ref=e13] [cursor=pointer]

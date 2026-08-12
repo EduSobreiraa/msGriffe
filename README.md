@@ -1,6 +1,6 @@
 # MS Griffe
 
-Frontend da loja virtual MS Griffe, construído com React, TypeScript, Vite e Wouter.
+Projeto da loja virtual MS Griffe. O frontend React/TypeScript/Vite fica em [`Frontend/`](./Frontend); esta raiz concentra documentação e operação do projeto.
 
 A interface oferece temas claro e escuro, respeita a preferência inicial do sistema e persiste a escolha feita pelo usuário no navegador.
 
@@ -14,6 +14,7 @@ A página inicial possui navegação por teclado, suporte a movimento reduzido e
 ## Desenvolvimento local
 
 ```bash
+cd Frontend
 npm install
 cp .env.example .env.local
 npm run dev
@@ -24,6 +25,7 @@ O endereço exibido pelo Vite abre a aplicação local.
 ## Verificações
 
 ```bash
+cd Frontend
 npm run lint
 npm run test
 npm run test:coverage
@@ -33,7 +35,7 @@ npm run preview
 
 A cobertura mínima exigida é de 85% para branches e 90% para funções, linhas e statements.
 
-O build de produção é gerado em `dist/`.
+O build de produção é gerado em `Frontend/dist/`.
 
 ## Variáveis públicas
 
@@ -54,7 +56,7 @@ Build command: npm run build
 Build output directory: dist
 ```
 
-O arquivo `public/_redirects` garante o fallback da aplicação para rotas acessadas diretamente. O arquivo `public/_headers` aplica CSP e headers defensivos no Cloudflare Pages.
+Os arquivos `Frontend/public/_redirects` e `Frontend/public/_headers` garantem, respectivamente, o fallback da aplicação e os headers defensivos no Cloudflare Pages.
 
 A CSP atual permite conexões somente com a própria origem. Quando a API real for habilitada, seu domínio público deverá ser incluído explicitamente em `connect-src`; curingas não devem ser usados para contornar essa configuração.
 
@@ -64,4 +66,4 @@ A CSP atual permite conexões somente com a própria origem. Quando a API real f
 - [Roadmap](./docs/ROADMAP.md)
 - [Princípios de arquitetura](./docs/ARCHITECTURE_PRINCIPLES.md)
 
-O protótipo original permanece em `Frontend/ms-grifes-react.html` como referência histórica enquanto a migração é validada.
+O protótipo original permanece em [`Frontend/legacy-prototype.html`](./Frontend/legacy-prototype.html) como referência histórica enquanto a migração é validada.

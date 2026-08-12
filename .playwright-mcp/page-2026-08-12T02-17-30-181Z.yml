@@ -1,0 +1,104 @@
+- generic [ref=f2e2]:
+  - link "Ir para o conteúdo principal" [ref=f2e3] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - banner [ref=f2e4]:
+    - generic [ref=f2e5]:
+      - link "Página inicial da MS Griffe" [ref=f2e6] [cursor=pointer]:
+        - /url: /
+        - img "MS Griffe" [ref=f2e7]
+      - navigation "Navegação principal" [ref=f2e8]:
+        - link "INÍCIO" [ref=f2e9] [cursor=pointer]:
+          - /url: /
+        - link "PRODUTOS" [ref=f2e10] [cursor=pointer]:
+          - /url: /produtos
+        - link "CATEGORIAS" [ref=f2e11] [cursor=pointer]:
+          - /url: /categorias
+        - generic "Disponível em breve" [ref=f2e12]: SOBRE NÓS
+        - generic "Disponível em breve" [ref=f2e13]: CONTATO
+      - generic [ref=f2e14]:
+        - button "Ativar tema escuro" [ref=f2e15] [cursor=pointer]
+        - button "Busca disponível em breve" [disabled] [ref=f2e18]
+        - button "Conta disponível em breve" [disabled] [ref=f2e22]
+        - button "Abrir sacola, 1 item" [ref=f2e26] [cursor=pointer]:
+          - generic "1 item na sacola" [ref=f2e30]: "1"
+  - paragraph [ref=f2e31]
+  - main [ref=f2e32]:
+    - region [ref=f2e33]:
+      - generic [ref=f2e34]:
+        - generic [ref=f2e35]:
+          - paragraph [ref=f2e36]: Moda masculina
+          - heading "Vista sua melhor versão" [level=1] [ref=f2e37]:
+            - text: Vista sua melhor
+            - generic [ref=f2e38]: versão
+          - paragraph [ref=f2e39]: Qualidade, estilo e atitude em cada peça.
+          - link "VER PRODUTOS" [ref=f2e40] [cursor=pointer]:
+            - /url: /produtos
+        - img "Camiseta e shorts masculinos em destaque" [ref=f2e42]
+    - region "Benefícios da loja" [ref=f2e43]:
+      - generic [ref=f2e45]:
+        - article [ref=f2e46]:
+          - generic [ref=f2e52]:
+            - strong [ref=f2e53]: ENVIO RÁPIDO
+            - generic [ref=f2e54]: Para todo o Brasil
+        - article [ref=f2e55]:
+          - generic [ref=f2e60]:
+            - strong [ref=f2e61]: PARCELE EM ATÉ 12X
+            - generic [ref=f2e62]: No cartão de crédito
+        - article [ref=f2e63]:
+          - generic [ref=f2e68]:
+            - strong [ref=f2e69]: SITE 100% SEGURO
+            - generic [ref=f2e70]: Seus dados protegidos
+        - article [ref=f2e71]:
+          - generic [ref=f2e75]:
+            - strong [ref=f2e76]: ATENDIMENTO
+            - generic [ref=f2e77]: Suporte dedicado
+    - region [ref=f2e78]:
+      - generic [ref=f2e79]:
+        - generic [ref=f2e80]:
+          - heading "Destaques" [level=2] [ref=f2e81]
+          - paragraph [ref=f2e82]: Confira os produtos mais desejados do momento.
+        - generic [ref=f2e83]:
+          - article [ref=f2e84]:
+            - link "Ver detalhes de Camiseta Boss" [ref=f2e85] [cursor=pointer]:
+              - /url: /produtos/camiseta-boss
+            - generic [ref=f2e86]:
+              - generic [ref=f2e87]:
+                - heading [level=3] [ref=f2e88]:
+                  - link "Camiseta Boss" [ref=f2e89] [cursor=pointer]:
+                    - /url: /produtos/camiseta-boss
+                - generic [ref=f2e90]: R$ 89,90
+                - generic [ref=f2e91]: 12x de R$ 8,32
+              - button "Sacola disponível em breve para Camiseta Boss" [disabled] [ref=f2e92]
+          - article [ref=f2e96]:
+            - link "Ver detalhes de Short Boss Azul" [ref=f2e97] [cursor=pointer]:
+              - /url: /produtos/short-boss-azul
+            - generic [ref=f2e98]:
+              - generic [ref=f2e99]:
+                - heading [level=3] [ref=f2e100]:
+                  - link "Short Boss Azul" [ref=f2e101] [cursor=pointer]:
+                    - /url: /produtos/short-boss-azul
+                - generic [ref=f2e102]: R$ 79,90
+                - generic [ref=f2e103]: 12x de R$ 7,39
+              - button "Sacola disponível em breve para Short Boss Azul" [disabled] [ref=f2e104]
+          - article [ref=f2e108]:
+            - link "Ver detalhes de Short Boss Cinza" [ref=f2e109] [cursor=pointer]:
+              - /url: /produtos/short-boss-cinza
+            - generic [ref=f2e110]:
+              - generic [ref=f2e111]:
+                - heading [level=3] [ref=f2e112]:
+                  - link "Short Boss Cinza" [ref=f2e113] [cursor=pointer]:
+                    - /url: /produtos/short-boss-cinza
+                - generic [ref=f2e114]: R$ 79,90
+                - generic [ref=f2e115]: 12x de R$ 7,39
+              - button "Sacola disponível em breve para Short Boss Cinza" [disabled] [ref=f2e116]
+          - article [ref=f2e120]:
+            - link "Ver detalhes de Camiseta Faixa Refletiva" [ref=f2e121] [cursor=pointer]:
+              - /url: /produtos/camiseta-faixa-refletiva
+            - generic [ref=f2e122]:
+              - generic [ref=f2e123]:
+                - heading [level=3] [ref=f2e124]:
+                  - link "Camiseta Faixa Refletiva" [ref=f2e125] [cursor=pointer]:
+                    - /url: /produtos/camiseta-faixa-refletiva
+                - generic [ref=f2e126]: R$ 89,90
+                - generic [ref=f2e127]: 12x de R$ 8,32
+              - button "Sacola disponível em breve para Camiseta Faixa Refletiva" [disabled] [ref=f2e128]

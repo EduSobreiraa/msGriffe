@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MS Grifes — Moda Masculina</title>
+  <meta name="description" content="Loja masculina com roupas, acessórios e peças selecionadas." />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --bg: #090909;
+      --panel: #121212;
+      --panel-2: #191919;
+      --text: #f5f5f5;
+      --muted: #bdbdbd;
+      --gold: #d5a436;
+      --gold-2: #f0bf4c;
+      --line: #2a2a2a;
+      --radius: 14px;
+      --shadow: 0 18px 50px rgba(0,0,0,.35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #161616 0, #090909 36%, #050505 100%);
+      color: var(--text);
+    }
+    button, a { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(0,0,0,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .header-inner {
+      min-height: 86px;
+      display: grid;
+      grid-template-columns: 170px 1fr auto;
+      align-items: center;
+      gap: 28px;
+    }
+    .logo { width: 112px; }
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 34px;
+      font-size: .92rem;
+    }
+    .nav a {
+      position: relative;
+      padding: 31px 0 27px;
+      color: #e6e6e6;
+    }
+    .nav a::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 21px;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: .2s ease;
+    }
+    .nav a:hover::after, .nav a.active::after { transform: scaleX(1); }
+    .header-actions { display: flex; gap: 12px; }
+    .icon-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: white;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+    .icon-btn:hover { border-color: #343434; background: #111; color: var(--gold-2); }
+    .icon-btn svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+
+    .hero {
+      min-height: 430px;
+      display: flex;
+      align-items: center;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.75) 0%, rgba(0,0,0,.38) 42%, rgba(0,0,0,.08) 70%),
+        radial-gradient(circle at 70% 50%, rgba(255,255,255,.08), transparent 45%),
+        #202020;
+      overflow: hidden;
+      border-bottom: 1px solid #181818;
+      background-image: url('public/images/hero_products.png');
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      align-items: center;
+      min-height: 430px;
+    }
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      padding: 52px 0;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(3rem, 5.5vw, 5rem);
+      line-height: .92;
+      text-transform: uppercase;
+      letter-spacing: -.04em;
+      max-width: 520px;
+    }
+    .hero h1 span { color: var(--gold); display: block; }
+    .hero p {
+      color: #f0f0f0;
+      font-size: clamp(1rem, 1.8vw, 1.25rem);
+      line-height: 1.45;
+      max-width: 340px;
+      margin: 18px 0 26px;
+    }
+    .cta {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 184px;
+      padding: 14px 24px;
+      border-radius: 8px;
+      border: 0;
+      background: linear-gradient(135deg, #c99628, #e2b64c);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(213,164,54,.22);
+      transition: transform .2s ease, filter .2s ease;
+    }
+    .cta:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .hero-visual {
+      align-self: stretch;
+      min-height: 430px;
+      filter: drop-shadow(0 22px 24px rgba(0,0,0,.35));
+    }
+
+    .benefits {
+      background: #060606;
+      border-top: 1px solid #151515;
+      border-bottom: 1px solid #151515;
+    }
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      min-height: 80px;
+      align-items: center;
+    }
+    .benefit {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 24px;
+      border-right: 1px solid #252525;
+    }
+    .benefit:last-child { border-right: 0; }
+    .benefit-icon { color: var(--gold); width: 34px; flex: 0 0 34px; }
+    .benefit-icon svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .benefit strong { display:block; font-size: .88rem; letter-spacing: .01em; }
+    .benefit span { display:block; color: var(--muted); font-size: .79rem; margin-top: 2px; }
+
+    .featured { padding: 24px 0 28px; }
+    .section-heading { text-align:center; margin-bottom: 18px; }
+    .section-heading h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .section-heading p { color: var(--muted); margin: 4px 0 0; font-size: .95rem; }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: linear-gradient(180deg, #191919, #121212);
+      border: 1px solid #2b2b2b;
+      border-radius: 9px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .2s ease, border-color .2s ease;
+    }
+    .card:hover { transform: translateY(-5px); border-color: #4a3a17; }
+    .card-image {
+      aspect-ratio: 1.75;
+      background: #6d6763;
+      overflow: hidden;
+    }
+    .card-image img { width:100%; height:100%; object-fit:cover; }
+    .card-body { display:grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px; align-items:end; }
+    .card h3 { margin: 0 0 8px; font-size: .86rem; font-weight: 600; }
+    .price { color: var(--gold-2); font-size: 1.05rem; font-weight: 800; }
+    .installment { color: #eee; margin-top: 3px; font-size: .76rem; }
+    .bag-btn {
+      width: 42px; height: 42px;
+      border: 1px solid #303030;
+      border-radius: 10px;
+      background: #161616;
+      color: white;
+      display:grid; place-items:center;
+      cursor:pointer;
+    }
+    .bag-btn:hover { color: var(--gold); border-color: #5a451e; }
+    .bag-btn svg { width:21px; height:21px; stroke: currentColor; fill:none; stroke-width:1.7; }
+    .dots { display:flex; justify-content:center; gap:12px; margin:18px 0 0; }
+    .dot { width:9px; height:9px; border-radius:50%; background:#eee; opacity:.95; }
+    .dot.active { background: var(--gold); transform:scale(1.18); }
+
+    .service-strip {
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 22px;
+      border:1px solid #202020;
+      background: linear-gradient(180deg, #181818, #111);
+      border-radius: 9px;
+      overflow:hidden;
+    }
+
+    .whatsapp {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: #22c55e;
+      display:grid;
+      place-items:center;
+      box-shadow: 0 15px 35px rgba(0,0,0,.35);
+      border: 4px solid rgba(255,255,255,.18);
+      z-index: 30;
+    }
+    .whatsapp svg { width:34px; height:34px; fill:white; }
+
+    @media (max-width: 920px) {
+      .header-inner { grid-template-columns: 120px 1fr auto; }
+      .nav { gap: 18px; font-size: .82rem; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-copy { padding-bottom: 8px; }
+      .hero-visual { min-height: 320px; }
+      .products { grid-template-columns: repeat(2, 1fr); }
+      .benefits-grid, .service-strip { grid-template-columns: repeat(2, 1fr); }
+      .benefit:nth-child(2) { border-right: 0; }
+      .benefit:nth-child(-n+2) { border-bottom: 1px solid #252525; }
+    }
+
+    @media (max-width: 680px) {
+      .header-inner { grid-template-columns: 1fr auto; min-height: 72px; }
+      .logo { width: 92px; }
+      .nav { display:none; }
+      .hero { min-height: auto; }
+      .hero-grid { min-height:auto; }
+      .hero-copy { padding: 46px 0 12px; }
+      .hero h1 { font-size: clamp(2.75rem, 14vw, 4.5rem); }
+      .hero-visual { min-height: 250px; background-size: 118%; }
+      .benefits-grid, .service-strip, .products { grid-template-columns: 1fr; }
+      .benefit {
+        border-right:0;
+        border-bottom:1px solid #252525;
+      }
+      .benefit:last-child { border-bottom:0; }
+      .featured { padding-top: 30px; }
+      .whatsapp { width:56px; height:56px; right:18px; bottom:18px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const Icon = ({name}) => {
+      const icons = {
+        search: <><circle cx="11" cy="11" r="7"/><path d="m20 20-4.2-4.2"/></>,
+        user: <><circle cx="12" cy="8" r="4"/><path d="M4 21c.7-4.4 3.4-6.5 8-6.5s7.3 2.1 8 6.5"/></>,
+        bag: <><path d="M6 8h12l1 13H5L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/></>,
+        truck: <><path d="M3 6h11v10H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></>,
+        card: <><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 9h20"/><path d="M6 15h4"/></>,
+        lock: <><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></>,
+        headset: <><path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v5h4v-5H4Zm12 0v5h4v-5h-4Z"/><path d="M16 20c-1 1-2.3 1.5-4 1.5"/></>,
+        shield: <><path d="M12 3 4 6v5c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6l-8-3Z"/><path d="m9 12 2 2 4-5"/></>,
+        refresh: <><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M6.5 7.5A7 7 0 0 1 18 9"/><path d="M17.5 16.5A7 7 0 0 1 6 15"/></>,
+      };
+      return <svg viewBox="0 0 24 24" aria-hidden="true">{icons[name]}</svg>
+    };
+
+    const products = [
+      {name:"Camiseta Boss", price:"R$ 89,90", installment:"12x de R$ 8,32", image: "./public/images/bossshirt.png",},
+      {name:"Short Boss", price:"R$ 79,90", installment:"12x de R$ 7,39", image:"./public/images/BlueBossShorts.png"},
+      {name:"Short Boss Cinza", price:"R$ 79,90", installment:"12x de R$ 7,39", image:"./public/images/GreyBossShorts.png"},
+      {name:"Camiseta Faixa Refletiva", price:"R$ 89,90", installment:"12x de R$ 8,32", image:"./public/images/Shirt2.png"},
+    ];
+
+    const benefits = [
+      {icon:"truck", title:"ENVIO RÁPIDO", text:"Para todo o Brasil"},
+      {icon:"card", title:"PARCELE EM ATÉ 12X", text:"No cartão de crédito"},
+      {icon:"lock", title:"SITE 100% SEGURO", text:"Seus dados protegidos"},
+      {icon:"headset", title:"ATENDIMENTO", text:"Suporte dedicado"},
+    ];
+
+    const services = [
+      {icon:"shield", title:"COMPRA SEGURA", text:"Ambiente criptografado"},
+      {icon:"headset", title:"ATENDIMENTO VIA WHATSAPP", text:"Tire suas dúvidas"},
+      {icon:"refresh", title:"TROCA FÁCIL", text:"Até 7 dias para trocar"},
+      {icon:"card", title:"PARCELE EM ATÉ 12X", text:"Nos cartões de crédito"},
+    ];
+
+    function App() {
+      return (
+        <>
+          <header className="header">
+            <div className="container header-inner">
+              <a href="#" aria-label="MS Grifes">
+                <img className="logo" src="./public/images/msGriffeLogo.png" alt="MS Grifes" />
+              </a>
+              <nav className="nav" aria-label="Navegação principal">
+                <a className="active" href="#">INÍCIO</a>
+                <a href="#produtos">PRODUTOS</a>
+                <a href="#categorias">CATEGORIAS</a>
+                <a href="#sobre">SOBRE NÓS</a>
+                <a href="#contato">CONTATO</a>
+              </nav>
+              <div className="header-actions">
+                <button className="icon-btn" aria-label="Buscar"><Icon name="search"/></button>
+                <button className="icon-btn" aria-label="Conta"><Icon name="user"/></button>
+                <button className="icon-btn" aria-label="Sacola"><Icon name="bag"/></button>
+              </div>
+            </div>
+          </header>
+
+          <main>
+            <section className="hero">
+              <div className="container hero-grid">
+                <div className="hero-copy">
+                  <h1>Vista sua melhor <span>versão</span></h1>
+                  <p>Qualidade, estilo e atitude em cada peça.</p>
+                  <a className="cta" href="#produtos">VER PRODUTOS</a>
+                </div>
+                <div className="hero-visual" aria-label="Conjunto de peças masculinas"></div>
+              </div>
+            </section>
+
+            <section className="benefits" aria-label="Benefícios da loja">
+              <div className="container benefits-grid">
+                {benefits.map(item => (
+                  <article className="benefit" key={item.title}>
+                    <div className="benefit-icon"><Icon name={item.icon}/></div>
+                    <div><strong>{item.title}</strong><span>{item.text}</span></div>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="featured" id="produtos">
+              <div className="container">
+                <div className="section-heading">
+                  <h2>Destaques</h2>
+                  <p>Confira os produtos mais desejados do momento.</p>
+                </div>
+
+                <div className="products">
+                  {products.map(product => (
+                    <article className="card" key={product.name}>
+                      <div className="card-image">
+                        <img src={product.image} alt={product.name} />
+                      </div>
+                      <div className="card-body">
+                        <div>
+                          <h3>{product.name}</h3>
+                          <div className="price">{product.price}</div>
+                          <div className="installment">{product.installment}</div>
+                        </div>
+                        <button className="bag-btn" aria-label={`Adicionar ${product.name} à sacola`}>
+                          <Icon name="bag"/>
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="service-strip">
+                  {services.map(item => (
+                    <article className="benefit" key={item.title}>
+                      <div className="benefit-icon"><Icon name={item.icon}/></div>
+                      <div><strong>{item.title}</strong><span>{item.text}</span></div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </main>
+
+          <a className="whatsapp" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer" aria-label="Falar pelo WhatsApp">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M16 3a12 12 0 0 0-10.3 18.1L4 28l7-1.8A12 12 0 1 0 16 3Zm0 21.7c-1.7 0-3.3-.4-4.8-1.2l-.4-.2-4.1 1.1 1.1-4-.3-.4A9.7 9.7 0 1 1 16 24.7Zm5.3-7.2c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.2l-.9 1.1c-.2.2-.4.3-.7.1-2-.8-3.3-2.8-3.5-3.1-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1.1 1-1.1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.2 4.5 3.1 1.2 3.1.8 3.7.8.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z"/>
+            </svg>
+          </a>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

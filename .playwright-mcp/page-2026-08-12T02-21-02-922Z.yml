@@ -1,0 +1,53 @@
+- generic [ref=f7e2]:
+  - link "Ir para o conteúdo principal" [ref=f7e3] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - banner [ref=f7e4]:
+    - generic [ref=f7e5]:
+      - link "Página inicial da MS Griffe" [ref=f7e6] [cursor=pointer]:
+        - /url: /
+        - img "MS Griffe" [ref=f7e7]
+      - generic [ref=f7e8]:
+        - button "Ativar tema escuro" [ref=f7e9] [cursor=pointer]
+        - button "Abrir sacola, 1 item" [ref=f7e12] [cursor=pointer]:
+          - generic "1 item na sacola" [ref=f7e16]: "1"
+        - button "Abrir menu" [ref=f7e17] [cursor=pointer]
+  - paragraph [ref=f7e20]
+  - main [ref=f7e21]:
+    - generic [ref=f7e22]:
+      - navigation "Navegação estrutural" [ref=f7e23]:
+        - link "Produtos" [ref=f7e24] [cursor=pointer]:
+          - /url: /produtos
+        - generic [ref=f7e25]: /
+        - link "Camisetas" [ref=f7e26] [cursor=pointer]:
+          - /url: /categorias/camisetas
+        - generic [ref=f7e27]: /
+        - generic [ref=f7e28]: Camiseta Boss
+      - generic [ref=f7e29]:
+        - region "Galeria de Camiseta Boss" [ref=f7e30]:
+          - img "Camiseta Boss" [ref=f7e32]
+        - region [ref=f7e33]:
+          - paragraph [ref=f7e34]: Camisetas
+          - heading "Camiseta Boss" [level=1] [ref=f7e35]
+          - paragraph [ref=f7e36]: R$ 89,90
+          - paragraph [ref=f7e37]: ou 12x de R$ 8,32
+          - paragraph [ref=f7e38]: Camiseta masculina Boss em tecido confortável.
+          - generic [ref=f7e39]:
+            - group [ref=f7e40]:
+              - generic [ref=f7e41]:
+                - text: "Cor:"
+                - strong [ref=f7e42]: Preto
+              - generic [ref=f7e43]:
+                - button "Preto" [pressed] [ref=f7e44] [cursor=pointer]
+                - button "Cinza" [ref=f7e45] [cursor=pointer]
+            - group [ref=f7e46]:
+              - generic [ref=f7e47]:
+                - text: "Tamanho:"
+                - strong [ref=f7e48]: P
+              - generic [ref=f7e49]:
+                - button "P" [pressed] [ref=f7e50] [cursor=pointer]
+                - button "M" [ref=f7e51] [cursor=pointer]
+                - button "G" [ref=f7e52] [cursor=pointer]
+            - paragraph [ref=f7e53]: Disponível
+          - button "Adicionar à sacola" [ref=f7e54] [cursor=pointer]
+          - status [ref=f7e55]
+          - paragraph [ref=f7e56]: Preços e disponibilidade serão confirmados no checkout.

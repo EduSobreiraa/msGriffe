@@ -96,7 +96,7 @@ Objetivo: construir catálogo, filtros, ordenação, busca, categorias e detalhe
 Dependências e limites:
 
 - F1 concluída;
-- `imgs/msGrifeCatalogo.png` é a referência principal;
+- `Frontend/public/images/msGrifeCatalogo.png` é a referência principal;
 - dados atuais são demonstrativos;
 - catálogo não assume responsabilidades de carrinho ou checkout;
 - regras comerciais e estoque real continuam dependentes do backend e do vendedor.

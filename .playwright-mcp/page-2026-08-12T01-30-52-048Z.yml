@@ -1,0 +1,21 @@
+- generic [ref=f1e2]:
+  - link "Ir para o conteúdo principal" [ref=f1e3] [cursor=pointer]:
+    - /url: "#conteudo-principal"
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - link "Página inicial da MS Griffe" [ref=f1e6] [cursor=pointer]:
+        - /url: /
+        - img "MS Griffe" [ref=f1e7]
+      - generic [ref=f1e8]:
+        - button "Ativar tema escuro" [ref=f1e9] [cursor=pointer]
+        - button "Abrir sacola, vazia" [ref=f1e12] [cursor=pointer]:
+          - generic "0 itens na sacola" [ref=f1e16]: "0"
+        - button "Abrir menu" [ref=f1e17] [cursor=pointer]
+  - paragraph [ref=f1e20]
+  - main [ref=f1e21]:
+    - generic [ref=f1e22]:
+      - paragraph [ref=f1e23]: Erro 404
+      - heading "Página não encontrada" [level=1] [ref=f1e24]
+      - paragraph [ref=f1e25]: O endereço informado não existe ou foi movido.
+      - link "Voltar ao início" [ref=f1e26] [cursor=pointer]:
+        - /url: /
