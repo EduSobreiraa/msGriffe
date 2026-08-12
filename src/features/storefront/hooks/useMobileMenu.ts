@@ -5,6 +5,7 @@ const desktopMediaQuery = '(min-width: 701px)'
 export function useMobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLElement>(null)
 
   const close = useCallback((returnFocus = false) => {
     setIsOpen(false)
@@ -38,6 +39,16 @@ export function useMobileMenu() {
   }, [close, isOpen])
 
   useEffect(() => {
+    if (!isOpen) return
+
+    window.requestAnimationFrame(() => {
+      menuRef.current
+        ?.querySelector<HTMLElement>('a[href], button:not(:disabled)')
+        ?.focus()
+    })
+  }, [isOpen])
+
+  useEffect(() => {
     if (!window.matchMedia) return
 
     const mediaQuery = window.matchMedia(desktopMediaQuery)
@@ -49,5 +60,5 @@ export function useMobileMenu() {
     return () => mediaQuery.removeEventListener('change', handleViewportChange)
   }, [close])
 
-  return { close, isOpen, toggle, triggerRef }
+  return { close, isOpen, menuRef, toggle, triggerRef }
 }

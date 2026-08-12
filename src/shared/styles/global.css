@@ -335,7 +335,7 @@ a:focus-visible {
 
 .button--small {
   min-width: auto;
-  min-height: 38px;
+  min-height: 44px;
   padding: 8px 16px;
 }
 
@@ -786,7 +786,7 @@ a:focus-visible {
 .catalog-filters__error {
   grid-column: 1 / -1;
   margin: 0;
-  color: #c63b3b;
+  color: var(--color-error);
   font-size: 0.82rem;
 }
 
@@ -829,8 +829,8 @@ a:focus-visible {
 
 .pagination__page,
 .pagination__arrow {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--color-border);
   border-radius: 7px;
   background: var(--color-surface);
@@ -843,6 +843,10 @@ a:focus-visible {
   background: var(--color-brand);
   color: #111;
   font-weight: 800;
+}
+
+:root[data-theme='light'] .pagination__page.active {
+  color: #fff;
 }
 
 .pagination__page:hover:not(.active),
@@ -1112,7 +1116,7 @@ a:focus-visible {
 .product-info__feedback {
   min-height: 24px;
   margin: 12px 0 0;
-  color: #27864b;
+  color: var(--color-success);
   font-size: 0.84rem;
   font-weight: 700;
   text-align: center;
@@ -1210,9 +1214,9 @@ a:focus-visible {
 }
 
 .cart-line-item__heading .icon-button {
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
 }
 
 .cart-line-item__content > p {
@@ -1228,7 +1232,7 @@ a:focus-visible {
 
 .cart-line-item__quantity {
   display: inline-grid;
-  grid-template-columns: 34px 38px 34px;
+  grid-template-columns: 44px 38px 44px;
   align-items: center;
   margin-top: 12px;
   overflow: hidden;
@@ -1237,7 +1241,7 @@ a:focus-visible {
 }
 
 .cart-line-item__quantity button {
-  min-height: 34px;
+  min-height: 44px;
   border: 0;
   background: var(--color-surface);
   color: var(--color-text);
@@ -1577,7 +1581,7 @@ a:focus-visible {
 
 .product-option {
   min-width: 86px;
-  min-height: 42px;
+  min-height: 44px;
   padding: 8px 14px;
   border: 1px solid var(--color-border);
   border-radius: 7px;
@@ -1606,7 +1610,7 @@ a:focus-visible {
 
 .product-availability {
   margin: 0;
-  color: #27864b;
+  color: var(--color-success);
   font-size: 0.86rem;
   font-weight: 700;
 }
@@ -1636,8 +1640,8 @@ a:focus-visible {
 
 .product-card__bag {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   place-items: center;
   border: 1px solid var(--color-border);

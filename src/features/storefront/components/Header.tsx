@@ -10,7 +10,7 @@ import { CartDrawer } from '../../cart/components/CartDrawer'
 import { useCallback, useRef, useState } from 'react'
 
 export function Header() {
-  const { close, isOpen, toggle, triggerRef } = useMobileMenu()
+  const { close, isOpen, menuRef, toggle, triggerRef } = useMobileMenu()
   const { totals } = useCart()
   const [cartOpen, setCartOpen] = useState(false)
   const bagButtonRef = useRef<HTMLButtonElement>(null)
@@ -35,7 +35,7 @@ export function Header() {
             />
           </Link>
 
-          <PrimaryNavigation isOpen={isOpen} onNavigate={() => close()} />
+          <PrimaryNavigation menuRef={menuRef} isOpen={isOpen} onNavigate={() => close()} />
 
           <div className="header__actions">
             <ThemeToggle />
@@ -85,7 +85,7 @@ export function Header() {
           className="navigation-backdrop"
           type="button"
           aria-label="Fechar menu"
-          onClick={() => close()}
+          onClick={() => close(true)}
         />
       )}
       <CartDrawer isOpen={cartOpen} onClose={closeCart} triggerRef={bagButtonRef} />

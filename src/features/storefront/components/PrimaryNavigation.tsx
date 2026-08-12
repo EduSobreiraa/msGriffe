@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'wouter'
+import type { RefObject } from 'react'
 import { routes } from '../../../app/routes'
 
 const navigationItems = [
@@ -11,11 +12,13 @@ const navigationItems = [
 
 interface PrimaryNavigationProps {
   isOpen: boolean
+  menuRef: RefObject<HTMLElement | null>
   onNavigate: () => void
 }
 
 export function PrimaryNavigation({
   isOpen,
+  menuRef,
   onNavigate,
 }: PrimaryNavigationProps) {
   const [location] = useLocation()
@@ -25,6 +28,7 @@ export function PrimaryNavigation({
 
   return (
     <nav
+      ref={menuRef}
       id="primary-navigation"
       className={`navigation ${isOpen ? 'navigation--open' : ''}`}
       aria-label="Navegação principal"

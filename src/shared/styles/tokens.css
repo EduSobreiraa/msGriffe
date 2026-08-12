@@ -16,6 +16,8 @@
   --color-card-start: #191919;
   --color-card-end: #121212;
   --color-focus: #f0bf4c;
+  --color-success: #6fd38f;
+  --color-error: #f2a0a0;
   --container: 1180px;
   --shadow-card: 0 18px 50px rgb(0 0 0 / 35%);
 }
@@ -38,5 +40,7 @@
   --color-card-start: #fff;
   --color-card-end: #f9f9f7;
   --color-focus: #9c6811;
+  --color-success: #217a43;
+  --color-error: #b42318;
   --shadow-card: 0 12px 30px rgb(29 29 29 / 10%);
 }
