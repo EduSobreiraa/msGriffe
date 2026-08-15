@@ -1,6 +1,7 @@
 import { Link } from 'wouter'
 import { routes } from '../../../app/routes'
 import { useDocumentMetadata } from '../../../shared/hooks/useDocumentMetadata'
+import { CheckoutAddressForm } from '../components/CheckoutAddressForm'
 import { CheckoutIdentityForm } from '../components/CheckoutIdentityForm'
 
 export function CheckoutPage() {
@@ -19,6 +20,7 @@ export function CheckoutPage() {
           <span>Confirme seus dados em etapas. Nenhuma cobrança será realizada.</span>
         </header>
         <CheckoutIdentityForm />
+        <CheckoutAddressForm />
         <Link className="checkout-page__back" href={routes.cart}>Voltar para sacola</Link>
       </div>
     </main>

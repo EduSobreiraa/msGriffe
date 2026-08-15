@@ -429,7 +429,7 @@ Limites de segurança:
 | F3.4 | Página do carrinho | Concluída | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
 | F3.5 | Cálculos demonstrativos | Concluída | Subtotal, descontos, frete estimado e total usam serviço substituível. |
 | F3.6 | Identificação progressiva | Concluída | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
-| F3.7 | Endereço e entrega | Pendente | Coleta e seleção visual de entrega têm validação e estados definidos. |
+| F3.7 | Endereço e entrega | Concluída | Coleta e seleção visual de entrega têm validação e estados definidos. |
 | F3.8 | Cupom, pagamento e revisão | Pendente | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
 | F3.9 | Estados simulados do pedido | Pendente | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
 | F3.10 | Encerramento da F3 | Pendente | Jornadas, OWASP, multitelas, smoke test e commit final aprovados. |
@@ -630,13 +630,24 @@ Registro:
 
 ### F3.7 — Endereço e entrega
 
-Estado: **pendente**.
+Estado: **concluída em 15 de agosto de 2026**.
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| F3.7.1 | Coletar endereço transitório | Pendente | CEP e endereço possuem validação local e nunca entram no armazenamento do carrinho. |
-| F3.7.2 | Selecionar entrega demonstrativa | Pendente | Opções visuais deixam claro que prazo e frete dependem de cálculo autoritativo. |
-| F3.7.3 | Testar, revisar e versionar | Pendente | Dados, foco, responsividade e commit aprovados. |
+| F3.7.1 | Coletar endereço transitório | Concluída | CEP e endereço possuem validação local e nunca entram no armazenamento do carrinho. |
+| F3.7.2 | Selecionar entrega demonstrativa | Concluída | Opções visuais deixam claro que prazo e frete dependem de cálculo autoritativo. |
+| F3.7.3 | Testar, revisar e versionar | Concluída | Dados, foco, responsividade e commit aprovados. |
+
+Registro:
+
+- endereço e escolha de modalidade integram o mesmo provider transitório, sem `localStorage`, API ou adapter de dados;
+- CEP, endereço, número, complemento, bairro, cidade e UF recebem validação de presença e formato somente para orientar a interface;
+- a segunda etapa inicia bloqueada e é liberada após a identificação local, evitando coleta desnecessária fora da jornada;
+- modalidades padrão e expressa existem somente como escolhas visuais preparatórias; preço, cobertura, disponibilidade e prazo continuam dependentes de decisão comercial, CEP e backend;
+- a interface repete explicitamente que frete e prazo não são garantidos pela simulação;
+- testes cobrem bloqueio progressivo, validação, escolha da modalidade e conclusão local;
+- revisão manual em 390×844 confirma duas etapas sem overflow horizontal;
+- encerramento com 98 testes, lint, build e npm audit aprovados.
 
 ### F3.8 — Cupom, pagamento e revisão
 
