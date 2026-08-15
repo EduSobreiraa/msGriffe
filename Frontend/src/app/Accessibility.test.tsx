@@ -83,3 +83,17 @@ describe('acessibilidade da sacola', () => {
     expect(await getAccessibilityViolations()).toEqual([])
   })
 })
+
+describe('acessibilidade do checkout demonstrativo', () => {
+  beforeEach(() => {
+    window.localStorage.clear()
+  })
+
+  it('não possui violações estruturais conhecidas', async () => {
+    window.history.replaceState(null, '', '/checkout')
+    render(<App />)
+
+    expect(await screen.findByRole('heading', { name: 'Finalizar compra' })).toBeInTheDocument()
+    expect(await getAccessibilityViolations()).toEqual([])
+  })
+})

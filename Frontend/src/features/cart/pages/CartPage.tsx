@@ -82,9 +82,9 @@ export function CartPage() {
                 Simulação do frontend, não constitui oferta. O backend confirmará preços,
                 descontos, entrega, estoque e total antes do pagamento.
               </p>
-              <button className="button button--primary button--medium button--full-width" disabled type="button">
-                Continuar em breve
-              </button>
+              <Link className="button button--primary button--medium button--full-width" href={routes.checkout}>
+                Continuar checkout demonstrativo
+              </Link>
               <Link className="cart-page__continue" href={routes.catalog}>
                 Continuar comprando
               </Link>

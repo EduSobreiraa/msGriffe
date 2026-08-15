@@ -65,7 +65,10 @@ describe('CartPage', () => {
     expect(screen.getByText('R$ 109,80')).toBeInTheDocument()
     expect(screen.getByText('− R$ 0,00')).toBeInTheDocument()
     expect(screen.getByText(/não constitui oferta/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Continuar em breve' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Continuar checkout demonstrativo' })).toHaveAttribute(
+      'href',
+      '/checkout',
+    )
 
     fireEvent.click(
       screen.getByRole('button', { name: 'Aumentar quantidade de Camiseta Boss' }),

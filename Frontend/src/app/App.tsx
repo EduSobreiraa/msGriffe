@@ -12,6 +12,7 @@ import { WhatsAppLink } from '../features/storefront/components/WhatsAppLink'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { RouteAccessibility } from './RouteAccessibility'
 import { CartProvider } from '../features/cart/presentation/CartProvider'
+import { CheckoutProvider } from '../features/checkout/presentation/CheckoutProvider'
 
 export function App() {
   return (
@@ -22,10 +23,12 @@ export function App() {
             pricingService={cartPricingService}
             repository={cartRepository}
           >
-            <Header />
-            <RouteAccessibility />
-            <AppRoutes />
-            <WhatsAppLink />
+            <CheckoutProvider>
+              <Header />
+              <RouteAccessibility />
+              <AppRoutes />
+              <WhatsAppLink />
+            </CheckoutProvider>
           </CartProvider>
         </CategoryProvider>
       </CatalogProvider>

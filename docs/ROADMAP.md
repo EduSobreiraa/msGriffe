@@ -428,7 +428,7 @@ Limites de segurança:
 | F3.3 | Drawer da sacola | Concluída | Resumo lateral acessível permite revisar e alterar itens. |
 | F3.4 | Página do carrinho | Concluída | Itens, quantidades, remoção e estados vazios funcionam em rota própria. |
 | F3.5 | Cálculos demonstrativos | Concluída | Subtotal, descontos, frete estimado e total usam serviço substituível. |
-| F3.6 | Identificação progressiva | Pendente | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
+| F3.6 | Identificação progressiva | Concluída | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
 | F3.7 | Endereço e entrega | Pendente | Coleta e seleção visual de entrega têm validação e estados definidos. |
 | F3.8 | Cupom, pagamento e revisão | Pendente | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
 | F3.9 | Estados simulados do pedido | Pendente | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
@@ -594,6 +594,81 @@ Registro:
 - varredura não encontrou APIs de injeção ou persistência de dados sensíveis e o npm audit permaneceu limpo;
 - encerramento com 94 testes, 97,5% de statements, 90,55% de branches, 99,14% de funções e 98,27% de linhas;
 - lint e build de produção aprovados e zero vulnerabilidades no npm audit.
+
+### F3.6 — Identificação progressiva
+
+Estado: **concluída em 15 de agosto de 2026**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.6.1 | Modelar dados transitórios | Concluída | Dados de conta ficam apenas em memória, fora do carrinho e de persistência local. |
+| F3.6.2 | Criar formulário de conta | Concluída | Nome, e-mail, telefone e senha possuem campos semânticos, autocomplete e validação local. |
+| F3.6.3 | Criar dados complementares | Concluída | CPF, nascimento e consentimento são solicitados somente na jornada de checkout. |
+| F3.6.4 | Exibir privacidade e limites | Concluída | Interface declara que cadastro e confirmação ocorrerão no backend. |
+| F3.6.5 | Testar, revisar e versionar | Concluída | Sem persistência sensível, teclado, OWASP, responsividade e commit aprovados. |
+
+Escopo:
+
+- criar a rota privada de indexação `/checkout` sem integrar autenticação ou backend;
+- manter os dados de conta e identificação exclusivamente no estado React em memória;
+- solicitar somente os campos previstos no contexto do projeto para cadastro e checkout;
+- validar formato e presença no cliente apenas como melhoria de experiência;
+- identificar claramente que o backend validará, protegerá e persistirá os dados reais.
+
+Registro:
+
+- `CheckoutProvider` concentra os dados transitórios e não possui adapter de persistência;
+- formulário semântico coleta nome, e-mail, telefone e senha para a conta, e CPF, nascimento e consentimento durante o checkout;
+- cada campo recebe `autocomplete`, tipo e `inputMode` adequados, com erros locais anunciados por `role="alert"`;
+- senha utiliza `autocomplete="new-password"` e nunca é enviada, registrada ou gravada pelo frontend;
+- rota `/checkout` recebe metadados próprios e `noindex, nofollow`;
+- sacola passa a oferecer entrada explícita para o checkout demonstrativo, sem iniciar operação financeira;
+- mensagens deixam inequívoco que os dados ficam em memória e que backend confirmará cadastro, segurança e validação;
+- testes cobrem validação, metadados, não persistência e acessibilidade automatizada da rota;
+- revisão manual aprovada em 390×844 e 1440×960, sem overflow horizontal;
+- encerramento com 97 testes, lint e build de produção aprovados.
+
+### F3.7 — Endereço e entrega
+
+Estado: **pendente**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.7.1 | Coletar endereço transitório | Pendente | CEP e endereço possuem validação local e nunca entram no armazenamento do carrinho. |
+| F3.7.2 | Selecionar entrega demonstrativa | Pendente | Opções visuais deixam claro que prazo e frete dependem de cálculo autoritativo. |
+| F3.7.3 | Testar, revisar e versionar | Pendente | Dados, foco, responsividade e commit aprovados. |
+
+### F3.8 — Cupom, pagamento e revisão
+
+Estado: **pendente**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.8.1 | Registrar cupom transitório | Pendente | Código é apenas solicitado e marcado para validação backend; nenhuma regra comercial é inventada. |
+| F3.8.2 | Selecionar pagamento visual | Pendente | Pix, cartão e boleto são opções sem coletar dados financeiros ou iniciar cobrança. |
+| F3.8.3 | Revisar pedido demonstrativo | Pendente | Produtos, entrega, pagamento e totais projetados ficam inequívocos antes da simulação. |
+| F3.8.4 | Testar, revisar e versionar | Pendente | Segurança, acessibilidade, responsividade e commit aprovados. |
+
+### F3.9 — Estados simulados do pedido
+
+Estado: **pendente**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.9.1 | Modelar estados financeiros visuais | Pendente | Pendente, aprovado, recusado, expirado e erro possuem mensagens e tratamentos distintos. |
+| F3.9.2 | Simular transições sem efeito externo | Pendente | Nenhuma cobrança, pedido persistente, e-mail ou alteração de estoque é criada. |
+| F3.9.3 | Testar, revisar e versionar | Pendente | Estados, teclado, OWASP, responsividade e commit aprovados. |
+
+### F3.10 — Encerramento da F3
+
+Estado: **pendente**.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F3.10.1 | Consolidar jornada | Pendente | Sacola, checkout e estados simulados formam percurso coerente. |
+| F3.10.2 | Revisar limites e decisões provisórias | Pendente | Nenhuma projeção visual é confundida com regra comercial ou backend. |
+| F3.10.3 | Executar quality gate | Pendente | Testes, cobertura, lint, build, audit, acessibilidade e matriz multitelas aprovados. |
+| F3.10.4 | Atualizar documentação e versionar | Pendente | ROADMAP, contexto e commit de encerramento ficam consistentes. |
 
 ### F3.2 — Adição e feedback
 
