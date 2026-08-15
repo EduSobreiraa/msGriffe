@@ -3,6 +3,8 @@ import { routes } from '../../../app/routes'
 import { useDocumentMetadata } from '../../../shared/hooks/useDocumentMetadata'
 import { CheckoutAddressForm } from '../components/CheckoutAddressForm'
 import { CheckoutIdentityForm } from '../components/CheckoutIdentityForm'
+import { CheckoutPaymentForm } from '../components/CheckoutPaymentForm'
+import { CheckoutReview } from '../components/CheckoutReview'
 
 export function CheckoutPage() {
   useDocumentMetadata({
@@ -21,6 +23,8 @@ export function CheckoutPage() {
         </header>
         <CheckoutIdentityForm />
         <CheckoutAddressForm />
+        <CheckoutPaymentForm />
+        <CheckoutReview />
         <Link className="checkout-page__back" href={routes.cart}>Voltar para sacola</Link>
       </div>
     </main>

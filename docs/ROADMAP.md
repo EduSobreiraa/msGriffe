@@ -430,7 +430,7 @@ Limites de segurança:
 | F3.5 | Cálculos demonstrativos | Concluída | Subtotal, descontos, frete estimado e total usam serviço substituível. |
 | F3.6 | Identificação progressiva | Concluída | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
 | F3.7 | Endereço e entrega | Concluída | Coleta e seleção visual de entrega têm validação e estados definidos. |
-| F3.8 | Cupom, pagamento e revisão | Pendente | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
+| F3.8 | Cupom, pagamento e revisão | Concluída | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
 | F3.9 | Estados simulados do pedido | Pendente | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
 | F3.10 | Encerramento da F3 | Pendente | Jornadas, OWASP, multitelas, smoke test e commit final aprovados. |
 
@@ -651,14 +651,26 @@ Registro:
 
 ### F3.8 — Cupom, pagamento e revisão
 
-Estado: **pendente**.
+Estado: **concluída em 15 de agosto de 2026**.
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| F3.8.1 | Registrar cupom transitório | Pendente | Código é apenas solicitado e marcado para validação backend; nenhuma regra comercial é inventada. |
-| F3.8.2 | Selecionar pagamento visual | Pendente | Pix, cartão e boleto são opções sem coletar dados financeiros ou iniciar cobrança. |
-| F3.8.3 | Revisar pedido demonstrativo | Pendente | Produtos, entrega, pagamento e totais projetados ficam inequívocos antes da simulação. |
-| F3.8.4 | Testar, revisar e versionar | Pendente | Segurança, acessibilidade, responsividade e commit aprovados. |
+| F3.8.1 | Registrar cupom transitório | Concluída | Código é apenas solicitado e marcado para validação backend; nenhuma regra comercial é inventada. |
+| F3.8.2 | Selecionar pagamento visual | Concluída | Pix, cartão e boleto são opções sem coletar dados financeiros ou iniciar cobrança. |
+| F3.8.3 | Revisar pedido demonstrativo | Concluída | Produtos, entrega, pagamento e totais projetados ficam inequívocos antes da simulação. |
+| F3.8.4 | Testar, revisar e versionar | Concluída | Segurança, acessibilidade, responsividade e commit aprovados. |
+
+Registro:
+
+- cupom é mantido somente na memória da jornada e, ao ser registrado, recebe aviso de validação futura sem alterar preço ou desconto;
+- Pix, cartão e boleto são escolhas visuais; a interface não pede, envia ou armazena cartão, parcela, chave Pix ou informação bancária;
+- regras de juros, parcela mínima, desconto no Pix, validade e aplicação de cupom não foram presumidas;
+- revisão reutiliza produtos e precificação demonstrativa da sacola, além de exibir modalidade de entrega e pagamento escolhidas;
+- sacola vazia recebe estado seguro de retorno ao catálogo, inclusive em acesso direto ao checkout;
+- todos os valores da revisão permanecem marcados como demonstrativos e sujeitos a confirmação pelo backend;
+- testes cobrem registro de cupom sem desconto, escolha de Pix e resumo sem cobrança;
+- revisão manual em 390px confirma quatro etapas sem overflow horizontal;
+- encerramento com 99 testes, lint, build e npm audit aprovados.
 
 ### F3.9 — Estados simulados do pedido
 
