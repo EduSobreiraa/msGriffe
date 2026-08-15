@@ -5,6 +5,7 @@ import { CheckoutAddressForm } from '../components/CheckoutAddressForm'
 import { CheckoutIdentityForm } from '../components/CheckoutIdentityForm'
 import { CheckoutPaymentForm } from '../components/CheckoutPaymentForm'
 import { CheckoutReview } from '../components/CheckoutReview'
+import { CheckoutSimulationPanel } from '../components/CheckoutSimulationPanel'
 
 export function CheckoutPage() {
   useDocumentMetadata({
@@ -25,6 +26,7 @@ export function CheckoutPage() {
         <CheckoutAddressForm />
         <CheckoutPaymentForm />
         <CheckoutReview />
+        <CheckoutSimulationPanel />
         <Link className="checkout-page__back" href={routes.cart}>Voltar para sacola</Link>
       </div>
     </main>

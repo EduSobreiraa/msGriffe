@@ -6,6 +6,7 @@ import {
 } from '../domain/CheckoutAddress'
 import { emptyCheckoutIdentity, type CheckoutIdentity } from '../domain/CheckoutIdentity'
 import type { PaymentMethod } from '../domain/CheckoutPayment'
+import type { CheckoutSimulationStatus } from '../domain/CheckoutSimulation'
 import { CheckoutContext } from './CheckoutContext'
 
 export function CheckoutProvider({ children }: PropsWithChildren) {
@@ -17,30 +18,50 @@ export function CheckoutProvider({ children }: PropsWithChildren) {
   const [identity, setIdentity] = useState<CheckoutIdentity>(emptyCheckoutIdentity)
   const [identityComplete, setIdentityComplete] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null)
+  const [paymentSimulationStatus, setPaymentSimulationStatusState] =
+    useState<CheckoutSimulationStatus | null>(null)
+
+  const clearPaymentSimulation = useCallback(() => setPaymentSimulationStatusState(null), [])
 
   const updateIdentity = useCallback((values: Partial<CheckoutIdentity>) => {
     setIdentity((current) => ({ ...current, ...values }))
     setIdentityComplete(false)
-  }, [])
+    clearPaymentSimulation()
+  }, [clearPaymentSimulation])
 
   const markIdentityComplete = useCallback(() => setIdentityComplete(true), [])
 
   const updateAddress = useCallback((values: Partial<CheckoutAddress>) => {
     setAddress((current) => ({ ...current, ...values }))
     setAddressComplete(false)
-  }, [])
+    clearPaymentSimulation()
+  }, [clearPaymentSimulation])
 
   const markAddressComplete = useCallback(() => setAddressComplete(true), [])
 
   const setCouponCode = useCallback((value: string) => {
     setCouponCodeState(value)
     setCouponSubmitted(false)
-  }, [])
+    clearPaymentSimulation()
+  }, [clearPaymentSimulation])
 
-  const submitCoupon = useCallback(() => setCouponSubmitted(true), [])
+  const submitCoupon = useCallback(() => {
+    setCouponSubmitted(true)
+    clearPaymentSimulation()
+  }, [clearPaymentSimulation])
 
   const selectPaymentMethod = useCallback((method: Exclude<PaymentMethod, null>) => {
     setPaymentMethod(method)
+    clearPaymentSimulation()
+  }, [clearPaymentSimulation])
+
+  const startPaymentSimulation = useCallback(
+    () => setPaymentSimulationStatusState('PENDING_PAYMENT'),
+    [],
+  )
+
+  const setPaymentSimulationStatus = useCallback((status: CheckoutSimulationStatus) => {
+    setPaymentSimulationStatusState(status)
   }, [])
 
   const value = useMemo(
@@ -55,9 +76,12 @@ export function CheckoutProvider({ children }: PropsWithChildren) {
       markAddressComplete,
       markIdentityComplete,
       paymentMethod,
+      paymentSimulationStatus,
       setDeliveryOption,
       selectPaymentMethod,
+      setPaymentSimulationStatus,
       setCouponCode,
+      startPaymentSimulation,
       submitCoupon,
       updateAddress,
       updateIdentity,
@@ -73,8 +97,11 @@ export function CheckoutProvider({ children }: PropsWithChildren) {
       markAddressComplete,
       markIdentityComplete,
       paymentMethod,
+      paymentSimulationStatus,
       selectPaymentMethod,
+      setPaymentSimulationStatus,
       setCouponCode,
+      startPaymentSimulation,
       submitCoupon,
       updateAddress,
       updateIdentity,

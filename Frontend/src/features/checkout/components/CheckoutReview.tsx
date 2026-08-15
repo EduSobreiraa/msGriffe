@@ -1,5 +1,6 @@
 import { Link } from 'wouter'
 import { routes } from '../../../app/routes'
+import { Button } from '../../../shared/components/Button'
 import { formatCurrency } from '../../../shared/lib/formatters'
 import { useCart } from '../../cart/presentation/useCart'
 import { paymentMethodLabels } from '../domain/CheckoutPayment'
@@ -12,7 +13,14 @@ const deliveryLabels = {
 
 export function CheckoutReview() {
   const { cart, pricing, totals } = useCart()
-  const { addressComplete, couponCode, couponSubmitted, deliveryOption, paymentMethod } = useCheckout()
+  const {
+    addressComplete,
+    couponCode,
+    couponSubmitted,
+    deliveryOption,
+    paymentMethod,
+    startPaymentSimulation,
+  } = useCheckout()
   const readyToReview = addressComplete && paymentMethod !== null
 
   return (
@@ -80,6 +88,9 @@ export function CheckoutReview() {
           <p className="checkout-form__notice">
             Simulação do frontend. Estoque, cupom, frete, preço e pagamento serão confirmados pelo backend.
           </p>
+          <Button disabled={!readyToReview} fullWidth onClick={startPaymentSimulation}>
+            Simular criação do pedido
+          </Button>
         </>
       )}
     </section>

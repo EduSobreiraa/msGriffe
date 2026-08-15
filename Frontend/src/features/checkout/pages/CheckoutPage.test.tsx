@@ -40,6 +40,23 @@ function renderPage(initialCart: Cart = { items: [] }) {
   )
 }
 
+function completeIdentityAndAddress() {
+  fireEvent.change(screen.getByLabelText('Nome completo'), { target: { value: 'Maria Silva' } })
+  fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'maria@exemplo.com' } })
+  fireEvent.change(screen.getByLabelText('Telefone'), { target: { value: '(71) 99999-9999' } })
+  fireEvent.change(screen.getByLabelText('Senha para criar conta'), { target: { value: 'senha-segura' } })
+  fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '123.456.789-09' } })
+  fireEvent.change(screen.getByLabelText('Data de nascimento'), { target: { value: '1990-01-20' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Continuar para entrega' }))
+  fireEvent.change(screen.getByLabelText('CEP'), { target: { value: '40000-000' } })
+  fireEvent.change(screen.getByLabelText('Endereço'), { target: { value: 'Rua das Flores' } })
+  fireEvent.change(screen.getByLabelText('Número'), { target: { value: '10' } })
+  fireEvent.change(screen.getByLabelText('Bairro'), { target: { value: 'Centro' } })
+  fireEvent.change(screen.getByLabelText('Cidade'), { target: { value: 'Salvador' } })
+  fireEvent.change(screen.getByLabelText('Estado (UF)'), { target: { value: 'BA' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Continuar para revisão' }))
+}
+
 describe('CheckoutPage', () => {
   it('mantém os dados de identificação em memória e informa os limites da simulação', () => {
     window.localStorage.clear()
@@ -103,20 +120,7 @@ describe('CheckoutPage', () => {
   it('registra cupom sem aplicar desconto e revisa pagamento sem cobrar', () => {
     renderPage(cartWithItem)
 
-    fireEvent.change(screen.getByLabelText('Nome completo'), { target: { value: 'Maria Silva' } })
-    fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'maria@exemplo.com' } })
-    fireEvent.change(screen.getByLabelText('Telefone'), { target: { value: '(71) 99999-9999' } })
-    fireEvent.change(screen.getByLabelText('Senha para criar conta'), { target: { value: 'senha-segura' } })
-    fireEvent.change(screen.getByLabelText('CPF'), { target: { value: '123.456.789-09' } })
-    fireEvent.change(screen.getByLabelText('Data de nascimento'), { target: { value: '1990-01-20' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Continuar para entrega' }))
-    fireEvent.change(screen.getByLabelText('CEP'), { target: { value: '40000-000' } })
-    fireEvent.change(screen.getByLabelText('Endereço'), { target: { value: 'Rua das Flores' } })
-    fireEvent.change(screen.getByLabelText('Número'), { target: { value: '10' } })
-    fireEvent.change(screen.getByLabelText('Bairro'), { target: { value: 'Centro' } })
-    fireEvent.change(screen.getByLabelText('Cidade'), { target: { value: 'Salvador' } })
-    fireEvent.change(screen.getByLabelText('Estado (UF)'), { target: { value: 'BA' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Continuar para revisão' }))
+    completeIdentityAndAddress()
     fireEvent.change(screen.getByLabelText('Cupom de desconto'), { target: { value: 'BEMVINDO' } })
     fireEvent.click(screen.getByRole('button', { name: 'Registrar cupom' }))
     fireEvent.click(screen.getByRole('radio', { name: /Pix/ }))
@@ -126,5 +130,26 @@ describe('CheckoutPage', () => {
     expect(screen.getByText('BEMVINDO')).toBeInTheDocument()
     expect(screen.getByText('Pix', { selector: 'dd' })).toBeInTheDocument()
     expect(screen.getByText(/nenhum dado financeiro é solicitado/i)).toBeInTheDocument()
+  })
+
+  it('simula transições de pagamento sem criar pedido ou pagamento real', () => {
+    window.localStorage.clear()
+    renderPage(cartWithItem)
+
+    completeIdentityAndAddress()
+    fireEvent.click(screen.getByRole('radio', { name: /Pix/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Simular criação do pedido' }))
+
+    expect(screen.getByRole('status')).toHaveTextContent(/pagamento pendente/i)
+    expect(screen.getByRole('status')).toHaveTextContent(/nenhum pagamento, pedido ou reserva de estoque/i)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Simular pagamento aprovado' }))
+    expect(screen.getByRole('status')).toHaveTextContent(/pagamento aprovado/i)
+    expect(screen.getByRole('status')).toHaveTextContent(/reduzir estoque em transação/i)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Simular falha técnica' }))
+    expect(screen.getByRole('status')).toHaveTextContent(/falha no pagamento/i)
+    expect(screen.getByRole('status')).toHaveTextContent(/nenhuma comunicação com mercado pago/i)
+    expect(Object.keys(window.localStorage)).not.toContain('msgriffe-checkout')
   })
 })

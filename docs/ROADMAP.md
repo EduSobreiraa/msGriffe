@@ -431,7 +431,7 @@ Limites de segurança:
 | F3.6 | Identificação progressiva | Concluída | Conta e dados pessoais possuem fluxo visual sem persistência sensível indevida. |
 | F3.7 | Endereço e entrega | Concluída | Coleta e seleção visual de entrega têm validação e estados definidos. |
 | F3.8 | Cupom, pagamento e revisão | Concluída | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
-| F3.9 | Estados simulados do pedido | Pendente | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
+| F3.9 | Estados simulados do pedido | Concluída | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
 | F3.10 | Encerramento da F3 | Pendente | Jornadas, OWASP, multitelas, smoke test e commit final aprovados. |
 
 ### F3.1 — Fundação do carrinho
@@ -674,13 +674,24 @@ Registro:
 
 ### F3.9 — Estados simulados do pedido
 
-Estado: **pendente**.
+Estado: **concluída em 15 de agosto de 2026**.
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| F3.9.1 | Modelar estados financeiros visuais | Pendente | Pendente, aprovado, recusado, expirado e erro possuem mensagens e tratamentos distintos. |
-| F3.9.2 | Simular transições sem efeito externo | Pendente | Nenhuma cobrança, pedido persistente, e-mail ou alteração de estoque é criada. |
-| F3.9.3 | Testar, revisar e versionar | Pendente | Estados, teclado, OWASP, responsividade e commit aprovados. |
+| F3.9.1 | Modelar estados financeiros visuais | Concluída | Pendente, aprovado, recusado, expirado e erro possuem mensagens e tratamentos distintos. |
+| F3.9.2 | Simular transições sem efeito externo | Concluída | Nenhuma cobrança, pedido persistente, e-mail ou alteração de estoque é criada. |
+| F3.9.3 | Testar, revisar e versionar | Concluída | Estados, teclado, OWASP, responsividade e commit aprovados. |
+
+Registro:
+
+- estados em memória representam `PENDING_PAYMENT`, `PAID`, `DECLINED`, `EXPIRED` e `ERROR`, todos com mensagens distintas e acessíveis;
+- a simulação começa pendente e permite percorrer os desfechos sem sair da página;
+- alterações em dados, endereço, cupom ou pagamento limpam o estado simulado para não mostrar confirmação desatualizada;
+- aprovação visual explicita que o backend precisará confirmar o pagamento e reduzir estoque em transação;
+- nenhum estado cria pedido, reserva produto, reduz estoque, envia e-mail, chama Mercado Pago ou persiste informação no navegador;
+- painel usa região de status com `aria-live="polite"` e botões de transição por teclado;
+- testes cobrem pendência, aprovação, falha e ausência de persistência de checkout;
+- encerramento com 100 testes, lint, build e npm audit aprovados.
 
 ### F3.10 — Encerramento da F3
 
