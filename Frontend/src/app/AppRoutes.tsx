@@ -5,6 +5,12 @@ import { CategoryPage } from '../features/catalog/pages/CategoryPage'
 import { ProductPage } from '../features/catalog/pages/ProductPage'
 import { CartPage } from '../features/cart/pages/CartPage'
 import { CheckoutPage } from '../features/checkout/pages/CheckoutPage'
+import { AccountPage } from '../features/account/pages/AccountPage'
+import { AccessStatePage } from '../features/account/pages/AccessStatePage'
+import { AuthPage } from '../features/account/pages/AuthPage'
+import { EmailVerificationPage } from '../features/account/pages/EmailVerificationPage'
+import { OrderDetailPage, OrdersPage } from '../features/account/pages/OrdersPage'
+import { PasswordRecoveryPage } from '../features/account/pages/PasswordRecoveryPage'
 import { HomePage } from '../features/storefront/pages/HomePage'
 import { NotFoundPage } from '../shared/pages/NotFoundPage'
 import { routes } from './routes'
@@ -19,6 +25,15 @@ export function AppRoutes() {
       <Route path={routes.categories} component={CategoriesPage} />
       <Route path={routes.cart} component={CartPage} />
       <Route path={routes.checkout} component={CheckoutPage} />
+      <Route path={routes.login}><AuthPage mode="login" /></Route>
+      <Route path={routes.signup}><AuthPage mode="signup" /></Route>
+      <Route path={routes.passwordRecovery} component={PasswordRecoveryPage} />
+      <Route path={routes.emailVerification} component={EmailVerificationPage} />
+      <Route path={routes.account} component={AccountPage} />
+      <Route path={routes.orders} component={OrdersPage} />
+      <Route path={routes.sessionExpired}><AccessStatePage state="expired" /></Route>
+      <Route path={routes.accessDenied}><AccessStatePage state="denied" /></Route>
+      <Route path="/conta/pedidos/:orderId" component={OrderDetailPage} />
       <Route path="/produtos/:productSlug" component={ProductPage} />
       <Route path="/categorias/:categorySlug" component={CategoryPage} />
       <Route component={NotFoundPage} />

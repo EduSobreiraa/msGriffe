@@ -3,14 +3,17 @@ import { IconButton } from '../../../shared/components/IconButton'
 import { ThemeToggle } from '../../../shared/components/ThemeToggle'
 import { useMobileMenu } from '../hooks/useMobileMenu'
 import { PrimaryNavigation } from './PrimaryNavigation'
-import { Link } from 'wouter'
+import { Link, useLocation } from 'wouter'
 import { routes } from '../../../app/routes'
 import { useCart } from '../../cart/presentation/useCart'
 import { CartDrawer } from '../../cart/components/CartDrawer'
 import { useCallback, useRef, useState } from 'react'
+import { useAccount } from '../../account/presentation/useAccount'
 
 export function Header() {
   const { close, isOpen, menuRef, toggle, triggerRef } = useMobileMenu()
+  const [, setLocation] = useLocation()
+  const { sessionState } = useAccount()
   const { totals } = useCart()
   const [cartOpen, setCartOpen] = useState(false)
   const bagButtonRef = useRef<HTMLButtonElement>(null)
@@ -51,9 +54,9 @@ export function Header() {
             <IconButton
               className="desktop-action"
               icon="user"
-              label="Conta disponível em breve"
-              title="Conta disponível em breve"
-              disabled
+              label={sessionState === 'ACTIVE' ? 'Abrir minha conta' : 'Entrar na conta'}
+              title={sessionState === 'ACTIVE' ? 'Minha conta' : 'Entrar'}
+              onClick={() => setLocation(sessionState === 'ACTIVE' ? routes.account : routes.login)}
             />
             <IconButton
               ref={bagButtonRef}

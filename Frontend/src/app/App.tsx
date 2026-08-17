@@ -13,6 +13,7 @@ import { ThemeProvider } from './theme/ThemeProvider'
 import { RouteAccessibility } from './RouteAccessibility'
 import { CartProvider } from '../features/cart/presentation/CartProvider'
 import { CheckoutProvider } from '../features/checkout/presentation/CheckoutProvider'
+import { AccountProvider } from '../features/account/presentation/AccountProvider'
 
 export function App() {
   return (
@@ -24,10 +25,12 @@ export function App() {
             repository={cartRepository}
           >
             <CheckoutProvider>
-              <Header />
-              <RouteAccessibility />
-              <AppRoutes />
-              <WhatsAppLink />
+              <AccountProvider>
+                <Header />
+                <RouteAccessibility />
+                <AppRoutes />
+                <WhatsAppLink />
+              </AccountProvider>
             </CheckoutProvider>
           </CartProvider>
         </CategoryProvider>

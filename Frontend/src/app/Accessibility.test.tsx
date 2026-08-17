@@ -97,3 +97,22 @@ describe('acessibilidade do checkout demonstrativo', () => {
     expect(await getAccessibilityViolations()).toEqual([])
   })
 })
+
+describe('acessibilidade da conta demonstrativa', () => {
+  beforeEach(() => {
+    window.localStorage.clear()
+  })
+
+  it.each([
+    ['/entrar', 'Entrar'],
+    ['/criar-conta', 'Criar conta'],
+    ['/conta', 'Entre para continuar'],
+    ['/acesso-negado', 'Acesso negado'],
+  ])('não possui violações estruturais conhecidas em %s', async (path, heading) => {
+    window.history.replaceState(null, '', path)
+    render(<App />)
+
+    expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
+    expect(await getAccessibilityViolations()).toEqual([])
+  })
+})

@@ -765,13 +765,92 @@ Registro:
 
 ## F4 — Conta e pós-compra
 
-Estado: **pendente**.
+Estado: **concluída em 17 de agosto de 2026**.
 
-- cadastro, login e verificação de e-mail;
-- recuperação de senha;
-- perfil e endereços;
-- lista, detalhe e linha do tempo dos pedidos;
-- sessão expirada e acesso negado.
+Objetivo: entregar jornada visual de conta e pós-compra com contratos locais transitórios, sem simular autenticação, autorização, pedidos ou persistência autoritativos antes do backend.
+
+Limites de segurança:
+
+- senha, token, CPF, endereço e dados de pagamento nunca serão persistidos pelo frontend;
+- sucesso de cadastro, login, verificação, recuperação e sessão será sempre identificado como demonstração visual;
+- backend continuará responsável por hash de senha, rate limiting, anti-enumeração, sessão, autorização e auditoria;
+- pedidos exibidos serão dados públicos demonstrativos, sem qualquer alteração financeira ou operacional.
+
+### Andamento da F4
+
+| ID | Entrega | Estado | Critério principal |
+| --- | --- | --- | --- |
+| F4.1 | Fundação de conta | Concluída | Rotas, estado transitório, contratos e proteção visual ficam isolados por feature. |
+| F4.2 | Acesso e recuperação | Concluída | Cadastro, login, verificação e recuperação têm formulários acessíveis sem credenciais persistidas. |
+| F4.3 | Perfil e endereços | Concluída | Dados de conta e endereços possuem edição local, validação e aviso de backend. |
+| F4.4 | Pedidos e pós-compra | Concluída | Lista, detalhe e linha do tempo apresentam somente dados demonstrativos. |
+| F4.5 | Sessão e acesso negado | Concluída | Estados de sessão expirada, rota protegida e acesso negado são claros e seguros. |
+| F4.6 | Encerramento da F4 | Concluída | Jornada, OWASP, multitelas, quality gate e commit final aprovados. |
+
+### F4.1 — Fundação de conta
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F4.1.1 | Definir modelos e dados demonstrativos | Concluída | Perfil, endereço, pedido e sessão visual ficam fora de infraestrutura e persistência. |
+| F4.1.2 | Criar provider e API pública | Concluída | Estado transitório é encapsulado e componentes não conhecem detalhes internos. |
+| F4.1.3 | Criar rotas e composição | Concluída | Rotas públicas e protegidas têm destinos estáveis e metadados corretos. |
+| F4.1.4 | Testar, revisar e versionar | Concluída | Segurança, acessibilidade, responsividade e commit aprovados. |
+
+### F4.2 — Acesso e recuperação
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F4.2.1 | Criar cadastro e login visuais | Concluída | Campos semânticos validam experiência sem autenticar nem gravar senha. |
+| F4.2.2 | Criar verificação de e-mail | Concluída | Estado visual não confirma conta real nem expõe endereço sensível. |
+| F4.2.3 | Criar recuperação de senha | Concluída | Mensagem neutra evita enumeração de usuários e não envia e-mail real. |
+| F4.2.4 | Testar, revisar e versionar | Concluída | Teclado, OWASP, responsividade e commit aprovados. |
+
+### F4.3 — Perfil e endereços
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F4.3.1 | Criar área de perfil | Concluída | Dados exibidos e editáveis têm responsabilidade visual isolada. |
+| F4.3.2 | Criar gerenciamento de endereços | Concluída | Inclusão, edição e remoção locais são identificadas como demonstração. |
+| F4.3.3 | Testar, revisar e versionar | Concluída | Sem persistência sensível, acessibilidade e commit aprovados. |
+
+### F4.4 — Pedidos e pós-compra
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F4.4.1 | Criar lista de pedidos | Concluída | Estado, itens, data e total demonstrativos possuem semântica clara. |
+| F4.4.2 | Criar detalhe e linha do tempo | Concluída | Estados operacionais e financeiros ficam distintos, sem alterar pedido real. |
+| F4.4.3 | Testar, revisar e versionar | Concluída | Rotas, acessibilidade, responsividade e commit aprovados. |
+
+### F4.5 — Sessão e acesso negado
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F4.5.1 | Proteger rotas visualmente | Concluída | Perfil e pedidos orientam login, sem afirmar proteção autoritativa. |
+| F4.5.2 | Criar sessão expirada e acesso negado | Concluída | Estados não vazam dados e indicam validação futura no backend. |
+| F4.5.3 | Testar, revisar e versionar | Concluída | Fluxos, teclado, segurança e commit aprovados. |
+
+### F4.6 — Encerramento da F4
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F4.6.1 | Consolidar jornadas | Concluída | Acesso, perfil, endereços e pedidos formam percurso coerente. |
+| F4.6.2 | Revisar limites e decisões | Concluída | Frontend não assume regra de autenticação, autorização ou pedido. |
+| F4.6.3 | Executar quality gate | Concluída | Testes, cobertura, lint, build, audit, acessibilidade e matriz multitelas aprovados. |
+| F4.6.4 | Atualizar documentação e versionar | Concluída | ROADMAP e commit de encerramento ficam consistentes. |
+
+Registro:
+
+- `AccountProvider` mantém sessão visual, perfil e endereços apenas em memória; não usa `localStorage`, token ou senha;
+- cadastro e login são rotas demonstrativas com campos semânticos, `autocomplete` e validação local de experiência;
+- verificação de e-mail e recuperação de senha não enviam mensagem real; recuperação mostra retorno neutro para evitar enumeração;
+- perfil permite alterar dados locais e gerenciar endereços transitórios, sempre identificado como demonstração;
+- lista, detalhe e linha do tempo usam pedidos públicos estáticos; não executam alteração operacional, financeira ou de estoque;
+- rotas de perfil e pedidos possuem gate visual para sessão anônima, expirada ou acesso negado, sem substituir validação autoritativa do backend;
+- cabeçalho passa a oferecer acesso à conta e respeita estado visual da sessão;
+- jornadas automatizadas cobrem gate, cadastro, verificação, perfil, endereço, pedidos, detalhe, expiração, recuperação e acesso negado;
+- axe cobre rotas públicas e protegidas da conta sem violações estruturais conhecidas;
+- revisão manual aprovada em 390×844 e 1440×1000, tema escuro, sem overflow horizontal;
+- F4 termina como frontend demonstrativo. Backend deverá implementar hash, sessão, tokens `HttpOnly`, CSRF, rate limiting, e-mails, autorização, pedidos e auditoria.
 
 ## F5 — Painel do vendedor
 
