@@ -854,14 +854,85 @@ Registro:
 
 ## F5 — Painel do vendedor
 
-Estado: **pendente**.
+Estado: **concluída em 17 de agosto de 2026**.
 
-- shell administrativo;
-- dashboard e seleção de período;
-- pedidos, produtos, variantes, imagens, preços e estoque;
-- clientes, categorias, cupons e promoções;
-- configurações e auditoria;
-- capacidades visuais de `SELLER` e `SUPERADMIN`.
+Objetivo: entregar painel administrativo demonstrativo organizado por domínio, preparado para `SELLER` e `SUPERADMIN`, sem assumir autorização, alteração comercial, estoque, auditoria ou integração real antes do backend.
+
+Limites de segurança:
+
+- capacidade visual nunca substituirá autorização do backend;
+- preços, estoque, pedidos, clientes e cupons serão somente dados demonstrativos em memória;
+- nenhuma alteração visual enviará e-mail, mudará estoque, reembolsará, registrará auditoria ou persistirá dados;
+- ações críticas de `SUPERADMIN` terão estado de acesso negado explícito até existir controle autoritativo.
+
+### Andamento da F5
+
+| ID | Entrega | Estado | Critério principal |
+| --- | --- | --- | --- |
+| F5.1 | Fundação administrativa | Concluída | Shell, navegação, dados demonstrativos e gate visual são isolados por feature. |
+| F5.2 | Dashboard e pedidos | Concluída | Métricas, período, pedidos e transições operacionais são projeções inequívocas. |
+| F5.3 | Catálogo e estoque | Concluída | Produtos, variantes, mídia, preço e estoque possuem visual seguro sem escrita real. |
+| F5.4 | Clientes e promoções | Concluída | Clientes, categorias, cupons e promoções exibem dados demonstrativos. |
+| F5.5 | Configurações e capacidades | Concluída | `SELLER` e `SUPERADMIN`, auditoria e acesso negado ficam claros. |
+| F5.6 | Encerramento da F5 | Concluída | Jornada, OWASP, multitelas, quality gate e commit final aprovados. |
+
+### F5.1 — Fundação administrativa
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F5.1.1 | Modelar dados demonstrativos | Concluída | Dados públicos de operação não dependem de React, API ou persistência. |
+| F5.1.2 | Criar provider e gate visual | Concluída | Papel visual é encapsulado e não equivale a autorização real. |
+| F5.1.3 | Criar shell e rotas | Concluída | Navegação administrativa mantém destino, foco e metadados estáveis. |
+
+### F5.2 — Dashboard e pedidos
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F5.2.1 | Criar dashboard e período | Concluída | Métricas aprovadas pelo contexto ficam marcadas como demonstrativas. |
+| F5.2.2 | Criar lista e detalhe de pedidos | Concluída | Status financeiro e operacional ficam distintos sem alteração real. |
+
+### F5.3 — Catálogo e estoque
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F5.3.1 | Criar gestão visual de catálogo | Concluída | Produtos, variantes e mídia são exibidos sem upload ou persistência. |
+| F5.3.2 | Criar preço e estoque visuais | Concluída | Alterações locais são identificadas e não substituem regra comercial. |
+
+### F5.4 — Clientes e promoções
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F5.4.1 | Criar área de clientes | Concluída | Campos aceitos no contexto são apresentados com dados demonstrativos. |
+| F5.4.2 | Criar categorias e promoções | Concluída | Cupons e promoções não aplicam regra comercial nem persistem dados. |
+
+### F5.5 — Configurações e capacidades
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F5.5.1 | Criar configurações e auditoria visual | Concluída | Itens críticos não executam ação e declaram auditoria futura. |
+| F5.5.2 | Criar estados de papel | Concluída | `SELLER`, `SUPERADMIN` e acesso negado possuem capacidade visual clara. |
+
+### F5.6 — Encerramento da F5
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F5.6.1 | Consolidar jornada | Concluída | Shell e áreas administrativas formam percurso coerente. |
+| F5.6.2 | Revisar limites | Concluída | Nenhuma projeção visual é confundida com autorização ou operação real. |
+| F5.6.3 | Executar quality gate | Concluída | Testes, cobertura, lint, build, audit, acessibilidade e matriz multitelas aprovados. |
+| F5.6.4 | Atualizar documentação e versionar | Concluída | ROADMAP e commit de encerramento ficam consistentes. |
+
+Registro:
+
+- a feature `admin` separa domínio, provider, shell e páginas; todos os dados e alterações ficam apenas em memória;
+- dashboard mostra faturamento, pedidos, ticket médio, estoque baixo, pedidos recentes e produtos mais vendidos como métricas demonstrativas;
+- pedidos possuem lista e detalhe; pagamento aprovado e operação são campos distintos, e a transição visual é limitada a `PAID → PREPARING → SHIPPED → DELIVERED`;
+- catálogo apresenta produtos, variantes, mídia, preço e estoque; qualquer ajuste local declara que não altera o catálogo real;
+- clientes apresentam os campos aprovados para o dashboard; categorias, cupons e promoções não aplicam regra comercial;
+- `SELLER` e `SUPERADMIN` são apenas papéis visuais; configurações críticas continuam negadas ao vendedor e nenhuma ação produz escrita, auditoria, e-mail ou integração externa;
+- rotas administrativas usam metadados `noindex`, navegação semântica, tabelas HTML acessíveis e foco no conteúdo principal;
+- jornadas e axe cobrem dashboard, pedidos, detalhe, catálogo e configurações; a revisão em 390×844 e 1440×1000 confirmou ausência de overflow global, com tabelas rolando somente no próprio cartão;
+- quality gate: 117 testes aprovados, cobertura de statements 94,01%, branches 85,61%, functions 94,50% e lines 96,82%; lint, build, `git diff --check` e `npm audit --audit-level=high` aprovados (0 vulnerabilidades);
+- F5 termina como frontend demonstrativo. Backend deverá implementar autenticação, autorização por papel, pagamentos, operações comerciais, persistência, auditoria e alertas autoritativos.
 
 ## F6 — Integração preparada e qualidade
 

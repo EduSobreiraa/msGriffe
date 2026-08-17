@@ -116,3 +116,19 @@ describe('acessibilidade da conta demonstrativa', () => {
     expect(await getAccessibilityViolations()).toEqual([])
   })
 })
+
+describe('acessibilidade da operação demonstrativa', () => {
+  it.each([
+  ['/admin', 'Visão geral'],
+  ['/admin/pedidos', 'Pedidos'],
+  ['/admin/pedidos/MSG-1024', 'MSG-1024'],
+    ['/admin/catalogo', 'Catálogo e estoque'],
+    ['/admin/configuracoes', 'Configurações e auditoria'],
+  ])('não possui violações estruturais conhecidas em %s', async (path, heading) => {
+    window.history.replaceState(null, '', path)
+    render(<App />)
+
+    expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
+    expect(await getAccessibilityViolations()).toEqual([])
+  })
+})

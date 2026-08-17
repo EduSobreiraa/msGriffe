@@ -13,6 +13,13 @@ export const routes = {
   order: (id: string) => `/conta/pedidos/${id}`,
   sessionExpired: '/sessao-expirada',
   accessDenied: '/acesso-negado',
+  admin: '/admin',
+  adminOrders: '/admin/pedidos',
+  adminOrder: (id: string) => `/admin/pedidos/${id}`,
+  adminCatalog: '/admin/catalogo',
+  adminCustomers: '/admin/clientes',
+  adminPromotions: '/admin/promocoes',
+  adminSettings: '/admin/configuracoes',
   product: (slug: string) => `/produtos/${slug}`,
   category: (slug: string) => `/categorias/${slug}`,
 } as const

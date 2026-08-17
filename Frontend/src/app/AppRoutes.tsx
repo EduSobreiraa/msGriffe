@@ -11,6 +11,7 @@ import { AuthPage } from '../features/account/pages/AuthPage'
 import { EmailVerificationPage } from '../features/account/pages/EmailVerificationPage'
 import { OrderDetailPage, OrdersPage } from '../features/account/pages/OrdersPage'
 import { PasswordRecoveryPage } from '../features/account/pages/PasswordRecoveryPage'
+import { AdminCatalogPage, AdminCustomersPage, AdminDashboardPage, AdminOrderDetailPage, AdminOrdersPage, AdminPromotionsPage, AdminSettingsPage } from '../features/admin/pages/AdminPages'
 import { HomePage } from '../features/storefront/pages/HomePage'
 import { NotFoundPage } from '../shared/pages/NotFoundPage'
 import { routes } from './routes'
@@ -33,6 +34,13 @@ export function AppRoutes() {
       <Route path={routes.orders} component={OrdersPage} />
       <Route path={routes.sessionExpired}><AccessStatePage state="expired" /></Route>
       <Route path={routes.accessDenied}><AccessStatePage state="denied" /></Route>
+      <Route path={routes.admin} component={AdminDashboardPage} />
+      <Route path="/admin/pedidos/:orderId" component={AdminOrderDetailPage} />
+      <Route path={routes.adminOrders} component={AdminOrdersPage} />
+      <Route path={routes.adminCatalog} component={AdminCatalogPage} />
+      <Route path={routes.adminCustomers} component={AdminCustomersPage} />
+      <Route path={routes.adminPromotions} component={AdminPromotionsPage} />
+      <Route path={routes.adminSettings} component={AdminSettingsPage} />
       <Route path="/conta/pedidos/:orderId" component={OrderDetailPage} />
       <Route path="/produtos/:productSlug" component={ProductPage} />
       <Route path="/categorias/:categorySlug" component={CategoryPage} />

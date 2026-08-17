@@ -14,6 +14,7 @@ import { RouteAccessibility } from './RouteAccessibility'
 import { CartProvider } from '../features/cart/presentation/CartProvider'
 import { CheckoutProvider } from '../features/checkout/presentation/CheckoutProvider'
 import { AccountProvider } from '../features/account/presentation/AccountProvider'
+import { AdminProvider } from '../features/admin/presentation/AdminProvider'
 
 export function App() {
   return (
@@ -26,10 +27,12 @@ export function App() {
           >
             <CheckoutProvider>
               <AccountProvider>
-                <Header />
-                <RouteAccessibility />
-                <AppRoutes />
-                <WhatsAppLink />
+                <AdminProvider>
+                  <Header />
+                  <RouteAccessibility />
+                  <AppRoutes />
+                  <WhatsAppLink />
+                </AdminProvider>
               </AccountProvider>
             </CheckoutProvider>
           </CartProvider>
