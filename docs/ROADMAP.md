@@ -408,7 +408,7 @@ Registro:
 
 ## F3 — Carrinho e checkout visual
 
-Estado: **em andamento**.
+Estado: **concluída em 15 de agosto de 2026**.
 
 Objetivo: construir uma jornada demonstrável de preparação da compra com estado local não sensível e contratos substituíveis, sem afirmar que cálculos ou pagamentos são autoritativos antes do backend.
 
@@ -432,7 +432,7 @@ Limites de segurança:
 | F3.7 | Endereço e entrega | Concluída | Coleta e seleção visual de entrega têm validação e estados definidos. |
 | F3.8 | Cupom, pagamento e revisão | Concluída | Opções comerciais e revisão são demonstráveis sem operação financeira real. |
 | F3.9 | Estados simulados do pedido | Concluída | Pendente, aprovado, recusado, expirado e erro têm representação inequívoca. |
-| F3.10 | Encerramento da F3 | Pendente | Jornadas, OWASP, multitelas, smoke test e commit final aprovados. |
+| F3.10 | Encerramento da F3 | Concluída | Jornadas, OWASP, multitelas, smoke test e commit final aprovados. |
 
 ### F3.1 — Fundação do carrinho
 
@@ -695,14 +695,27 @@ Registro:
 
 ### F3.10 — Encerramento da F3
 
-Estado: **pendente**.
+Estado: **concluída em 15 de agosto de 2026**.
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| F3.10.1 | Consolidar jornada | Pendente | Sacola, checkout e estados simulados formam percurso coerente. |
-| F3.10.2 | Revisar limites e decisões provisórias | Pendente | Nenhuma projeção visual é confundida com regra comercial ou backend. |
-| F3.10.3 | Executar quality gate | Pendente | Testes, cobertura, lint, build, audit, acessibilidade e matriz multitelas aprovados. |
-| F3.10.4 | Atualizar documentação e versionar | Pendente | ROADMAP, contexto e commit de encerramento ficam consistentes. |
+| F3.10.1 | Consolidar jornada | Concluída | Sacola, checkout e estados simulados formam percurso coerente. |
+| F3.10.2 | Revisar limites e decisões provisórias | Concluída | Nenhuma projeção visual é confundida com regra comercial ou backend. |
+| F3.10.3 | Executar quality gate | Concluída | Testes, cobertura, lint, build, audit, acessibilidade e matriz multitelas aprovados. |
+| F3.10.4 | Atualizar documentação e versionar | Concluída | ROADMAP, contexto e commit de encerramento ficam consistentes. |
+
+Registro:
+
+- jornada automatizada percorre produto → sacola → checkout → dados → entrega → Pix → pendência → aprovação simulada;
+- checkout mantém CPF, nascimento, endereço e senha apenas em memória do React; o único armazenamento local continua restrito à sacola pública validada e ao tema;
+- preço, desconto, frete, cupom, juros, estoque, entrega e pagamento são repetidamente identificados como projeções sujeitas à confirmação do backend;
+- nenhuma integração com autenticação, Mercado Pago, estoque, e-mail, pedido, webhook ou persistência de checkout foi antecipada;
+- estados de pagamento usam transações visuais e deixam explícita a futura necessidade de redução de estoque atômica após confirmação autoritativa;
+- cobertura final: 96,51% de statements, 88,85% de branches, 98,30% de funções e 97,97% de linhas, acima dos limites configurados de 90%/85%/90%/90%;
+- quality gate final: 101 testes aprovados, lint, build de produção, `npm audit` sem vulnerabilidades e `git diff --check` sem erros;
+- axe valida a rota do checkout sem violações estruturais conhecidas;
+- matriz manual Playwright aprovada em 390×844, 768×1024, 1024×900 e 1440×1000, nos temas claro e escuro, sem overflow horizontal;
+- F3 permanece somente como frontend demonstrativo. A próxima fase deve iniciar backend, autenticação, regras autoritativas, pagamento e estoque conforme o contexto do projeto.
 
 ### F3.2 — Adição e feedback
 
