@@ -42,6 +42,7 @@ O build de produção é gerado em `Frontend/dist/`.
 Somente valores seguros para exposição no navegador podem usar o prefixo `VITE_`:
 
 - `VITE_API_BASE_URL`: endereço público da futura API;
+- `VITE_DATA_SOURCE`: `demo` por padrão; `api` somente após homologação de backend;
 - `VITE_WHATSAPP_NUMBER`: número do WhatsApp com código do país e DDD, apenas dígitos.
 
 Segredos, tokens privados e credenciais nunca devem ser configurados no frontend.
@@ -60,10 +61,14 @@ Os arquivos `Frontend/public/_redirects` e `Frontend/public/_headers` garantem, 
 
 A CSP atual permite conexões somente com a própria origem. Quando a API real for habilitada, seu domínio público deverá ser incluído explicitamente em `connect-src`; curingas não devem ser usados para contornar essa configuração.
 
+O checklist de staging, produção, variáveis públicas e promoção está em [Cloudflare Pages](./docs/DEPLOYMENT_CLOUDFLARE_PAGES.md). Os contratos que conectam o frontend ao backend estão em [Contratos de API](./docs/FRONTEND_API_CONTRACTS.md).
+
 ## Documentação
 
 - [Contexto do projeto](./docs/PROJECT_CONTEXT.md)
 - [Roadmap](./docs/ROADMAP.md)
 - [Princípios de arquitetura](./docs/ARCHITECTURE_PRINCIPLES.md)
+- [Contratos de API do frontend](./docs/FRONTEND_API_CONTRACTS.md)
+- [Deploy Cloudflare Pages](./docs/DEPLOYMENT_CLOUDFLARE_PAGES.md)
 
 O protótipo original permanece em [`Frontend/legacy-prototype.html`](./Frontend/legacy-prototype.html) como referência histórica enquanto a migração é validada.

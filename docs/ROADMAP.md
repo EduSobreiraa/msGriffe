@@ -936,14 +936,85 @@ Registro:
 
 ## F6 — Integração preparada e qualidade
 
-Estado: **pendente**.
+Estado: **concluída em 18 de agosto de 2026**.
 
-- contratos definitivos de requests, responses e erros;
-- cliente HTTP e renovação de sessão;
-- adaptadores simulados e reais;
-- tratamento global de falhas;
-- testes críticos ponta a ponta;
-- desempenho, SEO e staging no Cloudflare Pages.
+Objetivo: preparar o frontend para trocar dados demonstrativos por API autoritativa, preservando contratos de feature, segurança de sessão, falhas seguras e deploy em Cloudflare Pages sem ativar integração externa antes do backend.
+
+Limites de segurança:
+
+- nenhuma variável `VITE_` conterá segredo, token privado ou credencial;
+- access token, quando a API existir, permanecerá somente em memória; refresh usará cookie `HttpOnly` enviado com `credentials: 'include'`;
+- uma resposta `401` poderá renovar sessão uma única vez e nunca repetirá requisições não idempotentes automaticamente;
+- mensagens de falha serão genéricas para cliente e não exibirão resposta, URL interna ou detalhes sensíveis;
+- adaptadores HTTP permanecerão inativos por padrão até API, CORS, CSP e contratos do backend serem homologados.
+
+### Andamento da F6
+
+| ID | Entrega | Estado | Critério principal |
+| --- | --- | --- | --- |
+| F6.1 | Contratos e configuração pública | Concluída | Tipos, catálogo de erros e variáveis públicas não acoplam telas à API. |
+| F6.2 | Cliente HTTP e sessão | Concluída | Cliente tipado trata falhas e só tenta refresh seguro uma vez. |
+| F6.3 | Adaptadores demonstrativos e HTTP | Concluída | Fontes de catálogo são intercambiáveis pelo mesmo contrato. |
+| F6.4 | Estados globais de falha | Concluída | Falhas inesperadas têm fallback acessível e recuperação local. |
+| F6.5 | Jornadas críticas | Concluída | Fluxos públicos e de erro possuem testes de integração de interface. |
+| F6.6 | SEO, desempenho e Cloudflare Pages | Concluída | Artefatos de produção, documentação, qualidade e commit ficam aprovados. |
+
+### F6.1 — Contratos e configuração pública
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F6.1.1 | Documentar contratos de integração | Concluída | Requests, responses, erros e limites pendentes ficam rastreáveis. |
+| F6.1.2 | Criar configuração pública tipada | Concluída | Ambiente escolhe fonte de dados sem expor segredo no bundle. |
+
+### F6.2 — Cliente HTTP e sessão
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F6.2.1 | Criar cliente HTTP tipado | Concluída | URL, método, body, erro e abort são tratados em borda única. |
+| F6.2.2 | Criar renovação de sessão | Concluída | Refresh via cookie é único, seguro e não persiste token no navegador. |
+
+### F6.3 — Adaptadores demonstrativos e HTTP
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F6.3.1 | Criar adaptadores HTTP de catálogo | Concluída | Implementam os leitores existentes, sem importar páginas ou React. |
+| F6.3.2 | Compor fonte de dados por ambiente | Concluída | Demonstração segue padrão; API só ativa por configuração explícita. |
+
+### F6.4 — Estados globais de falha
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F6.4.1 | Criar boundary global | Concluída | Exceção inesperada mostra fallback seguro, focável e recuperável. |
+| F6.4.2 | Preservar falhas por feature | Concluída | Loading, retry e estados locais continuam sem duplicar detalhe técnico. |
+
+### F6.5 — Jornadas críticas
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F6.5.1 | Testar HTTP, refresh e adaptadores | Concluída | Contratos cobrem sucesso, erro, abort e regra de retry. |
+| F6.5.2 | Testar jornada pública crítica | Concluída | Catálogo, produto, sacola e checkout mantêm percurso sem cobrança real. |
+
+### F6.6 — SEO, desempenho e Cloudflare Pages
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| F6.6.1 | Consolidar metadados e artefatos web | Concluída | Indexação de páginas públicas e exclusão de áreas privadas ficam explícitas. |
+| F6.6.2 | Preparar staging e deploy | Concluída | Variáveis, CSP, cache, redirects e comando Cloudflare ficam documentados. |
+| F6.6.3 | Executar quality gate | Concluída | Testes, cobertura, lint, build, audit, acessibilidade e matriz multitelas aprovados. |
+| F6.6.4 | Atualizar documentação e versionar | Concluída | ROADMAP e commit de encerramento ficam consistentes. |
+
+Registro:
+
+- `FRONTEND_API_CONTRACTS.md` define contrato inicial de sessão, catálogo, categorias, erros e responsabilidades ainda pertencentes ao backend;
+- `runtimeConfig` mantém fonte `demo` por padrão, valida origem pública e exige HTTPS fora de localhost; `VITE_DATA_SOURCE=api` exige URL explícita;
+- `HttpApiClient` centraliza JSON, abort, status, cookies e token de acesso somente em memória; apenas `GET` e `HEAD` podem executar refresh e retry únicos;
+- `BrowserSessionRefresher` usa `POST /v1/auth/session/refresh` com `credentials: 'include'`; token de refresh nunca é exposto ao JavaScript;
+- adaptadores HTTP de catálogo e categoria implementam os mesmos leitores dos mocks, validam DTOs e rejeitam mídia externa até existir decisão de CSP e imagem;
+- `AppErrorBoundary` não exibe detalhes internos e oferece recuperação com foco; falhas de carregamento e retry já existentes nas features foram preservadas;
+- `robots.txt`, preload da imagem principal, metadados existentes e guia de Cloudflare Pages consolidam indexação, desempenho e staging, sem deploy ou API real ativados;
+- revisão manual aprovada em 390×844, 768×1024, 1024×900 e 1440×1000, nos temas escuro e claro, sem overflow horizontal;
+- quality gate: 147 testes aprovados, cobertura de statements 93,31%, branches 85,76%, functions 95,00% e lines 96,82%; lint, build, artefatos `robots.txt`/headers/redirects, `git diff --check` e `npm audit --audit-level=high` aprovados (0 vulnerabilidades);
+- F6 encerra o frontend preparado para integração. Ativação de API, CORS, CSP, sessão, CSRF, contratos comerciais, observabilidade e deploy continuam condicionados às fases B0–B7 e à homologação de staging.
 
 ## Backend — B0 a B7
 

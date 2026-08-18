@@ -96,6 +96,50 @@ a:focus-visible {
   transform: translateY(0);
 }
 
+.app-error {
+  display: grid;
+  min-height: 100dvh;
+  padding: 32px;
+  place-items: center;
+}
+
+.app-error section {
+  width: min(100%, 560px);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  padding: clamp(24px, 5vw, 48px);
+}
+
+.app-error p {
+  margin: 0 0 12px;
+  color: var(--color-brand-light);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.app-error h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+}
+
+.app-error span {
+  display: block;
+  margin-top: 16px;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.app-error div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
 .header {
   position: sticky;
   z-index: 50;

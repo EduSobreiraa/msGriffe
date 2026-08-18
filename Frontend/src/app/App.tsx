@@ -15,29 +15,32 @@ import { CartProvider } from '../features/cart/presentation/CartProvider'
 import { CheckoutProvider } from '../features/checkout/presentation/CheckoutProvider'
 import { AccountProvider } from '../features/account/presentation/AccountProvider'
 import { AdminProvider } from '../features/admin/presentation/AdminProvider'
+import { AppErrorBoundary } from './AppErrorBoundary'
 
 export function App() {
   return (
-    <ThemeProvider>
-      <CatalogProvider reader={catalogReader}>
-        <CategoryProvider reader={categoryReader}>
-          <CartProvider
-            pricingService={cartPricingService}
-            repository={cartRepository}
-          >
-            <CheckoutProvider>
-              <AccountProvider>
-                <AdminProvider>
-                  <Header />
-                  <RouteAccessibility />
-                  <AppRoutes />
-                  <WhatsAppLink />
-                </AdminProvider>
-              </AccountProvider>
-            </CheckoutProvider>
-          </CartProvider>
-        </CategoryProvider>
-      </CatalogProvider>
-    </ThemeProvider>
+    <AppErrorBoundary>
+      <ThemeProvider>
+        <CatalogProvider reader={catalogReader}>
+          <CategoryProvider reader={categoryReader}>
+            <CartProvider
+              pricingService={cartPricingService}
+              repository={cartRepository}
+            >
+              <CheckoutProvider>
+                <AccountProvider>
+                  <AdminProvider>
+                    <Header />
+                    <RouteAccessibility />
+                    <AppRoutes />
+                    <WhatsAppLink />
+                  </AdminProvider>
+                </AccountProvider>
+              </CheckoutProvider>
+            </CartProvider>
+          </CategoryProvider>
+        </CatalogProvider>
+      </ThemeProvider>
+    </AppErrorBoundary>
   )
 }

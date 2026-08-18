@@ -367,6 +367,8 @@ Enquanto as pendências não forem resolvidas:
 - frontend e backend devem seguir SOLID, modularização por responsabilidade e baixo acoplamento;
 - componentes, serviços, casos de uso e módulos devem observar principalmente o princípio da responsabilidade única;
 - regras de negócio devem permanecer independentes de frameworks, banco de dados e provedores externos;
+- enquanto o backend não for homologado, o frontend usará adaptadores demonstrativos por padrão; a fonte HTTP será ativada somente por configuração pública explícita e contratos validados;
+- o access token do frontend, quando existir, ficará somente em memória; renovação de sessão dependerá de cookie `HttpOnly` e não repetirá mutações automaticamente;
 - toda nova subfase de produção deve começar com um plano documentado, passos hierárquicos, critérios de aceite e acompanhamento de estado;
 - segurança deve ser revisada continuamente com base no OWASP Top 10 e, conforme o risco, nos controles aplicáveis do OWASP ASVS;
 - dependências, entradas, autenticação, autorização, sessões, segredos, headers e integrações externas devem fazer parte do quality gate de segurança;
@@ -398,3 +400,4 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-09 | Validação responsiva passa a cobrir mobile, tablet, notebook e desktop conforme o impacto da etapa. |
 | 2026-08-09 | Cada etapa concluída deve receber commit próprio após aprovação do quality gate. |
 | 2026-08-11 | Decisões provisórias implementadas passam a integrar um checklist obrigatório de revisão, com responsável e prazo de validação. |
+| 2026-08-18 | F6 prepara contratos HTTP, refresh de sessão em memória e fonte demonstrativa padrão; nenhuma API real foi ativada. |
