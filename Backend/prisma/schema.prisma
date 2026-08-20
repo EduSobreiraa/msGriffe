@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  SELLER
+  SUPERADMIN
+}
+
+enum CheckoutAttemptStatus {
+  PENDING_PAYMENT
+  EXPIRED
+  FAILED
+}
+
+enum OrderStatus {
+  PAID
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  role         UserRole @default(CUSTOMER)
+  name         String
+  email        String   @unique
+  phone        String
+  birthDate    DateTime @db.Date
+  passwordHash String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  checkoutAttempts CheckoutAttempt[]
+  orders           Order[]
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  categoryId  String   @db.Uuid
+  slug        String   @unique
+  name        String
+  description String
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images   ProductImage[]
+  variants ProductVariant[]
+}
+
+model ProductImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  productId String   @db.Uuid
+  objectKey String   @unique
+  position  Int
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, position])
+}
+
+model ProductVariant {
+  id           String   @id @default(uuid()) @db.Uuid
+  productId    String   @db.Uuid
+  sku          String   @unique
+  color        String
+  size         String
+  priceInCents Int
+  stock        Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  orderItems OrderItem[]
+
+  @@unique([productId, color, size])
+}
+
+model CheckoutAttempt {
+  id            String                @id @default(uuid()) @db.Uuid
+  customerId    String                @db.Uuid
+  status        CheckoutAttemptStatus @default(PENDING_PAYMENT)
+  currency      String                @default("BRL") @db.Char(3)
+  snapshot      Json
+  expiresAt     DateTime
+  providerRef   String?               @unique
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  customer User   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  order    Order?
+}
+
+model Order {
+  id                String      @id @default(uuid()) @db.Uuid
+  code              String      @unique
+  customerId        String      @db.Uuid
+  checkoutAttemptId String      @unique @db.Uuid
+  status            OrderStatus @default(PAID)
+  totalInCents      Int
+  paidAt            DateTime
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  customer        User            @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  checkoutAttempt CheckoutAttempt @relation(fields: [checkoutAttemptId], references: [id], onDelete: Restrict)
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id               String   @id @default(uuid()) @db.Uuid
+  orderId          String   @db.Uuid
+  productVariantId String   @db.Uuid
+  quantity         Int
+  unitPriceInCents Int
+  snapshot         Json
+  createdAt        DateTime @default(now())
+
+  order          Order          @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Restrict)
+}

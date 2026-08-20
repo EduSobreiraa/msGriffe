@@ -2,7 +2,7 @@
 
 > Fonte única para planejamento, execução e acompanhamento das fases do projeto.
 >
-> Última atualização: 9 de agosto de 2026.
+> Última atualização: 20 de agosto de 2026.
 
 ## Convenções
 
@@ -29,16 +29,16 @@ Pendente → Em andamento → Concluída
 | F0 — Fundação técnica | Concluída em 2026-08-07 | React, TypeScript, Vite, qualidade e Cloudflare Pages preparados. |
 | F1 — Design system e vitrine | Concluída em 2026-08-07 | Página inicial modular, responsiva, acessível e testada. |
 | F2 — Catálogo, busca e produto | Concluída em 2026-08-09 | Jornada pública de descoberta de produtos completa. |
-| F3 — Carrinho e checkout visual | Em andamento | Jornada demonstrável de preparação da compra. |
-| F4 — Conta e pós-compra | Pendente | Área do cliente, autenticação visual e pedidos. |
-| F5 — Painel do vendedor | Pendente | Operação administrativa demonstrável. |
-| F6 — Integração preparada e qualidade | Pendente | Contratos estabilizados e frontend pronto para API real. |
-| B0 — Arquitetura e contratos | Pendente | Fundação técnica do backend. |
+| F3 — Carrinho e checkout visual | Concluída | Jornada demonstrável de preparação da compra. |
+| F4 — Conta e pós-compra | Concluída | Área do cliente, autenticação visual e pedidos. |
+| F5 — Painel do vendedor | Concluída | Operação administrativa demonstrável. |
+| F6 — Integração preparada e qualidade | Concluída | Contratos estabilizados e frontend pronto para API real. |
+| B0 — Arquitetura e contratos | Concluída | Fundação técnica do backend. |
 | B1 — Identidade e autorização | Pendente | Contas, sessões, papéis e proteção administrativa. |
 | B2 — Catálogo, preços e estoque | Pendente | Domínio comercial e persistência do catálogo. |
 | B3 — Carrinho e cálculo comercial | Pendente | Carrinho, cupons, frete e totais autoritativos. |
 | B4 — Pedidos e Mercado Pago | Pendente | Núcleo transacional da compra. |
-| B5 — Operação e comunicação | Pendente | Dashboard, e-mails, auditoria e observabilidade. |
+| B5 — Operação e comunicação | Pendente | Dashboard, WhatsApp, auditoria e observabilidade. |
 | B6 — Integração frontend-backend | Pendente | Substituição dos simuladores pela API. |
 | B7 — Preparação de produção | Pendente | Segurança, recuperação, go-live e monitoramento. |
 
@@ -1020,7 +1020,37 @@ Registro:
 
 ### B0 — Arquitetura e contratos
 
-- stack, banco, deploy, módulos, migrações, testes e documentação da API.
+Estado: **concluída em 20 de agosto de 2026**.
+
+Objetivo: criar fundação backend Node.js/TypeScript com Fastify, Prisma e PostgreSQL, mantendo módulos de domínio, contratos HTTP, segurança de base e execução local/staging sem antecipar regra comercial pendente.
+
+Limites:
+
+- nenhum segredo, serviço Railway/R2/Mercado Pago, banco remoto ou deploy será criado nesta fase;
+- fontes externas serão portas/adaptadores, nunca dependência do domínio;
+- valores monetários usarão centavos inteiros e datas terão referência temporal inequívoca;
+- `Checkout`/`PaymentAttempt` preserva pré-pagamento; `Order` só existe ou confirma após aprovação;
+- integração de autenticação, pagamento, imagens e frete fica para B1–B4.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B0.1 | Estrutura e dependências | Concluída | Workspace backend, Fastify, Prisma, TypeScript e scripts têm responsabilidade explícita. |
+| B0.2 | Configuração e segurança base | Concluída | Ambiente validado, segredo ausente falha seguro, CORS allowlist e headers ficam na borda HTTP. |
+| B0.3 | Prisma e PostgreSQL | Concluída | Schema inicial, migrações e banco local possuem modelo mínimo sem regra comercial antecipada. |
+| B0.4 | Módulos e contratos API | Concluída | Health, erros versionados, DTOs e portas suportam frontend sem acoplamento. |
+| B0.5 | Qualidade e operação | Concluída | Testes, lint, build, documentação Railway/GitHub Actions e commit aprovados. |
+
+Registro:
+
+- `Backend/` inicia API Node.js/TypeScript com Fastify; cada módulo separa configuração, composição HTTP, domínio e compartilhados;
+- `readEnvironment` valida host, porta e allowlist CORS, normaliza origens e bloqueia HTTP em produção; Helmet e respostas de erro com códigos estáveis protegem a borda HTTP;
+- `GET /v1/health` é healthcheck público versionado e foi validado com processo real na porta local 3001;
+- Prisma 6.12 foi escolhido porque a linha Prisma 7 instalada inicialmente continha alerta alto em `deepmerge-ts`; `npm audit --audit-level=high` passou sem vulnerabilidades após a troca;
+- schema e migração inicial versionam usuários, categorias, produtos, variantes, imagens R2 por `objectKey`, checkout attempts, pedidos e itens; valores monetários usam centavos inteiros;
+- `CheckoutAttempt` representa `PENDING_PAYMENT`; `Order` começa em `PAID` após confirmação, preservando contexto pré-pagamento sem expor pedido ao cliente antes disso;
+- PostgreSQL 17 local via Docker Compose usa porta 5433 e recebeu a migração `20260820000000_initial`; `prisma migrate status` confirmou banco atualizado;
+- Railway e GitHub Actions estão documentados e configurados por arquivos, mas nenhum recurso remoto, segredo ou deploy foi criado;
+- quality gate: 5 testes aprovados, cobertura 100%, lint, build, schema Prisma, migração local e healthcheck aprovados; `npm audit --audit-level=high` retornou 0 vulnerabilidades.
 
 ### B1 — Identidade, sessões e autorização
 
@@ -1040,7 +1070,7 @@ Registro:
 
 ### B5 — Operação, comunicação e dashboard
 
-- endpoints administrativos, métricas, Resend, alertas, auditoria e observabilidade.
+- endpoints administrativos, métricas, WhatsApp, alertas, auditoria e observabilidade.
 
 ### B6 — Integração frontend-backend
 

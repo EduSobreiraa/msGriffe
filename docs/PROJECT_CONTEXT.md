@@ -2,13 +2,31 @@
 
 > Documento inicial de decisões do produto e da arquitetura.
 >
-> Última atualização: 9 de agosto de 2026.
+> Última atualização: 20 de agosto de 2026.
 
 ## 1. Visão geral
 
 A **msGriffe** é uma loja virtual. O sistema deverá atender clientes, vendedores e administradores, cobrindo catálogo, conta do cliente, checkout, pagamento, estoque, acompanhamento de pedidos, comunicação transacional e gestão comercial.
 
 Este documento é a fonte inicial de contexto do projeto. As definições marcadas como provisórias ou pendentes não devem ser tratadas como regras comerciais definitivas sem validação do vendedor.
+
+### 1.1 Escopo funcional fechado do MVP
+
+Inclui:
+
+- aplicação web responsiva, sem aplicativo nativo;
+- conta obrigatória para comprar; cadastro com nome, telefone, e-mail e data de nascimento;
+- área do cliente para editar dados e senha, e acompanhar pedidos;
+- catálogo com busca textual e filtros de categoria, tamanho, preço e disponibilidade;
+- produtos com múltiplas imagens e variantes de tamanho e cor;
+- carrinho transitório: não persiste após o fechamento do navegador;
+- alteração de quantidade e variante limitada pelo estoque disponível;
+- checkout com CPF, CEP e endereço, mesmo antes da definição integral de frete;
+- estoque por variante, ajuste pelo `SELLER` e painel com CRUD de produtos, pedidos, clientes, últimas compras e analytics básico;
+- WhatsApp somente como link ou botão de contato;
+- `SUPERADMIN` restrito a manutenção técnica e administrativa, não à operação comercial.
+
+Ficam fora do MVP: avaliações, favoritos, páginas institucionais de Sobre Nós/Contato, CMS e automações de WhatsApp.
 
 ## 2. Perfis e responsabilidades
 
@@ -32,6 +50,15 @@ Estratégia definida:
 - expiração e revogação de sessões;
 - proteção contra enumeração de usuários.
 
+Para contas administrativas:
+
+- cookies com `HttpOnly`, `Secure` e `SameSite` adequado;
+- 2FA por TOTP, prioritariamente para `SUPERADMIN`;
+- não usar SMS como segundo fator;
+- nova autenticação para ações sensíveis;
+- recuperação inicial de senha por fluxo controlado pelo `SUPERADMIN`, pois haverá poucas contas administrativas;
+- não usar Keycloak ou Auth0 no MVP.
+
 O cliente deverá criar uma conta antes de comprar. O cadastro será progressivo para reduzir atrito.
 
 Dados do cadastro inicial:
@@ -39,12 +66,12 @@ Dados do cadastro inicial:
 - nome;
 - e-mail;
 - telefone;
+- data de nascimento;
 - senha.
 
 Dados solicitados durante a compra, quando necessários:
 
 - CPF;
-- data de nascimento;
 - endereço;
 - consentimentos aplicáveis.
 
@@ -52,10 +79,10 @@ Dados solicitados durante a compra, quando necessários:
 
 ### 4.1 Fluxo principal
 
-O estoque será reduzido somente após a aprovação do pagamento:
+Um `Checkout`/`PaymentAttempt` será criado antes do pagamento para preservar o carrinho, os dados e a conciliação com o Mercado Pago. O pedido comercial será criado ou confirmado somente após aprovação:
 
 ```text
-Pedido criado
+Checkout/PaymentAttempt criado
     ↓
 PENDING_PAYMENT
     ↓
@@ -65,7 +92,7 @@ Backend valida pagamento e autenticidade do evento
     ↓
 Backend reduz o estoque em transação atômica
     ↓
-Pedido passa para PAID
+Pedido é criado ou confirmado como PAID
 ```
 
 O processamento de webhooks deve ser idempotente. Um mesmo evento recebido mais de uma vez não pode duplicar cobranças, reduzir o estoque novamente ou repetir efeitos colaterais.
@@ -96,13 +123,12 @@ Ainda existe uma exceção de negócio: o pagamento pode ser aprovado quando o i
 
 Estados iniciais:
 
-- `PENDING_PAYMENT`;
+- `PENDING_PAYMENT` para o `Checkout`/`PaymentAttempt`;
 - `PAID`;
 - `PREPARING`;
 - `SHIPPED`;
 - `DELIVERED`;
-- `CANCELLED`;
-- `REFUNDED`.
+- `CANCELLED` como saída excepcional.
 
 O Mercado Pago será a fonte dos eventos financeiros. O `SELLER` será responsável principalmente pelas transições operacionais:
 
@@ -110,7 +136,7 @@ O Mercado Pago será a fonte dos eventos financeiros. O `SELLER` será responsá
 PAID → PREPARING → SHIPPED → DELIVERED
 ```
 
-Cancelamento, reembolso, transições reversas e permissões associadas ainda dependem de regras comerciais. Toda mudança de estado deverá ser validada no backend e registrada em histórico.
+Cancelamento e transições reversas dependem de regras comerciais. Reembolso fica fora do fluxo inicial do MVP. Toda mudança de estado deverá ser validada no backend e registrada em histórico.
 
 ### 4.4 Formas de pagamento
 
@@ -162,33 +188,15 @@ Dependem do vendedor:
 - envio ou não do resumo do carrinho;
 - eventual automação futura.
 
-## 7. E-mails transacionais
+## 7. Comunicação
 
-Serviço definido: **Resend**.
+O **Resend foi retirado do MVP**. Não haverá e-mail transacional ou infraestrutura inicial de e-mail corporativo.
 
-Eventos previstos:
-
-- cadastro realizado;
-- recuperação de senha;
-- pedido criado;
-- pagamento pendente;
-- pagamento aprovado;
-- pagamento recusado ou expirado;
-- pedido em preparação;
-- pedido enviado;
-- pedido entregue;
-- cancelamento;
-- reembolso;
-- falha relevante de pagamento ou webhook.
-
-Possíveis endereços remetentes, sujeitos à definição do vendedor:
-
-```text
-vendas@dominio.com
-pedidos@dominio.com
-suporte@dominio.com
-seguranca@dominio.com
-```
+- atendimento ao cliente: WhatsApp;
+- comunicação de pedidos: site e WhatsApp;
+- Mercado Pago mantém suas comunicações próprias de pagamento quando aplicável;
+- WhatsApp não será mecanismo principal de autenticação administrativa;
+- Resend poderá ser reavaliado após o MVP.
 
 ## 8. Dashboard administrativo
 
@@ -233,6 +241,18 @@ O frontend será hospedado no **Cloudflare Pages**.
 
 Os projetos ou ambientes de preview, staging e produção deverão usar configurações e variáveis próprias. Segredos de backend e credenciais privadas não poderão ser expostos em variáveis incorporadas ao bundle do frontend.
 
+### 9.2 Backend e dados
+
+- API: Node.js + TypeScript, com Fastify como framework preferencial;
+- ORM: Prisma;
+- banco: PostgreSQL;
+- hospedagem da API e banco: Railway;
+- domínio público previsto: `api.msgriffe.com.br`;
+- object storage de imagens: Cloudflare R2;
+- CI/CD: GitHub Actions e deploy automático;
+- segredos: Railway Secrets e GitHub Secrets, sem Doppler ou Vault no MVP;
+- CORS: allowlist explícita apenas para origens autorizadas de staging e produção.
+
 ## 10. Auditoria, logs e retenção
 
 Eventos mínimos de auditoria:
@@ -246,19 +266,34 @@ Eventos mínimos de auditoria:
 - falhas em webhooks;
 - alterações de configurações críticas.
 
-A retenção inicial de **14 dias** se aplica somente a logs técnicos, operacionais e de segurança transitórios que não tenham obrigação de armazenamento prolongado.
+Retenções iniciais:
 
-Pedidos, pagamentos, documentos fiscais e histórico comercial não devem ser eliminados por essa política. A retenção definitiva deverá ser classificada por tipo de dado e validada conforme obrigações legais, fiscais, financeiras e de proteção de dados.
+- logs técnicos comuns: **14 dias**;
+- logs e auditorias de segurança: **90 dias**;
+- backups: **30 dias**;
+- tokens temporários: somente pelo período necessário;
+- pedidos, clientes e dados financeiros: conforme necessidade operacional e obrigações legais.
+
+Pedidos, pagamentos, documentos fiscais e histórico comercial não devem ser eliminados por retenções técnicas curtas.
+
+Backup e recuperação:
+
+- backup diário do PostgreSQL;
+- considerar cópia externa no Cloudflare R2;
+- testes periódicos de restore;
+- RPO inicial: até 24 horas;
+- RTO inicial: até 4 horas.
 
 ## 11. Observabilidade e alertas
 
 A configuração detalhada ocorrerá em etapa posterior da produção.
 
-Direcionamento inicial:
+Direcionamento definido:
 
-- alertas de segurança: Telegram;
-- alertas comerciais: e-mail;
-- erros técnicos: Sentry e Better Stack.
+- Sentry: erros e exceptions da aplicação;
+- Better Stack: uptime e healthchecks;
+- Telegram: alertas críticos;
+- WhatsApp: atendimento e comunicação operacional ao cliente.
 
 Exemplos de alertas para Telegram:
 
@@ -270,6 +305,7 @@ Exemplos de alertas para Telegram:
 - falha repetida em webhook;
 - tentativa de operação não autorizada;
 - alteração de configuração crítica.
+- falha de backup;
 
 ## 12. Segurança
 
@@ -278,19 +314,19 @@ Requisitos mínimos:
 - hash de senhas com algoritmo atual e configuração segura;
 - rate limiting;
 - cookies `Secure`, `HttpOnly` e com `SameSite` adequado;
-- proteção contra CSRF quando aplicável;
+- proteção CSRF obrigatória quando autenticação administrativa usar cookies;
 - validação e normalização de entradas;
 - controle de acesso por papel e por operação;
 - logs de ações administrativas;
 - segredos fora do repositório;
 - HTTPS obrigatório;
-- confirmação adicional para operações críticas;
+- nova autenticação para operações críticas;
 - headers HTTP de segurança;
 - atualização periódica de dependências;
 - validação de assinatura e idempotência de webhooks;
 - aplicação do princípio do menor privilégio.
 
-As regras definitivas de 2FA e sessões administrativas ainda serão decididas.
+Sessões administrativas devem ser revogáveis, ter expiração definida e não usar tokens/JWT de longa duração.
 
 ## 13. LGPD e documentos legais
 
@@ -324,19 +360,17 @@ O sistema deverá observar finalidade, necessidade, transparência, segurança e
 10. Conteúdo e prioridade do dashboard.
 11. Documentos legais e políticas da loja.
 12. Tratamento de pagamento aprovado sem estoque disponível.
+13. Campos, publicação/arquivamento e regras operacionais do CRUD de produtos.
 
 ### 14.2 Decisões técnicas posteriores
 
 1. Serviço de frete e cálculo por CEP.
-2. Estratégia de armazenamento, otimização e tratamento de imagens.
-3. Backup, retenção, RPO e RTO.
-4. Configuração detalhada do Better Stack.
-5. Configuração detalhada do Sentry.
-6. Integração dos alertas com Telegram.
-7. Política definitiva de retenção por categoria de log e dado.
-8. Regras de 2FA e sessões administrativas.
-9. Definição exata do escopo do MVP.
-10. Estratégia para indisponibilidade do Mercado Pago.
+2. Estratégia de otimização, tratamento e URLs das imagens no Cloudflare R2.
+3. Configuração detalhada do Better Stack.
+4. Configuração detalhada do Sentry.
+5. Integração dos alertas com Telegram.
+6. Política definitiva de retenção por categoria de log e dado.
+7. Estratégia para indisponibilidade do Mercado Pago.
 
 ### 14.3 Decisões provisórias implementadas e obrigatórias para revisão
 
@@ -401,3 +435,7 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-09 | Cada etapa concluída deve receber commit próprio após aprovação do quality gate. |
 | 2026-08-11 | Decisões provisórias implementadas passam a integrar um checklist obrigatório de revisão, com responsável e prazo de validação. |
 | 2026-08-18 | F6 prepara contratos HTTP, refresh de sessão em memória e fonte demonstrativa padrão; nenhuma API real foi ativada. |
+| 2026-08-20 | Backend do MVP definido como Fastify, Prisma e PostgreSQL no Railway; imagens no Cloudflare R2 e deploy via GitHub Actions. |
+| 2026-08-20 | 2FA TOTP, retenção, backup, RPO/RTO, observabilidade e alertas críticos foram definidos; Resend foi removido do MVP em favor de site e WhatsApp. |
+| 2026-08-20 | Escopo funcional do MVP definido: checkout pré-pagamento, pedido confirmado após aprovação, estoque por variante, operação `SELLER` e exclusões explícitas. |
+| 2026-08-20 | B0 adota Prisma 6.12 após alerta alto na linha Prisma 7; API Fastify, schema inicial, PostgreSQL local e pipeline de qualidade foram preparados. |

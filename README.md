@@ -2,6 +2,8 @@
 
 Projeto da loja virtual MS Griffe. O frontend React/TypeScript/Vite fica em [`Frontend/`](./Frontend); esta raiz concentra documentação e operação do projeto.
 
+A API Node.js/TypeScript/Fastify fica em [`Backend/`](./Backend), com Prisma e PostgreSQL preparados para Railway.
+
 A interface oferece temas claro e escuro, respeita a preferência inicial do sistema e persiste a escolha feita pelo usuário no navegador.
 
 A página inicial possui navegação por teclado, suporte a movimento reduzido e auditoria estrutural automatizada de acessibilidade com axe-core nos dois temas.
@@ -70,5 +72,6 @@ O checklist de staging, produção, variáveis públicas e promoção está em [
 - [Princípios de arquitetura](./docs/ARCHITECTURE_PRINCIPLES.md)
 - [Contratos de API do frontend](./docs/FRONTEND_API_CONTRACTS.md)
 - [Deploy Cloudflare Pages](./docs/DEPLOYMENT_CLOUDFLARE_PAGES.md)
+- [Operação do backend](./docs/BACKEND_OPERATIONS.md)
 
 O protótipo original permanece em [`Frontend/legacy-prototype.html`](./Frontend/legacy-prototype.html) como referência histórica enquanto a migração é validada.

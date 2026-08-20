@@ -1,0 +1,9 @@
+[build]
+builder = "RAILPACK"
+buildCommand = "npm run prisma:generate && npm run build"
+
+[deploy]
+healthcheckPath = "/v1/health"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+startCommand = "npm run prisma:migrate:deploy && npm run start"
