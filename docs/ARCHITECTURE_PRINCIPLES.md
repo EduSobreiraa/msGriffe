@@ -56,7 +56,7 @@ Exemplos preferidos:
 
 ### D — Inversão de dependência
 
-Regras de negócio e casos de uso dependerão de contratos, não de detalhes como banco de dados, Mercado Pago, Resend ou APIs do navegador.
+Regras de negócio e casos de uso dependerão de contratos, não de detalhes como banco de dados, Mercado Pago, Brevo ou APIs do navegador.
 
 As implementações concretas serão conectadas nas bordas da aplicação. O sentido principal das dependências será:
 
@@ -159,7 +159,7 @@ Regras:
 - regras comerciais não ficam em controllers, ORM models ou handlers de webhook;
 - cada caso de uso representa uma intenção clara, como `ApprovePayment` ou `ChangeOrderStatus`;
 - acesso ao banco ocorre por portas de persistência definidas conforme a necessidade do domínio;
-- integrações com Mercado Pago, Resend, frete e Telegram são adaptadores substituíveis;
+- integrações com Mercado Pago, Brevo, frete e Telegram são adaptadores substituíveis;
 - webhooks são entradas do sistema e delegam o processamento a casos de uso idempotentes;
 - transações são controladas na fronteira do caso de uso que exige atomicidade;
 - módulos não consultam tabelas internas de outros módulos de forma arbitrária;

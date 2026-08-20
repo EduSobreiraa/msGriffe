@@ -53,5 +53,5 @@ Railway usará `Backend/railway.toml`: gera cliente Prisma, compila, aplica some
 - CORS permite apenas origens declaradas; produção rejeita HTTP;
 - Helmet adiciona headers defensivos; erros retornam somente códigos estáveis;
 - logs, Sentry, Better Stack, Telegram, Mercado Pago e Cloudflare R2 não são conectados na B0;
-- antes de B1, definir a alternativa para verificação e recuperação de senha de clientes sem e-mail transacional;
+- B1 adicionará Brevo Free como adaptador de e-mail para verificação de conta e recuperação de senha; chave, remetente e autenticação de domínio ficam nos secrets de cada ambiente;
 - antes do primeiro deploy, configurar backup diário, retenções, restore testado, RPO de 24 h e RTO de 4 h no Railway/R2.

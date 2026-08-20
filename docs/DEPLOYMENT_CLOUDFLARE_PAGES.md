@@ -23,7 +23,7 @@ Somente valores que podem chegar ao bundle usam `VITE_`.
 | `VITE_API_BASE_URL` | vazia | vazia | origem HTTPS pública exata da API |
 | `VITE_WHATSAPP_NUMBER` | número de teste aprovado | número oficial aprovado | mesma regra |
 
-Nunca criar `VITE_` para secret, token privado, chave Mercado Pago, Resend, Sentry, banco ou Telegram. Esses valores pertencem ao backend e à infraestrutura privada.
+Nunca criar `VITE_` para secret, token privado, chave Mercado Pago, Brevo, Sentry, banco ou Telegram. Esses valores pertencem ao backend e à infraestrutura privada.
 
 ## Antes de ativar `VITE_DATA_SOURCE=api`
 

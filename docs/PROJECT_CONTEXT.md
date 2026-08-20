@@ -190,13 +190,15 @@ Dependem do vendedor:
 
 ## 7. Comunicação
 
-O **Resend foi retirado do MVP**. Não haverá e-mail transacional ou infraestrutura inicial de e-mail corporativo.
+O recebimento e o envio transacional têm responsabilidades separadas:
 
-- atendimento ao cliente: WhatsApp;
-- comunicação de pedidos: site e WhatsApp;
-- Mercado Pago mantém suas comunicações próprias de pagamento quando aplicável;
-- WhatsApp não será mecanismo principal de autenticação administrativa;
-- Resend poderá ser reavaliado após o MVP.
+- **Cloudflare Email Routing** receberá `contato@msgriffe.com.br`, `suporte@msgriffe.com.br` e `admin@msgriffe.com.br`, encaminhando inicialmente para e-mails pessoais;
+- **Brevo Free** enviará verificação de conta, recuperação de senha e mensagens essenciais da conta;
+- WhatsApp continua como canal principal comercial e de atendimento;
+- comunicação de pedidos no MVP: site, WhatsApp e as comunicações próprias do Mercado Pago quando aplicável;
+- WhatsApp não será mecanismo principal de autenticação administrativa.
+
+O adaptador do Brevo será introduzido na B1, sem acoplar regras de conta ao provedor. Credenciais, remetente validado e chaves de API pertencem somente aos secrets do ambiente.
 
 ## 8. Dashboard administrativo
 
@@ -252,6 +254,32 @@ Os projetos ou ambientes de preview, staging e produção deverão usar configur
 - CI/CD: GitHub Actions e deploy automático;
 - segredos: Railway Secrets e GitHub Secrets, sem Doppler ou Vault no MVP;
 - CORS: allowlist explícita apenas para origens autorizadas de staging e produção.
+
+### 9.3 Domínios, URLs e CORS
+
+Quando o domínio estiver registrado, os endereços canônicos serão:
+
+| Ambiente | Frontend | API |
+| --- | --- | --- |
+| Produção | `https://msgriffe.com.br` | `https://api.msgriffe.com.br` |
+| Staging | `https://staging.msgriffe.com.br` | `https://api-staging.msgriffe.com.br` |
+
+Antes disso, Cloudflare Pages e Railway usarão seus domínios temporários. Todas as URLs continuam em variáveis de ambiente, sem valores hardcoded no frontend ou backend.
+
+No backend, a variável implementada é `CORS_ALLOWED_ORIGINS`. Cada ambiente recebe somente sua origem exata:
+
+```text
+# produção
+CORS_ALLOWED_ORIGINS=https://msgriffe.com.br
+
+# staging
+CORS_ALLOWED_ORIGINS=https://staging.msgriffe.com.br
+
+# desenvolvimento local
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+```
+
+Não usar `*`, nem liberar previews da Cloudflare Pages por padrão. Uma origem temporária de staging só poderá ser adicionada explicitamente ao ambiente correspondente durante a homologação.
 
 ## 10. Auditoria, logs e retenção
 
@@ -355,12 +383,11 @@ O sistema deverá observar finalidade, necessidade, transparência, segurança e
 5. Regras de cupons e promoções.
 6. Política de preços.
 7. Número e funcionamento do WhatsApp.
-8. Endereços de e-mail usados pela loja.
-9. Regras comerciais de estoque baixo.
-10. Conteúdo e prioridade do dashboard.
-11. Documentos legais e políticas da loja.
-12. Tratamento de pagamento aprovado sem estoque disponível.
-13. Campos, publicação/arquivamento e regras operacionais do CRUD de produtos.
+8. Regras comerciais de estoque baixo.
+9. Conteúdo e prioridade do dashboard.
+10. Documentos legais e políticas da loja.
+11. Tratamento de pagamento aprovado sem estoque disponível.
+12. Campos, publicação/arquivamento e regras operacionais do CRUD de produtos.
 
 ### 14.2 Decisões técnicas posteriores
 
@@ -371,6 +398,8 @@ O sistema deverá observar finalidade, necessidade, transparência, segurança e
 5. Integração dos alertas com Telegram.
 6. Política definitiva de retenção por categoria de log e dado.
 7. Estratégia para indisponibilidade do Mercado Pago.
+8. Backup PostgreSQL e cópia externa no R2: procedimento, criptografia, automação, teste de restore e alertas.
+9. Compra do domínio, DNS, Cloudflare Email Routing e autenticação do remetente no Brevo.
 
 ### 14.3 Decisões provisórias implementadas e obrigatórias para revisão
 
@@ -422,7 +451,7 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-07 | Access token curto e refresh token em cookie `HttpOnly`. |
 | 2026-08-07 | Estoque reduzido apenas após aprovação do pagamento, de forma transacional. |
 | 2026-08-07 | Mercado Pago como integração financeira prevista. |
-| 2026-08-07 | Resend como serviço de e-mails transacionais. |
+| 2026-08-07 | Serviço de e-mails transacionais foi considerado inicialmente. |
 | 2026-08-07 | Ambientes local, staging e produção. |
 | 2026-08-07 | Cloudflare Pages como plataforma de hospedagem do frontend. |
 | 2026-08-07 | Implementação organizada em frontend (F0–F6) antes do backend (B0–B7). |
@@ -436,6 +465,7 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-11 | Decisões provisórias implementadas passam a integrar um checklist obrigatório de revisão, com responsável e prazo de validação. |
 | 2026-08-18 | F6 prepara contratos HTTP, refresh de sessão em memória e fonte demonstrativa padrão; nenhuma API real foi ativada. |
 | 2026-08-20 | Backend do MVP definido como Fastify, Prisma e PostgreSQL no Railway; imagens no Cloudflare R2 e deploy via GitHub Actions. |
-| 2026-08-20 | 2FA TOTP, retenção, backup, RPO/RTO, observabilidade e alertas críticos foram definidos; Resend foi removido do MVP em favor de site e WhatsApp. |
+| 2026-08-20 | 2FA TOTP, retenção, backup, RPO/RTO, observabilidade e alertas críticos foram definidos. |
 | 2026-08-20 | Escopo funcional do MVP definido: checkout pré-pagamento, pedido confirmado após aprovação, estoque por variante, operação `SELLER` e exclusões explícitas. |
 | 2026-08-20 | B0 adota Prisma 6.12 após alerta alto na linha Prisma 7; API Fastify, schema inicial, PostgreSQL local e pipeline de qualidade foram preparados. |
+| 2026-08-20 | Cloudflare Email Routing foi definido para recebimento e Brevo Free para e-mails transacionais essenciais; domínios e CORS por ambiente foram definidos, sem curinga ou preview liberado por padrão. |
