@@ -1069,7 +1069,7 @@ Limites da B1:
 | --- | --- | --- | --- |
 | B1.1 | Modelagem de identidade e migration | Concluída | Schema aditivo modela verificação de e-mail, sessões revogáveis e tokens temporários somente por hash. |
 | B1.2 | Cadastro, senha e sessão | Concluída | Conta autenticada usa hash de senha seguro, access token curto e refresh session revogável. |
-| B1.3 | Autorização e proteção de borda | Pendente | Papéis, CSRF e rate limiting protegem mutações e superfícies sensíveis. |
+| B1.3 | Autorização e proteção de borda | Concluída | Papéis, CSRF e rate limiting protegem mutações e superfícies sensíveis. |
 | B1.4 | Verificação, recuperação e Brevo | Pendente | Fluxos não enumeráveis usam tokens temporários e adaptador de e-mail. |
 | B1.5 | Administração reforçada | Pendente | TOTP, reautenticação e auditoria protegem `SELLER` e `SUPERADMIN`. |
 | B1.6 | Quality gate e encerramento | Pendente | Testes, migrações, segurança, documentação e commit da fase são aprovados. |
@@ -1124,6 +1124,67 @@ Registro:
 - cookie `msgriffe_refresh` é `HttpOnly`, sem domínio fixo, com `Secure` e `SameSite` configurados por ambiente;
 - rotas B1.2 não implementam CSRF, rate limiting, e-mail, Brevo, TOTP, auditoria ou autorização comercial;
 - quality gate: 8 testes, cobertura 93.07% statements e 87.95% branches, lint e build aprovados.
+
+### B1.3 — Autorização e proteção de borda
+
+Plano:
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.3.1 | Verificar access token e contexto de ator | Concluída | JWT válido cria contexto imutável com usuário e papel; token ausente, inválido ou expirado retorna `UNAUTHENTICATED`. |
+| B1.3.2 | Guardar permissões por papel | Concluída | Rotas sensíveis exigem papel explícito no backend; `SUPERADMIN` não recebe permissões comerciais implícitas. |
+| B1.3.3 | Adicionar CSRF e rate limiting | Concluída | Mutações autenticadas por cookie exigem proteção CSRF; cadastro, login, refresh e recuperação sofrem limitação proporcional. |
+| B1.3.4 | Testar e encerrar | Concluída | Tokens, limites, CSRF, permissões e respostas públicas possuem testes negativos; quality gate aprovado. |
+
+Escopo: proteção de borda e autorização reutilizável. Não criar fluxo de produto, pedido, pagamento, e-mail, recuperação, TOTP ou dashboard nesta subfase.
+
+Registro:
+
+- `JoseAccessTokenIssuer` agora valida JWT HS256 e recusa algoritmo, assinatura, expiração, sujeito ou papel inválidos com `UNAUTHENTICATED`;
+- `authenticateAccessToken` e `requireRole` criam contexto imutável por request e exigem papéis explicitamente, sem elevar `SUPERADMIN` a operador comercial;
+- CSRF usa o plugin oficial Fastify, cookie `HttpOnly` de escopo `/v1/auth` e header `x-csrf-token`; refresh e logout, que dependem do refresh cookie, são protegidos;
+- rate limiting oficial limita login a 5/minuto e refresh a 20/minuto por IP, retornando somente `RATE_LIMITED`;
+- quality gate B1.3: 9 testes aprovados, lint e build aprovados, cobertura global 92,05% statements, 86,02% branches, 97,56% funções e 96,06% linhas.
+
+### B1.4 — Verificação, recuperação e Brevo
+
+Plano:
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.4.1 | Estender contratos de identidade | Pendente | Tokens temporários são opacos, usados uma vez e nunca retornados pela API. |
+| B1.4.2 | Implementar verificação de e-mail | Pendente | Solicitação e confirmação expiram, não revelam segredo e atualizam somente a conta correta. |
+| B1.4.3 | Implementar recuperação não enumerável | Pendente | Solicitação possui resposta uniforme; confirmação troca senha, consome token e revoga sessões. |
+| B1.4.4 | Adaptar Brevo por configuração segura | Pendente | SDK/protocolo do provedor fica na infraestrutura; sem chave/remetente a operação falha de forma segura. |
+| B1.4.5 | Testar e encerrar | Pendente | Reuso, expiração, enumeração e falhas de provedor possuem cobertura. |
+
+Escopo: somente comunicação essencial de identidade. Não criar e-mail comercial, Resend, automação de WhatsApp ou regras de pedido.
+
+### B1.5 — Administração reforçada
+
+Plano:
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.5.1 | Modelar TOTP e auditoria de segurança | Pendente | Segredo TOTP permanece protegido em repouso; auditoria não inclui credenciais ou tokens. |
+| B1.5.2 | Exigir segundo fator administrativo | Pendente | `SELLER` e `SUPERADMIN` configurados não obtêm sessão sem TOTP válido; SMS não é usado. |
+| B1.5.3 | Expor setup e confirmação protegidos | Pendente | Setup exige access token e papel administrativo; ativação requer prova TOTP. |
+| B1.5.4 | Criar base reutilizável de reautenticação | Pendente | Credenciais recentes podem ser exigidas por operações críticas futuras sem confiar no frontend. |
+| B1.5.5 | Registrar eventos de segurança | Pendente | Login, falhas administrativas e mudança de segundo fator geram eventos sem dados sensíveis. |
+| B1.5.6 | Testar e encerrar | Pendente | Papéis, TOTP, reautenticação, auditoria e caminhos de erro possuem cobertura. |
+
+Escopo: endurecer acesso administrativo; não inventar recuperação de TOTP, permissões comerciais, fluxo de reembolso ou políticas de retenção além dos registros previstos.
+
+### B1.6 — Quality gate e encerramento
+
+Plano:
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.6.1 | Revisar migrações e variáveis | Pendente | Schema, migrations, exemplos de ambiente e configuração não expõem segredos. |
+| B1.6.2 | Executar quality gate | Pendente | Testes, cobertura, lint, build, Prisma e auditoria de dependências passam. |
+| B1.6.3 | Validar banco local e borda HTTP | Pendente | Migrações são aplicadas em PostgreSQL isolado e fluxos críticos recebem smoke test. |
+| B1.6.4 | Documentar limites e versionar | Pendente | ROADMAP registra o resultado e um commit exclusivo encerra B1. |
 
 ### B2 — Catálogo, mídia, preços e estoque
 

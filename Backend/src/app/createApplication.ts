@@ -1,6 +1,8 @@
 import cookie from '@fastify/cookie'
 import cors from '@fastify/cors'
+import csrfProtection from '@fastify/csrf-protection'
 import helmet from '@fastify/helmet'
+import rateLimit from '@fastify/rate-limit'
 import Fastify, { type FastifyInstance } from 'fastify'
 import { ZodError } from 'zod'
 import type { Environment } from '../config/environment.js'
@@ -15,6 +17,18 @@ export async function createApplication(environment: Environment, dependencies?:
 
   await application.register(helmet)
   await application.register(cookie)
+  await application.register(csrfProtection, {
+    cookieKey: 'msgriffe_csrf',
+    cookieOpts: { httpOnly: true, path: '/v1/auth', sameSite: environment.sessionCookieSameSite, secure: environment.sessionCookieSecure },
+    getToken: (request) => {
+      const token = request.headers['x-csrf-token']
+      return Array.isArray(token) ? token[0] : token
+    },
+  })
+  await application.register(rateLimit, {
+    global: false,
+    errorResponseBuilder: () => ({ error: { code: 'RATE_LIMITED' } }),
+  })
   await application.register(cors, {
     credentials: true,
     origin: (origin, callback) => {

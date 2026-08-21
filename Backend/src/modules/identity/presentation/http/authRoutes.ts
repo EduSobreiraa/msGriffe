@@ -41,20 +41,22 @@ export async function registerAuthRoutes(application: FastifyInstance, options: 
     return reply.status(201).send({ accessToken: session.accessToken })
   })
 
-  application.post('/v1/auth/login', async (request, reply) => {
+  application.post('/v1/auth/login', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
     const input = credentialsSchema.parse(request.body)
     const session = await options.identityService.login(input)
     setRefreshCookie(reply, options.environment, session.refreshToken)
     return { accessToken: session.accessToken }
   })
 
-  application.post('/v1/auth/session/refresh', async (request, reply) => {
+  application.get('/v1/auth/csrf', async (_request, reply) => ({ csrfToken: await reply.generateCsrf() }))
+
+  application.post('/v1/auth/session/refresh', { config: { rateLimit: { max: 20, timeWindow: '1 minute' } }, onRequest: application.csrfProtection }, async (request, reply) => {
     const session = await options.identityService.refresh(request.cookies[cookieName])
     setRefreshCookie(reply, options.environment, session.refreshToken)
     return { accessToken: session.accessToken }
   })
 
-  application.post('/v1/auth/logout', async (request, reply) => {
+  application.post('/v1/auth/logout', { onRequest: application.csrfProtection }, async (request, reply) => {
     await options.identityService.logout(request.cookies[cookieName])
     reply.clearCookie(cookieName, { httpOnly: true, path: '/v1/auth', sameSite: options.environment.sessionCookieSameSite, secure: options.environment.sessionCookieSecure })
     return reply.status(204).send()

@@ -12,9 +12,12 @@ describe('auth routes', () => {
     } })
     const register = await application.inject({ method: 'POST', url: '/v1/auth/register', payload: { birthDate: '2000-01-01', email: 'Cliente@Exemplo.com', name: 'Cliente', password: 'senha-segura-123', phone: '71999999999' } })
     const cookie = register.cookies[0]?.value
+    const csrf = await application.inject({ method: 'GET', url: '/v1/auth/csrf' })
+    const csrfCookie = csrf.cookies.find((entry) => entry.name === 'msgriffe_csrf')?.value
     const login = await application.inject({ method: 'POST', url: '/v1/auth/login', payload: { email: 'cliente@exemplo.com', password: 'senha-segura-123' } })
-    const refresh = await application.inject({ headers: { cookie: `msgriffe_refresh=${cookie}` }, method: 'POST', url: '/v1/auth/session/refresh' })
-    const logout = await application.inject({ headers: { cookie: `msgriffe_refresh=${cookie}` }, method: 'POST', url: '/v1/auth/logout' })
+    const headers = { cookie: `msgriffe_refresh=${cookie}; msgriffe_csrf=${csrfCookie}`, 'x-csrf-token': csrf.json().csrfToken }
+    const refresh = await application.inject({ headers, method: 'POST', url: '/v1/auth/session/refresh' })
+    const logout = await application.inject({ headers, method: 'POST', url: '/v1/auth/logout' })
     const invalid = await application.inject({ method: 'POST', url: '/v1/auth/login', payload: { email: 'invalido', password: 'curta' } })
     expect(register.statusCode).toBe(201); expect(register.json()).toEqual({ accessToken: 'access-token' }); expect(register.headers['set-cookie']).toContain('HttpOnly')
     expect(login.statusCode).toBe(200); expect(refresh.statusCode).toBe(200); expect(logout.statusCode).toBe(204); expect(invalid.json()).toEqual({ error: { code: 'VALIDATION_ERROR' } }); expect(calls).toEqual(['register', 'login', 'refresh', 'logout'])

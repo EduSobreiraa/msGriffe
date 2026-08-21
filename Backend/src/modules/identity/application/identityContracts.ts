@@ -33,3 +33,7 @@ export interface SecretHasher {
 export interface AccessTokenIssuer {
   issue(input: { role: IdentityRole; userId: string }): Promise<string>
 }
+
+export interface AccessTokenVerifier {
+  verify(value: string): Promise<{ role: IdentityRole; userId: string }>
+}
