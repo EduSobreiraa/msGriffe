@@ -306,9 +306,11 @@ Pedidos, pagamentos, documentos fiscais e histórico comercial não devem ser el
 
 Backup e recuperação:
 
-- backup diário do PostgreSQL;
-- considerar cópia externa no Cloudflare R2;
-- testes periódicos de restore;
+- `pg_dump` automatizado diariamente para PostgreSQL;
+- camadas independentes: backup nativo do provedor e cópia externa no Cloudflare R2 desde o MVP;
+- backup criptografado antes do envio e protegido em repouso; chaves e credenciais permanecem somente nos secrets do ambiente;
+- retenção de 30 dias, com remoção automática de backups mais antigos;
+- teste de restauração mensal nos primeiros meses, em banco isolado e com registro do resultado;
 - RPO inicial: até 24 horas;
 - RTO inicial: até 4 horas.
 
@@ -398,8 +400,7 @@ O sistema deverá observar finalidade, necessidade, transparência, segurança e
 5. Integração dos alertas com Telegram.
 6. Política definitiva de retenção por categoria de log e dado.
 7. Estratégia para indisponibilidade do Mercado Pago.
-8. Backup PostgreSQL e cópia externa no R2: procedimento, criptografia, automação, teste de restore e alertas.
-9. Compra do domínio, DNS, Cloudflare Email Routing e autenticação do remetente no Brevo.
+8. Compra do domínio, DNS, Cloudflare Email Routing e autenticação do remetente no Brevo.
 
 ### 14.3 Decisões provisórias implementadas e obrigatórias para revisão
 
@@ -469,3 +470,4 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-20 | Escopo funcional do MVP definido: checkout pré-pagamento, pedido confirmado após aprovação, estoque por variante, operação `SELLER` e exclusões explícitas. |
 | 2026-08-20 | B0 adota Prisma 6.12 após alerta alto na linha Prisma 7; API Fastify, schema inicial, PostgreSQL local e pipeline de qualidade foram preparados. |
 | 2026-08-20 | Cloudflare Email Routing foi definido para recebimento e Brevo Free para e-mails transacionais essenciais; domínios e CORS por ambiente foram definidos, sem curinga ou preview liberado por padrão. |
+| 2026-08-21 | Backup do MVP definido: `pg_dump` diário, backup do provedor mais cópia R2 criptografada, retenção e limpeza automática de 30 dias, restore mensal, RPO de 24 h e RTO de 4 h. |

@@ -54,4 +54,5 @@ Railway usará `Backend/railway.toml`: gera cliente Prisma, compila, aplica some
 - Helmet adiciona headers defensivos; erros retornam somente códigos estáveis;
 - logs, Sentry, Better Stack, Telegram, Mercado Pago e Cloudflare R2 não são conectados na B0;
 - B1 adicionará Brevo Free como adaptador de e-mail para verificação de conta e recuperação de senha; chave, remetente e autenticação de domínio ficam nos secrets de cada ambiente;
-- antes do primeiro deploy, configurar backup diário, retenções, restore testado, RPO de 24 h e RTO de 4 h no Railway/R2.
+- na B7, automatizar `pg_dump` diário, criptografar o artefato antes do envio ao R2, manter a cópia independente por 30 dias e remover automaticamente versões expiradas;
+- o backup nativo do provedor não substitui a cópia no R2; o restore será testado mensalmente nos primeiros meses em banco isolado, com RPO de 24 h e RTO de 4 h.

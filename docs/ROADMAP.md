@@ -1078,7 +1078,10 @@ Registro:
 
 ### B7 — Preparação de produção
 
-- segurança, backup, RPO/RTO, rollback, carga, LGPD, runbooks e go-live.
+- segurança, rollback, carga, LGPD, runbooks e go-live;
+- `pg_dump` diário automatizado, protegido antes do envio e armazenado no R2 como cópia independente do backup do provedor;
+- retenção e limpeza automática de 30 dias, restore mensal inicial em banco isolado, RPO de 24 h e RTO de 4 h;
+- alertar falha de backup, upload, expiração indevida ou teste de restore mal-sucedido.
 
 ## Marco entre frontend e backend
 
