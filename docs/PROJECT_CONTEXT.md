@@ -2,7 +2,7 @@
 
 > Documento inicial de decisões do produto e da arquitetura.
 >
-> Última atualização: 20 de agosto de 2026.
+> Última atualização: 21 de agosto de 2026.
 
 ## 1. Visão geral
 
@@ -49,6 +49,13 @@ Estratégia definida:
 - proteção adicional para `SELLER` e `SUPERADMIN`;
 - expiração e revogação de sessões;
 - proteção contra enumeração de usuários.
+
+Persistência de identidade:
+
+- verificação de e-mail é representada por `emailVerifiedAt` opcional;
+- sessão persiste somente hash do refresh token, expiração e revogação;
+- tokens de verificação e recuperação persistem somente hash, propósito, expiração e consumo;
+- tokens brutos, senhas e segredos de provedores nunca são armazenados em texto puro.
 
 Para contas administrativas:
 
@@ -471,3 +478,4 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-20 | B0 adota Prisma 6.12 após alerta alto na linha Prisma 7; API Fastify, schema inicial, PostgreSQL local e pipeline de qualidade foram preparados. |
 | 2026-08-20 | Cloudflare Email Routing foi definido para recebimento e Brevo Free para e-mails transacionais essenciais; domínios e CORS por ambiente foram definidos, sem curinga ou preview liberado por padrão. |
 | 2026-08-21 | Backup do MVP definido: `pg_dump` diário, backup do provedor mais cópia R2 criptografada, retenção e limpeza automática de 30 dias, restore mensal, RPO de 24 h e RTO de 4 h. |
+| 2026-08-21 | B1.1 adicionou persistência aditiva para verificação de e-mail, sessões revogáveis e tokens temporários hashados; endpoints e provedores permanecem pendentes. |

@@ -1054,7 +1054,48 @@ Registro:
 
 ### B1 — Identidade, sessões e autorização
 
-- cadastro, verificação, tokens, recuperação, papéis, 2FA, rate limiting e auditoria.
+Estado: **em andamento em 21 de agosto de 2026**.
+
+Objetivo: implementar identidade e acesso por etapas, mantendo segredos, regras de autorização e integrações fora da borda HTTP e sem antecipar domínios comerciais.
+
+Limites da B1:
+
+- `CUSTOMER`, `SELLER` e `SUPERADMIN` continuam únicos papéis; autorização real pertence ao backend;
+- access token curto, refresh token em cookie `HttpOnly`, sessões revogáveis, anti-enumeração, CSRF, rate limiting, TOTP administrativo, recuperação e verificação de e-mail são requisitos da fase, não comportamento já existente;
+- Brevo será adaptador de e-mail; não criar integração ou secret antes da subfase correspondente;
+- não implementar catálogo, pedidos, pagamentos, frete, cupons ou funcionalidades de fases posteriores.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.1 | Modelagem de identidade e migration | Concluída | Schema aditivo modela verificação de e-mail, sessões revogáveis e tokens temporários somente por hash. |
+| B1.2 | Cadastro, senha e sessão | Pendente | Conta autenticada usa hash de senha seguro, access token curto e refresh session revogável. |
+| B1.3 | Autorização e proteção de borda | Pendente | Papéis, CSRF e rate limiting protegem mutações e superfícies sensíveis. |
+| B1.4 | Verificação, recuperação e Brevo | Pendente | Fluxos não enumeráveis usam tokens temporários e adaptador de e-mail. |
+| B1.5 | Administração reforçada | Pendente | TOTP, reautenticação e auditoria protegem `SELLER` e `SUPERADMIN`. |
+| B1.6 | Quality gate e encerramento | Pendente | Testes, migrações, segurança, documentação e commit da fase são aprovados. |
+
+### B1.1 — Modelagem de identidade e migration
+
+Plano:
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.1.1 | Mapear estado atual e compatibilidade | Concluída | Leitores e writers atuais não usam autenticação; expansão não altera dados existentes. |
+| B1.1.2 | Expandir usuário e sessões | Concluída | `User` comporta verificação; sessão guarda somente hash de refresh token, expiração e revogação. |
+| B1.1.3 | Modelar tokens de conta | Concluída | Verificação e recuperação possuem tipo, hash, expiração, consumo e vínculo ao usuário. |
+| B1.1.4 | Gerar e aplicar migration aditiva | Concluída | Migration preserva usuários existentes e cria índices necessários sem passo destrutivo. |
+| B1.1.5 | Validar e registrar | Concluída | Schema, cliente Prisma, migration, testes, lint e build passam; rollback é remoção das novas tabelas/coluna apenas antes de produção. |
+
+Escopo desta subfase: somente persistência de identidade. Não criar endpoints, cookies, geração de token, hash de senha, Brevo, TOTP, autorização HTTP, auditoria ou rate limiting. A migration será somente expansiva: adiciona coluna anulável e tabelas novas, mantendo compatibilidade com o banco B0.
+
+Registro:
+
+- `User.emailVerifiedAt` é anulável, preservando usuários existentes durante rollout;
+- `Session` guarda `refreshTokenHash` único, expiração e revogação; não armazena refresh token bruto, IP ou user agent;
+- `AccountToken` guarda hash único, propósito (`EMAIL_VERIFICATION` ou `PASSWORD_RESET`), expiração e consumo;
+- migration `20260821113859_identity_persistence` cria enum, tabelas, índices e relacionamentos sem remoção ou alteração de dados existentes;
+- rollback só é seguro antes de produção e antes de qualquer writer B1.2: reverter a migration removendo as novas tabelas, enum e coluna; após uso real, restaurar backup e executar procedimento de migração reversa planejado;
+- validação: migration aplicada no PostgreSQL local, `prisma migrate status`, `prisma validate`, geração do client, 5 testes com 100% de cobertura do código atual, lint, build e audit sem vulnerabilidades altas.
 
 ### B2 — Catálogo, mídia, preços e estoque
 
