@@ -1068,7 +1068,7 @@ Limites da B1:
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
 | B1.1 | Modelagem de identidade e migration | Concluída | Schema aditivo modela verificação de e-mail, sessões revogáveis e tokens temporários somente por hash. |
-| B1.2 | Cadastro, senha e sessão | Pendente | Conta autenticada usa hash de senha seguro, access token curto e refresh session revogável. |
+| B1.2 | Cadastro, senha e sessão | Concluída | Conta autenticada usa hash de senha seguro, access token curto e refresh session revogável. |
 | B1.3 | Autorização e proteção de borda | Pendente | Papéis, CSRF e rate limiting protegem mutações e superfícies sensíveis. |
 | B1.4 | Verificação, recuperação e Brevo | Pendente | Fluxos não enumeráveis usam tokens temporários e adaptador de e-mail. |
 | B1.5 | Administração reforçada | Pendente | TOTP, reautenticação e auditoria protegem `SELLER` e `SUPERADMIN`. |
@@ -1096,6 +1096,34 @@ Registro:
 - migration `20260821113859_identity_persistence` cria enum, tabelas, índices e relacionamentos sem remoção ou alteração de dados existentes;
 - rollback só é seguro antes de produção e antes de qualquer writer B1.2: reverter a migration removendo as novas tabelas, enum e coluna; após uso real, restaurar backup e executar procedimento de migração reversa planejado;
 - validação: migration aplicada no PostgreSQL local, `prisma migrate status`, `prisma validate`, geração do client, 5 testes com 100% de cobertura do código atual, lint, build e audit sem vulnerabilidades altas.
+
+### B1.2 — Cadastro, senha e sessão
+
+Plano:
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B1.2.1 | Definir contratos e configuração | Concluída | Rotas de cadastro, login, refresh e logout têm DTOs, códigos públicos e secrets validados; access token dura 15 minutos e refresh session 14 dias. |
+| B1.2.2 | Implementar segurança de credenciais | Concluída | Senha e refresh token usam primitives consolidadas; valores brutos não persistem nem aparecem em logs/respostas. |
+| B1.2.3 | Implementar casos de uso e persistência | Concluída | Cadastro cria `CUSTOMER`; login, refresh rotativo e logout usam sessão revogável. |
+| B1.2.4 | Expor borda HTTP e cookie | Concluída | Rotas `/v1/auth/*` validam entrada, retornam access token curto e usam cookie `HttpOnly` configurável por ambiente. |
+| B1.2.5 | Testar e encerrar | Concluída | Fluxos válidos, inválidos, expiração, rotação e revogação passam em testes; lint, build e audit aprovados. |
+
+Decisões técnicas desta subfase:
+
+- `@fastify/cookie` registra cookies; `jose` assina e valida access tokens. Não implementar criptografia ou JWT manualmente;
+- hash de senha e token usará `node:crypto` com `scrypt`, salt aleatório e formato versionado; access token dura 15 minutos e sessão de refresh 14 dias;
+- cookie será `HttpOnly`, `SameSite` configurável e `Secure` obrigatório em produção. Staging temporário poderá usar `SameSite=None` somente com `Secure=true`;
+- rotas: `POST /v1/auth/register`, `POST /v1/auth/login`, `POST /v1/auth/session/refresh` e `POST /v1/auth/logout`;
+- escopo exclui CSRF, rate limiting, verificação de e-mail, recuperação, Brevo, TOTP, auditoria e autorização de rotas comerciais. Eles pertencem às subfases seguintes.
+
+Registro:
+
+- `@fastify/cookie` e `jose` tratam cookie e JWT; senha e refresh token usam `scrypt` nativo com salt aleatório;
+- cadastro cria somente `CUSTOMER`; login e refresh retornam access token de 15 minutos; refresh rotaciona segredo e logout revoga sessão;
+- cookie `msgriffe_refresh` é `HttpOnly`, sem domínio fixo, com `Secure` e `SameSite` configurados por ambiente;
+- rotas B1.2 não implementam CSRF, rate limiting, e-mail, Brevo, TOTP, auditoria ou autorização comercial;
+- quality gate: 8 testes, cobertura 93.07% statements e 87.95% branches, lint e build aprovados.
 
 ### B2 — Catálogo, mídia, preços e estoque
 

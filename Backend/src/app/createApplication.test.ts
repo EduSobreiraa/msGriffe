@@ -4,10 +4,15 @@ import { createApplication } from './createApplication.js'
 import { ApplicationError } from '../shared/errors/ApplicationError.js'
 
 const environment = {
+  accessTokenSecret: 'test-access-token-secret-that-has-at-least-32-characters',
+  accessTokenTtlSeconds: 900,
   corsAllowedOrigins: ['https://staging.msgriffe.com.br'],
   host: '127.0.0.1',
   nodeEnvironment: 'test' as const,
   port: 3000,
+  refreshSessionTtlDays: 14,
+  sessionCookieSameSite: 'lax' as const,
+  sessionCookieSecure: false,
 }
 
 describe('createApplication', () => {
