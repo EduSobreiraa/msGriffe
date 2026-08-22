@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { ApplicationError } from '../../../shared/errors/ApplicationError.js'
-import type { AccessTokenIssuer, IdentityRepository, IdentityUser, SecretHasher } from './identityContracts.js'
+import type { AccessTokenIssuer, AccountTokenPurpose, IdentityRepository, IdentityUser, SecretHasher, TransactionalEmailSender } from './identityContracts.js'
 
 export interface AuthenticatedSession {
   accessToken: string
@@ -13,6 +13,8 @@ export class IdentityService {
     private readonly secretHasher: SecretHasher,
     private readonly accessTokenIssuer: AccessTokenIssuer,
     private readonly refreshSessionTtlDays: number,
+    private readonly emailSender?: TransactionalEmailSender,
+    private readonly accountUrl?: string,
     private readonly now: () => Date = () => new Date(),
   ) {}
 
@@ -48,8 +50,55 @@ export class IdentityService {
     return this.createSession(user)
   }
 
+  async requestEmailVerification(email: string): Promise<void> {
+    const user = await this.repository.findUserByEmail(email)
+    if (!user || user.emailVerifiedAt) return
+    await this.sendAccountToken(user, 'EMAIL_VERIFICATION')
+  }
+
+  async confirmEmailVerification(token: string): Promise<void> {
+    const accountToken = await this.requireValidAccountToken(token, 'EMAIL_VERIFICATION')
+    if (!(await this.repository.consumeAccountToken(accountToken.id, this.now()))) throw new ApplicationError('INVALID_TOKEN', 400)
+    await this.repository.setEmailVerified(accountToken.user.id, this.now())
+  }
+
+  async requestPasswordRecovery(email: string): Promise<void> {
+    const user = await this.repository.findUserByEmail(email)
+    if (!user || !user.isActive) return
+    await this.sendAccountToken(user, 'PASSWORD_RESET')
+  }
+
+  async confirmPasswordRecovery(input: { password: string; token: string }): Promise<void> {
+    const accountToken = await this.requireValidAccountToken(input.token, 'PASSWORD_RESET')
+    const now = this.now()
+    if (!(await this.repository.consumeAccountToken(accountToken.id, now))) throw new ApplicationError('INVALID_TOKEN', 400)
+    await this.repository.setPasswordAndRevokeSessions({ passwordHash: await this.secretHasher.hash(input.password), revokedAt: now, userId: accountToken.user.id })
+  }
+
   private async createSession(user: IdentityUser): Promise<AuthenticatedSession> {
     return this.rotateSession(user, randomUUID(), this.now(), true)
+  }
+
+  private async sendAccountToken(user: IdentityUser, purpose: AccountTokenPurpose): Promise<void> {
+    if (!this.emailSender || !this.accountUrl) throw new ApplicationError('EMAIL_UNAVAILABLE', 503)
+    const id = randomUUID()
+    const secret = randomBytes(32).toString('base64url')
+    const expiresAt = new Date(this.now().getTime() + 3_600_000)
+    await this.repository.createAccountToken({ expiresAt, id, purpose, tokenHash: await this.secretHasher.hash(secret), userId: user.id })
+    const token = `${id}.${secret}`
+    const path = purpose === 'EMAIL_VERIFICATION' ? 'verificar-email' : 'recuperar-senha'
+    const subject = purpose === 'EMAIL_VERIFICATION' ? 'Verifique seu e-mail' : 'Redefina sua senha'
+    await this.emailSender.send({ html: `<p>Acesse <a href="${this.accountUrl}/${path}?token=${encodeURIComponent(token)}">msGriffe</a>. Este link expira em uma hora.</p>`, subject, to: user.email })
+  }
+
+  private async requireValidAccountToken(value: string, purpose: AccountTokenPurpose) {
+    const parsed = this.parseRefreshToken(value)
+    if (!parsed) throw new ApplicationError('INVALID_TOKEN', 400)
+    const accountToken = await this.repository.findAccountToken(parsed.sessionId)
+    if (!accountToken || accountToken.purpose !== purpose || accountToken.consumedAt || accountToken.expiresAt <= this.now() || !(await this.secretHasher.verify(parsed.secret, accountToken.tokenHash))) {
+      throw new ApplicationError('INVALID_TOKEN', 400)
+    }
+    return accountToken
   }
 
   private parseRefreshToken(value: string | undefined) {

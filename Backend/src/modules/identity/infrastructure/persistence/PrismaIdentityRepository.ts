@@ -21,6 +21,23 @@ export class PrismaIdentityRepository implements IdentityRepository {
     await this.prisma.session.create({ data: input })
   }
 
+  async createAccountToken(input: { expiresAt: Date; id: string; purpose: 'EMAIL_VERIFICATION' | 'PASSWORD_RESET'; tokenHash: string; userId: string }): Promise<void> {
+    await this.prisma.accountToken.create({ data: input })
+  }
+
+  async consumeAccountToken(id: string, consumedAt: Date): Promise<boolean> {
+    const result = await this.prisma.accountToken.updateMany({ data: { consumedAt }, where: { consumedAt: null, id } })
+    return result.count === 1
+  }
+
+  async findAccountToken(id: string) {
+    const accountToken = await this.prisma.accountToken.findUnique({
+      where: { id },
+      include: { user: { select: { email: true, id: true, isActive: true, passwordHash: true, role: true } } },
+    })
+    return accountToken ? { ...accountToken, purpose: accountToken.purpose, user: toUser(accountToken.user) } : null
+  }
+
   async findSession(id: string): Promise<IdentitySession | null> {
     const session = await this.prisma.session.findUnique({
       where: { id },
@@ -38,11 +55,26 @@ export class PrismaIdentityRepository implements IdentityRepository {
     await this.prisma.session.updateMany({ data: { revokedAt }, where: { id, revokedAt: null } })
   }
 
+  async revokeUserSessions(userId: string, revokedAt: Date): Promise<void> {
+    await this.prisma.session.updateMany({ data: { revokedAt }, where: { revokedAt: null, userId } })
+  }
+
   async rotateSession(input: { expiresAt: Date; id: string; refreshTokenHash: string; now: Date }): Promise<boolean> {
     const result = await this.prisma.session.updateMany({
       data: { expiresAt: input.expiresAt, refreshTokenHash: input.refreshTokenHash },
       where: { expiresAt: { gt: input.now }, id: input.id, revokedAt: null },
     })
     return result.count === 1
+  }
+
+  async setEmailVerified(userId: string, verifiedAt: Date): Promise<void> {
+    await this.prisma.user.update({ data: { emailVerifiedAt: verifiedAt }, where: { id: userId } })
+  }
+
+  async setPasswordAndRevokeSessions(input: { passwordHash: string; revokedAt: Date; userId: string }): Promise<void> {
+    await this.prisma.$transaction([
+      this.prisma.user.update({ data: { passwordHash: input.passwordHash }, where: { id: input.userId } }),
+      this.prisma.session.updateMany({ data: { revokedAt: input.revokedAt }, where: { revokedAt: null, userId: input.userId } }),
+    ])
   }
 }

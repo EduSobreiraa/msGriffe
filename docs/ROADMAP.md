@@ -1148,17 +1148,28 @@ Registro:
 
 ### B1.4 — Verificação, recuperação e Brevo
 
+Estado: **concluída em 22 de agosto de 2026**.
+
 Plano:
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| B1.4.1 | Estender contratos de identidade | Pendente | Tokens temporários são opacos, usados uma vez e nunca retornados pela API. |
-| B1.4.2 | Implementar verificação de e-mail | Pendente | Solicitação e confirmação expiram, não revelam segredo e atualizam somente a conta correta. |
-| B1.4.3 | Implementar recuperação não enumerável | Pendente | Solicitação possui resposta uniforme; confirmação troca senha, consome token e revoga sessões. |
-| B1.4.4 | Adaptar Brevo por configuração segura | Pendente | SDK/protocolo do provedor fica na infraestrutura; sem chave/remetente a operação falha de forma segura. |
-| B1.4.5 | Testar e encerrar | Pendente | Reuso, expiração, enumeração e falhas de provedor possuem cobertura. |
+| B1.4.1 | Estender contratos de identidade | Concluída | Tokens temporários são opacos, usados uma vez e nunca retornados pela API. |
+| B1.4.2 | Implementar verificação de e-mail | Concluída | Solicitação e confirmação expiram, não revelam segredo e atualizam somente a conta correta. |
+| B1.4.3 | Implementar recuperação não enumerável | Concluída | Solicitação possui resposta uniforme; confirmação troca senha, consome token e revoga sessões. |
+| B1.4.4 | Adaptar Brevo por configuração segura | Concluída | SDK/protocolo do provedor fica na infraestrutura; sem chave/remetente a operação falha de forma segura. |
+| B1.4.5 | Testar e encerrar | Concluída | Reuso, expiração, enumeração e falhas de provedor possuem cobertura. |
 
 Escopo: somente comunicação essencial de identidade. Não criar e-mail comercial, Resend, automação de WhatsApp ou regras de pedido.
+
+Registro:
+
+- `AccountToken` permanece persistido somente por hash; o valor enviado é opaco no formato `id.segredo`, expira em uma hora e é consumido atomicamente;
+- `POST /v1/auth/email-verification/request` e `POST /v1/auth/password-recovery/request` retornam sempre `202`, reduzindo enumeração; as confirmações retornam `INVALID_TOKEN` sem diferenciar causa;
+- redefinição atualiza senha e revoga sessões existentes na mesma transação Prisma;
+- `BrevoTransactionalEmailSender` usa a API SMTP do Brevo atrás de porta própria. API key e remetente são secrets opcionais e obrigatoriamente configurados em par; sem configuração, pedido de envio falha com `EMAIL_UNAVAILABLE`;
+- links usam `ACCOUNT_URL` validada como origem. Não há segredo, token bruto ou resposta do provedor em logs/respostas;
+- validação: 11 testes aprovados, cobertura 91,94% statements, 85,27% branches, 98,14% funções e 97,72% linhas; lint, build, Prisma validate/generate e `npm audit --audit-level=high` aprovados com 0 vulnerabilidades.
 
 ### B1.5 — Administração reforçada
 

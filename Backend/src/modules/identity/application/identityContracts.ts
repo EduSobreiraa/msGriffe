@@ -2,6 +2,7 @@ export type IdentityRole = 'CUSTOMER' | 'SELLER' | 'SUPERADMIN'
 
 export interface IdentityUser {
   email: string
+  emailVerifiedAt?: Date | null
   id: string
   isActive: boolean
   passwordHash: string
@@ -19,10 +20,31 @@ export interface IdentitySession {
 export interface IdentityRepository {
   createCustomer(input: { birthDate: Date; email: string; name: string; passwordHash: string; phone: string }): Promise<IdentityUser | null>
   createSession(input: { expiresAt: Date; id: string; refreshTokenHash: string; userId: string }): Promise<void>
+  createAccountToken(input: { expiresAt: Date; id: string; purpose: AccountTokenPurpose; tokenHash: string; userId: string }): Promise<void>
+  consumeAccountToken(id: string, consumedAt: Date): Promise<boolean>
+  findAccountToken(id: string): Promise<IdentityAccountToken | null>
   findSession(id: string): Promise<IdentitySession | null>
   findUserByEmail(email: string): Promise<IdentityUser | null>
   revokeSession(id: string, revokedAt: Date): Promise<void>
+  revokeUserSessions(userId: string, revokedAt: Date): Promise<void>
   rotateSession(input: { expiresAt: Date; id: string; refreshTokenHash: string; now: Date }): Promise<boolean>
+  setEmailVerified(userId: string, verifiedAt: Date): Promise<void>
+  setPasswordAndRevokeSessions(input: { passwordHash: string; revokedAt: Date; userId: string }): Promise<void>
+}
+
+export type AccountTokenPurpose = 'EMAIL_VERIFICATION' | 'PASSWORD_RESET'
+
+export interface IdentityAccountToken {
+  consumedAt: Date | null
+  expiresAt: Date
+  id: string
+  purpose: AccountTokenPurpose
+  tokenHash: string
+  user: IdentityUser
+}
+
+export interface TransactionalEmailSender {
+  send(input: { html: string; subject: string; to: string }): Promise<void>
 }
 
 export interface SecretHasher {

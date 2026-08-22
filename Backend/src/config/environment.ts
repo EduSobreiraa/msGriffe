@@ -5,6 +5,9 @@ const localHosts = new Set(['127.0.0.1', 'localhost'])
 export interface Environment {
   accessTokenSecret: string
   accessTokenTtlSeconds: number
+  accountUrl: string
+  brevoApiKey?: string
+  brevoSenderEmail?: string
   corsAllowedOrigins: string[]
   host: string
   nodeEnvironment: 'development' | 'production' | 'test'
@@ -28,6 +31,9 @@ function parseOrigin(value: string) {
 export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
   const parsed = z.object({
     ACCESS_TOKEN_SECRET: z.string().min(32),
+    ACCOUNT_URL: z.string().url().optional(),
+    BREVO_API_KEY: z.string().min(1).optional(),
+    BREVO_SENDER_EMAIL: z.string().email().optional(),
     ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
     CORS_ALLOWED_ORIGINS: z.string().min(1),
     HOST: z.string().min(1).default('127.0.0.1'),
@@ -46,9 +52,13 @@ export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
   if ((parsed.NODE_ENV === 'production' && !sessionCookieSecure) || (parsed.SESSION_COOKIE_SAME_SITE === 'none' && !sessionCookieSecure)) {
     throw new Error('Cookie de sessão exige Secure neste ambiente.')
   }
+  if (Boolean(parsed.BREVO_API_KEY) !== Boolean(parsed.BREVO_SENDER_EMAIL)) throw new Error('BREVO_API_KEY e BREVO_SENDER_EMAIL devem ser configurados juntos.')
 
   return {
     accessTokenSecret: parsed.ACCESS_TOKEN_SECRET,
+    accountUrl: parsed.ACCOUNT_URL ? parseOrigin(parsed.ACCOUNT_URL) : corsAllowedOrigins[0]!,
+    brevoApiKey: parsed.BREVO_API_KEY,
+    brevoSenderEmail: parsed.BREVO_SENDER_EMAIL,
     accessTokenTtlSeconds: parsed.ACCESS_TOKEN_TTL_SECONDS,
     corsAllowedOrigins,
     host: parsed.HOST,

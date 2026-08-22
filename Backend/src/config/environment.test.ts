@@ -6,6 +6,9 @@ describe('readEnvironment', () => {
     expect(readEnvironment({ ACCESS_TOKEN_SECRET: 'test-access-token-secret-that-has-at-least-32-characters', CORS_ALLOWED_ORIGINS: 'http://localhost:5173,https://staging.msgriffe.com.br', PORT: '3100' })).toEqual({
       accessTokenSecret: 'test-access-token-secret-that-has-at-least-32-characters',
       accessTokenTtlSeconds: 900,
+      accountUrl: 'http://localhost:5173',
+      brevoApiKey: undefined,
+      brevoSenderEmail: undefined,
       corsAllowedOrigins: ['http://localhost:5173', 'https://staging.msgriffe.com.br'],
       host: '127.0.0.1',
       nodeEnvironment: 'development',
@@ -21,5 +24,6 @@ describe('readEnvironment', () => {
     expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, CORS_ALLOWED_ORIGINS: 'https://api.msgriffe.com.br/path' })).toThrow('origem inválida')
     expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, CORS_ALLOWED_ORIGINS: 'http://localhost:5173', NODE_ENV: 'production' })).toThrow('HTTPS')
     expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, CORS_ALLOWED_ORIGINS: 'http://localhost:5173', SESSION_COOKIE_SAME_SITE: 'none' })).toThrow('Cookie de sessão')
+    expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, BREVO_API_KEY: 'secret', CORS_ALLOWED_ORIGINS: 'http://localhost:5173' })).toThrow('BREVO_API_KEY')
   })
 })

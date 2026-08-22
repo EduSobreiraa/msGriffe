@@ -4,15 +4,19 @@ import { readEnvironment } from './config/environment.js'
 import { IdentityService } from './modules/identity/application/IdentityService.js'
 import { PrismaIdentityRepository } from './modules/identity/infrastructure/persistence/PrismaIdentityRepository.js'
 import { ScryptSecretHasher } from './modules/identity/infrastructure/security/ScryptSecretHasher.js'
+import { BrevoTransactionalEmailSender } from './modules/identity/infrastructure/email/BrevoTransactionalEmailSender.js'
 import { JoseAccessTokenIssuer } from './modules/identity/infrastructure/tokens/JoseAccessTokenIssuer.js'
 
 const environment = readEnvironment(process.env)
 const prisma = new PrismaClient()
+const emailSender = environment.brevoApiKey && environment.brevoSenderEmail ? new BrevoTransactionalEmailSender(environment.brevoApiKey, environment.brevoSenderEmail) : undefined
 const identityService = new IdentityService(
   new PrismaIdentityRepository(prisma),
   new ScryptSecretHasher(),
   new JoseAccessTokenIssuer(environment.accessTokenSecret, environment.accessTokenTtlSeconds),
   environment.refreshSessionTtlDays,
+  emailSender,
+  environment.accountUrl,
 )
 const application = await createApplication(environment, { identityService })
 application.addHook('onClose', async () => prisma.$disconnect())
