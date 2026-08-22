@@ -1227,7 +1227,44 @@ Registro:
 
 ### B2 — Catálogo, mídia, preços e estoque
 
-- produtos, categorias, variantes, imagens, preços, promoções, busca e movimentações.
+Estado: **em andamento em 22 de agosto de 2026**.
+
+Objetivo: expor catálogo público autoritativo e preparar operação de produto, mídia e estoque sem antecipar regras comerciais ainda pendentes.
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B2.1 | Leitura pública de catálogo | Em andamento | Lista, busca, filtros e detalhe usam preço/estoque reais do PostgreSQL e não expõem variantes inativas. |
+| B2.2 | Escrita operacional de catálogo | Pendente | `SELLER` cria/edita produtos, variantes e categorias com autorização backend e validação de entrada. |
+| B2.3 | Mídia R2 | Pendente | Upload e remoção usam adaptador R2; banco guarda `objectKey`, não URL de provedor. |
+| B2.4 | Preço e disponibilidade | Pendente | Centavos, variante ativa e estoque definem preço/disponibilidade; promoções não são inventadas. |
+| B2.5 | Ajuste e histórico de estoque | Pendente | `SELLER` ajusta estoque por variante com validação, motivo e registro auditável. |
+| B2.6 | Busca, testes e encerramento | Pendente | Contratos, casos negativos, segurança, migration e quality gate passam. |
+
+### B2.1 — Leitura pública de catálogo
+
+| ID | Entrega | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B2.1.1 | Contrato e consulta de catálogo | Concluída | Caso de uso lê somente produtos/categorias/variantes ativos e calcula disponibilidade sem expor estoque. |
+| B2.1.2 | Filtros, busca e paginação | Pendente | Categoria, texto, faixa de preço, ordenação e paginação são validados e determinísticos. |
+| B2.1.3 | Detalhe e categorias públicas | Pendente | Slug inexistente não vaza dados; detalhe exclui variantes inativas. |
+| B2.1.4 | Borda HTTP e mídia | Pendente | Endpoint compatível depende de estratégia pública de imagens R2 ainda não definida. |
+| B2.1.5 | Testes e encerramento | Pendente | Casos de uso e contratos de borda passam quality gate. |
+
+Decisões e limites:
+
+- preço atual é `ProductVariant.priceInCents`; desconto Pix, parcelamento, preço promocional, cupom e política de estoque baixo dependem do vendedor e não entram nesta fase sem decisão posterior;
+- catálogo público expõe somente produto e variante ativos, com disponibilidade calculada por estoque positivo; estoque exato não será exposto;
+- contratos em `FRONTEND_API_CONTRACTS.md` são destino pretendido. B2.1 implementará somente leitura pública compatível; campos de parcelamento e imagem externa dependem de regras/infraestrutura ainda ausentes;
+- `SUPERADMIN` continua técnico. Escrita comercial pertence exclusivamente a `SELLER`;
+- R2 será adaptador de infraestrutura. Credenciais e domínio de mídia não serão criados nem versionados nesta subfase.
+
+Registro B2.1.1:
+
+- `CatalogService` e `PrismaCatalogRepository` separam regra pública de consulta Prisma; produto inativo ou sem variante ativa não entra na leitura;
+- preço público é menor preço entre variantes ativas; disponibilidade é booleana por estoque positivo, sem expor quantidade;
+- detalhe aplica defesa adicional contra variante inativa, mesmo que adaptador a retorne incorretamente;
+- filtros, ordenação e paginação existem no caso de uso, mas validação HTTP e resposta de mídia pública aguardam B2.1.2–B2.1.4;
+- validação parcial: 16 testes, lint e build aprovados.
 
 ### B3 — Clientes, carrinho e cálculo comercial
 
