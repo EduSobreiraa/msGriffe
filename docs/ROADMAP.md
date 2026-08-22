@@ -1173,7 +1173,7 @@ Registro:
 
 ### B1.5 — Administração reforçada
 
-Estado: **em andamento em 22 de agosto de 2026**.
+Estado: **concluída em 22 de agosto de 2026**.
 
 Plano:
 
