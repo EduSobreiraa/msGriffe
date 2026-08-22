@@ -5,20 +5,27 @@ import { IdentityService } from './modules/identity/application/IdentityService.
 import { PrismaIdentityRepository } from './modules/identity/infrastructure/persistence/PrismaIdentityRepository.js'
 import { ScryptSecretHasher } from './modules/identity/infrastructure/security/ScryptSecretHasher.js'
 import { BrevoTransactionalEmailSender } from './modules/identity/infrastructure/email/BrevoTransactionalEmailSender.js'
+import { PrismaSecurityAuditRecorder } from './modules/identity/infrastructure/persistence/PrismaSecurityAuditRecorder.js'
+import { AesGcmSecretCipher } from './modules/identity/infrastructure/security/AesGcmSecretCipher.js'
 import { JoseAccessTokenIssuer } from './modules/identity/infrastructure/tokens/JoseAccessTokenIssuer.js'
+import { TotpAuthenticator } from './modules/identity/infrastructure/security/TotpAuthenticator.js'
 
 const environment = readEnvironment(process.env)
 const prisma = new PrismaClient()
 const emailSender = environment.brevoApiKey && environment.brevoSenderEmail ? new BrevoTransactionalEmailSender(environment.brevoApiKey, environment.brevoSenderEmail) : undefined
+const accessTokenIssuer = new JoseAccessTokenIssuer(environment.accessTokenSecret, environment.accessTokenTtlSeconds)
+const twoFactorAuthenticator = environment.totpEncryptionKey ? new TotpAuthenticator(new AesGcmSecretCipher(environment.totpEncryptionKey)) : undefined
 const identityService = new IdentityService(
   new PrismaIdentityRepository(prisma),
   new ScryptSecretHasher(),
-  new JoseAccessTokenIssuer(environment.accessTokenSecret, environment.accessTokenTtlSeconds),
+  accessTokenIssuer,
   environment.refreshSessionTtlDays,
   emailSender,
   environment.accountUrl,
+  twoFactorAuthenticator,
+  new PrismaSecurityAuditRecorder(prisma),
 )
-const application = await createApplication(environment, { identityService })
+const application = await createApplication(environment, { accessTokenVerifier: accessTokenIssuer, identityService })
 application.addHook('onClose', async () => prisma.$disconnect())
 
 const close = async () => {

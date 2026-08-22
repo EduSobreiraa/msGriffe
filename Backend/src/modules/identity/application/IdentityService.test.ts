@@ -45,6 +45,10 @@ class InMemoryIdentityRepository implements IdentityRepository {
     return this.users.get(email) ?? null
   }
 
+  async findUserById(id: string) {
+    return [...this.users.values()].find((candidate) => candidate.id === id) ?? null
+  }
+
   async revokeSession(id: string, revokedAt: Date) {
     const session = this.sessions.get(id)
     if (session && !session.revokedAt) session.revokedAt = revokedAt
@@ -71,6 +75,20 @@ class InMemoryIdentityRepository implements IdentityRepository {
     const user = [...this.users.values()].find((candidate) => candidate.id === input.userId)
     if (user) user.passwordHash = input.passwordHash
     await this.revokeUserSessions(input.userId, input.revokedAt)
+  }
+
+  async startTotpSetup(input: { secretCiphertext: string; userId: string }) {
+    const user = await this.findUserById(input.userId)
+    if (user) user.totpPendingSecretCiphertext = input.secretCiphertext
+  }
+
+  async enableTotp(input: { enabledAt: Date; userId: string }) {
+    const user = await this.findUserById(input.userId)
+    if (!user?.totpPendingSecretCiphertext) return false
+    user.totpSecretCiphertext = user.totpPendingSecretCiphertext
+    user.totpPendingSecretCiphertext = null
+    user.totpEnabledAt = input.enabledAt
+    return true
   }
 }
 
@@ -118,5 +136,24 @@ describe('IdentityService', () => {
     await service.confirmPasswordRecovery({ password: 'nova-senha-segura-123', token: recoveryToken })
     await expect(service.refresh(registered.refreshToken)).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
     await service.login({ email: 'cliente@exemplo.com', password: 'nova-senha-segura-123' })
+  })
+
+  it('exige TOTP para admin configurado e aceita setup somente administrativo', async () => {
+    const { repository } = createService()
+    const admin: IdentityUser = { email: 'admin@exemplo.com', id: 'admin-1', isActive: true, passwordHash: await new ScryptSecretHasher().hash('senha-segura-123'), role: 'SUPERADMIN' }
+    repository.users.set(admin.email, admin)
+    const events: string[] = []
+    const twoFactorAuthenticator = { createSetup: () => ({ secretCiphertext: 'cipher', uri: 'otpauth://totp/msGriffe:admin' }), verify: (_secret: string, code: string) => code === '123456' }
+    const service = new IdentityService(repository, new ScryptSecretHasher(), accessTokenIssuer, 14, undefined, undefined, twoFactorAuthenticator, { record: async ({ action }) => { events.push(action) } })
+    const setup = await service.startTotpSetup(admin.id)
+    expect(setup.uri).toContain('otpauth://')
+    await service.confirmTotpSetup({ code: '123456', userId: admin.id })
+    await expect(service.login({ email: admin.email, password: 'senha-segura-123' })).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
+    await service.login({ email: admin.email, password: 'senha-segura-123', totpCode: '123456' })
+    await service.reauthenticate({ password: 'senha-segura-123', totpCode: '123456', userId: admin.id })
+    await expect(service.confirmTotpSetup({ code: '000000', userId: admin.id })).rejects.toMatchObject({ code: 'INVALID_TWO_FACTOR_CODE' })
+    await expect(service.reauthenticate({ password: 'senha-incorreta-123', userId: admin.id })).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
+    await expect(service.startTotpSetup('user-absent')).rejects.toMatchObject({ code: 'UNAUTHENTICATED' })
+    expect(events).toContain('ADMIN_TOTP_ENABLED')
   })
 })

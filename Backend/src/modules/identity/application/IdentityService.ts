@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto'
 import { ApplicationError } from '../../../shared/errors/ApplicationError.js'
-import type { AccessTokenIssuer, AccountTokenPurpose, IdentityRepository, IdentityUser, SecretHasher, TransactionalEmailSender } from './identityContracts.js'
+import type { AccessTokenIssuer, AccountTokenPurpose, IdentityRepository, IdentityUser, SecretHasher, SecurityAuditRecorder, TransactionalEmailSender, TwoFactorAuthenticator } from './identityContracts.js'
 
 export interface AuthenticatedSession {
   accessToken: string
@@ -15,12 +15,19 @@ export class IdentityService {
     private readonly refreshSessionTtlDays: number,
     private readonly emailSender?: TransactionalEmailSender,
     private readonly accountUrl?: string,
+    private readonly twoFactorAuthenticator?: TwoFactorAuthenticator,
+    private readonly securityAuditRecorder?: SecurityAuditRecorder,
     private readonly now: () => Date = () => new Date(),
   ) {}
 
-  async login(input: { email: string; password: string }): Promise<AuthenticatedSession> {
+  async login(input: { email: string; password: string; totpCode?: string }): Promise<AuthenticatedSession> {
     const user = await this.repository.findUserByEmail(input.email)
     if (!user || !user.isActive || !(await this.secretHasher.verify(input.password, user.passwordHash))) throw new ApplicationError('UNAUTHENTICATED', 401)
+    if (this.isAdministrative(user) && user.totpEnabledAt && (!user.totpSecretCiphertext || !this.twoFactorAuthenticator || !input.totpCode || !this.twoFactorAuthenticator.verify(user.totpSecretCiphertext, input.totpCode))) {
+      await this.recordSecurityEvent('ADMIN_LOGIN_TOTP_FAILED', user.id)
+      throw new ApplicationError('UNAUTHENTICATED', 401)
+    }
+    if (this.isAdministrative(user)) await this.recordSecurityEvent('ADMIN_LOGIN_SUCCEEDED', user.id)
     return this.createSession(user)
   }
 
@@ -75,8 +82,48 @@ export class IdentityService {
     await this.repository.setPasswordAndRevokeSessions({ passwordHash: await this.secretHasher.hash(input.password), revokedAt: now, userId: accountToken.user.id })
   }
 
+  async startTotpSetup(userId: string): Promise<{ uri: string }> {
+    const user = await this.requireAdministrativeUser(userId)
+    if (!this.twoFactorAuthenticator) throw new ApplicationError('TWO_FACTOR_UNAVAILABLE', 503)
+    const setup = this.twoFactorAuthenticator.createSetup(user.email)
+    await this.repository.startTotpSetup({ secretCiphertext: setup.secretCiphertext, userId })
+    await this.recordSecurityEvent('ADMIN_TOTP_SETUP_STARTED', userId)
+    return { uri: setup.uri }
+  }
+
+  async confirmTotpSetup(input: { code: string; userId: string }): Promise<void> {
+    const user = await this.requireAdministrativeUser(input.userId)
+    if (!user.totpPendingSecretCiphertext || !this.twoFactorAuthenticator || !this.twoFactorAuthenticator.verify(user.totpPendingSecretCiphertext, input.code)) throw new ApplicationError('INVALID_TWO_FACTOR_CODE', 400)
+    if (!(await this.repository.enableTotp({ enabledAt: this.now(), userId: user.id }))) throw new ApplicationError('INVALID_TWO_FACTOR_CODE', 400)
+    await this.recordSecurityEvent('ADMIN_TOTP_ENABLED', user.id)
+  }
+
+  async reauthenticate(input: { password: string; totpCode?: string; userId: string }): Promise<void> {
+    const user = await this.repository.findUserById(input.userId)
+    if (!user || !user.isActive || !(await this.secretHasher.verify(input.password, user.passwordHash))) throw new ApplicationError('UNAUTHENTICATED', 401)
+    if (this.isAdministrative(user) && user.totpEnabledAt && (!user.totpSecretCiphertext || !this.twoFactorAuthenticator || !input.totpCode || !this.twoFactorAuthenticator.verify(user.totpSecretCiphertext, input.totpCode))) {
+      throw new ApplicationError('UNAUTHENTICATED', 401)
+    }
+    await this.recordSecurityEvent('REAUTHENTICATION_SUCCEEDED', user.id)
+  }
+
   private async createSession(user: IdentityUser): Promise<AuthenticatedSession> {
     return this.rotateSession(user, randomUUID(), this.now(), true)
+  }
+
+  private isAdministrative(user: IdentityUser) {
+    return user.role === 'SELLER' || user.role === 'SUPERADMIN'
+  }
+
+  private async requireAdministrativeUser(userId: string) {
+    const user = await this.repository.findUserById(userId)
+    if (!user || !user.isActive) throw new ApplicationError('UNAUTHENTICATED', 401)
+    if (!this.isAdministrative(user)) throw new ApplicationError('FORBIDDEN', 403)
+    return user
+  }
+
+  private async recordSecurityEvent(action: string, actorId: string) {
+    await this.securityAuditRecorder?.record({ action, actorId })
   }
 
   private async sendAccountToken(user: IdentityUser, purpose: AccountTokenPurpose): Promise<void> {

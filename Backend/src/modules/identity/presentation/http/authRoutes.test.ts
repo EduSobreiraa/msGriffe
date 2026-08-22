@@ -7,8 +7,8 @@ const session = { accessToken: 'access-token', refreshToken: 'session.secret' }
 describe('auth routes', () => {
   it('emite e rotaciona cookie HttpOnly', async () => {
     const calls: string[] = []
-    const application = await createApplication(environment, { identityService: {
-      confirmEmailVerification: async () => { calls.push('confirm-email') }, confirmPasswordRecovery: async () => { calls.push('confirm-password') }, login: async () => { calls.push('login'); return session }, logout: async () => { calls.push('logout') }, refresh: async () => { calls.push('refresh'); return session }, register: async () => { calls.push('register'); return session }, requestEmailVerification: async () => { calls.push('request-email') }, requestPasswordRecovery: async () => { calls.push('request-password') },
+    const application = await createApplication(environment, { accessTokenVerifier: { verify: async () => ({ role: 'SUPERADMIN', userId: 'admin-1' }) }, identityService: {
+      confirmEmailVerification: async () => { calls.push('confirm-email') }, confirmPasswordRecovery: async () => { calls.push('confirm-password') }, confirmTotpSetup: async () => { calls.push('confirm-totp') }, login: async () => { calls.push('login'); return session }, logout: async () => { calls.push('logout') }, reauthenticate: async () => { calls.push('reauthenticate') }, refresh: async () => { calls.push('refresh'); return session }, register: async () => { calls.push('register'); return session }, requestEmailVerification: async () => { calls.push('request-email') }, requestPasswordRecovery: async () => { calls.push('request-password') }, startTotpSetup: async () => ({ uri: 'otpauth://totp/msGriffe:admin' }),
     } })
     const register = await application.inject({ method: 'POST', url: '/v1/auth/register', payload: { birthDate: '2000-01-01', email: 'Cliente@Exemplo.com', name: 'Cliente', password: 'senha-segura-123', phone: '71999999999' } })
     const cookie = register.cookies[0]?.value
@@ -23,8 +23,11 @@ describe('auth routes', () => {
     const verificationRequest = await application.inject({ method: 'POST', url: '/v1/auth/email-verification/request', payload: { email: 'cliente@exemplo.com' } })
     const verificationConfirm = await application.inject({ method: 'POST', url: '/v1/auth/email-verification/confirm', payload: { token: 'token' } })
     const recoveryConfirm = await application.inject({ method: 'POST', url: '/v1/auth/password-recovery/confirm', payload: { password: 'nova-senha-segura-123', token: 'token' } })
+    const setup = await application.inject({ headers: { authorization: 'Bearer token' }, method: 'POST', url: '/v1/auth/admin/totp/setup' })
+    const confirmTotp = await application.inject({ headers: { authorization: 'Bearer token' }, method: 'POST', url: '/v1/auth/admin/totp/confirm', payload: { code: '123456' } })
+    const reauthentication = await application.inject({ headers: { authorization: 'Bearer token' }, method: 'POST', url: '/v1/auth/reauthenticate', payload: { password: 'senha-segura-123' } })
     expect(register.statusCode).toBe(201); expect(register.json()).toEqual({ accessToken: 'access-token' }); expect(register.headers['set-cookie']).toContain('HttpOnly')
-    expect(login.statusCode).toBe(200); expect(refresh.statusCode).toBe(200); expect(logout.statusCode).toBe(204); expect(recovery.statusCode).toBe(202); expect(verificationRequest.statusCode).toBe(202); expect(verificationConfirm.statusCode).toBe(204); expect(recoveryConfirm.statusCode).toBe(204); expect(invalid.json()).toEqual({ error: { code: 'VALIDATION_ERROR' } }); expect(calls).toEqual(['register', 'login', 'refresh', 'logout', 'request-password', 'request-email', 'confirm-email', 'confirm-password'])
+    expect(login.statusCode).toBe(200); expect(refresh.statusCode).toBe(200); expect(logout.statusCode).toBe(204); expect(recovery.statusCode).toBe(202); expect(verificationRequest.statusCode).toBe(202); expect(verificationConfirm.statusCode).toBe(204); expect(recoveryConfirm.statusCode).toBe(204); expect(setup.json()).toEqual({ uri: 'otpauth://totp/msGriffe:admin' }); expect(confirmTotp.statusCode).toBe(204); expect(reauthentication.statusCode).toBe(204); expect(invalid.json()).toEqual({ error: { code: 'VALIDATION_ERROR' } }); expect(calls).toEqual(['register', 'login', 'refresh', 'logout', 'request-password', 'request-email', 'confirm-email', 'confirm-password', 'confirm-totp', 'reauthenticate'])
     await application.close()
   })
 })

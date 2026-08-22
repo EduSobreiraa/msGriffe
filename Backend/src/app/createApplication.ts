@@ -8,9 +8,10 @@ import { ZodError } from 'zod'
 import type { Environment } from '../config/environment.js'
 import { registerHealthRoutes } from '../modules/health/presentation/http/healthRoutes.js'
 import { registerAuthRoutes, type AuthService } from '../modules/identity/presentation/http/authRoutes.js'
+import type { AccessTokenVerifier } from '../modules/identity/application/identityContracts.js'
 import { ApplicationError } from '../shared/errors/ApplicationError.js'
 
-export async function createApplication(environment: Environment, dependencies?: { identityService: AuthService }): Promise<FastifyInstance> {
+export async function createApplication(environment: Environment, dependencies?: { accessTokenVerifier: AccessTokenVerifier; identityService: AuthService }): Promise<FastifyInstance> {
   const application = Fastify({
     logger: false,
   })
@@ -48,6 +49,6 @@ export async function createApplication(environment: Environment, dependencies?:
   application.setNotFoundHandler((_request, reply) => reply.status(404).send({ error: { code: 'NOT_FOUND' } }))
 
   await application.register(registerHealthRoutes)
-  if (dependencies) await application.register(registerAuthRoutes, { environment, identityService: dependencies.identityService })
+  if (dependencies) await application.register(registerAuthRoutes, { ...dependencies, environment })
   return application
 }

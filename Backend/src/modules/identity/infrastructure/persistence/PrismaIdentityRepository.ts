@@ -1,7 +1,7 @@
 import { Prisma, type PrismaClient } from '@prisma/client'
 import type { IdentityRepository, IdentitySession, IdentityUser } from '../../application/identityContracts.js'
 
-function toUser(user: { email: string; id: string; isActive: boolean; passwordHash: string; role: 'CUSTOMER' | 'SELLER' | 'SUPERADMIN' }): IdentityUser {
+function toUser(user: { email: string; id: string; isActive: boolean; passwordHash: string; role: 'CUSTOMER' | 'SELLER' | 'SUPERADMIN'; totpEnabledAt?: Date | null; totpPendingSecretCiphertext?: string | null; totpSecretCiphertext?: string | null }): IdentityUser {
   return user
 }
 
@@ -33,7 +33,7 @@ export class PrismaIdentityRepository implements IdentityRepository {
   async findAccountToken(id: string) {
     const accountToken = await this.prisma.accountToken.findUnique({
       where: { id },
-      include: { user: { select: { email: true, id: true, isActive: true, passwordHash: true, role: true } } },
+      include: { user: { select: { email: true, id: true, isActive: true, passwordHash: true, role: true, totpEnabledAt: true, totpPendingSecretCiphertext: true, totpSecretCiphertext: true } } },
     })
     return accountToken ? { ...accountToken, purpose: accountToken.purpose, user: toUser(accountToken.user) } : null
   }
@@ -41,13 +41,18 @@ export class PrismaIdentityRepository implements IdentityRepository {
   async findSession(id: string): Promise<IdentitySession | null> {
     const session = await this.prisma.session.findUnique({
       where: { id },
-      include: { user: { select: { email: true, id: true, isActive: true, passwordHash: true, role: true } } },
+      include: { user: { select: { email: true, id: true, isActive: true, passwordHash: true, role: true, totpEnabledAt: true, totpPendingSecretCiphertext: true, totpSecretCiphertext: true } } },
     })
     return session ? { ...session, user: toUser(session.user) } : null
   }
 
   async findUserByEmail(email: string): Promise<IdentityUser | null> {
-    const user = await this.prisma.user.findUnique({ where: { email }, select: { email: true, id: true, isActive: true, passwordHash: true, role: true } })
+    const user = await this.prisma.user.findUnique({ where: { email }, select: { email: true, id: true, isActive: true, passwordHash: true, role: true, totpEnabledAt: true, totpPendingSecretCiphertext: true, totpSecretCiphertext: true } })
+    return user ? toUser(user) : null
+  }
+
+  async findUserById(id: string): Promise<IdentityUser | null> {
+    const user = await this.prisma.user.findUnique({ where: { id }, select: { email: true, id: true, isActive: true, passwordHash: true, role: true, totpEnabledAt: true, totpPendingSecretCiphertext: true, totpSecretCiphertext: true } })
     return user ? toUser(user) : null
   }
 
@@ -76,5 +81,18 @@ export class PrismaIdentityRepository implements IdentityRepository {
       this.prisma.user.update({ data: { passwordHash: input.passwordHash }, where: { id: input.userId } }),
       this.prisma.session.updateMany({ data: { revokedAt: input.revokedAt }, where: { revokedAt: null, userId: input.userId } }),
     ])
+  }
+
+  async startTotpSetup(input: { secretCiphertext: string; userId: string }): Promise<void> {
+    await this.prisma.user.update({ data: { totpPendingSecretCiphertext: input.secretCiphertext }, where: { id: input.userId } })
+  }
+
+  async enableTotp(input: { enabledAt: Date; userId: string }): Promise<boolean> {
+    return this.prisma.$transaction(async (transaction) => {
+      const user = await transaction.user.findUnique({ where: { id: input.userId }, select: { totpPendingSecretCiphertext: true } })
+      if (!user?.totpPendingSecretCiphertext) return false
+      await transaction.user.update({ data: { totpEnabledAt: input.enabledAt, totpPendingSecretCiphertext: null, totpSecretCiphertext: user.totpPendingSecretCiphertext }, where: { id: input.userId } })
+      return true
+    })
   }
 }

@@ -1180,11 +1180,11 @@ Plano:
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
 | B1.5.1 | Modelar TOTP e auditoria de segurança | Concluída | Segredo TOTP permanece protegido em repouso; auditoria não inclui credenciais ou tokens. |
-| B1.5.2 | Exigir segundo fator administrativo | Pendente | `SELLER` e `SUPERADMIN` configurados não obtêm sessão sem TOTP válido; SMS não é usado. |
-| B1.5.3 | Expor setup e confirmação protegidos | Pendente | Setup exige access token e papel administrativo; ativação requer prova TOTP. |
-| B1.5.4 | Criar base reutilizável de reautenticação | Pendente | Credenciais recentes podem ser exigidas por operações críticas futuras sem confiar no frontend. |
-| B1.5.5 | Registrar eventos de segurança | Pendente | Login, falhas administrativas e mudança de segundo fator geram eventos sem dados sensíveis. |
-| B1.5.6 | Testar e encerrar | Pendente | Papéis, TOTP, reautenticação, auditoria e caminhos de erro possuem cobertura. |
+| B1.5.2 | Exigir segundo fator administrativo | Concluída | `SELLER` e `SUPERADMIN` configurados não obtêm sessão sem TOTP válido; SMS não é usado. |
+| B1.5.3 | Expor setup e confirmação protegidos | Concluída | Setup exige access token e papel administrativo; ativação requer prova TOTP. |
+| B1.5.4 | Criar base reutilizável de reautenticação | Concluída | Credenciais recentes podem ser exigidas por operações críticas futuras sem confiar no frontend. |
+| B1.5.5 | Registrar eventos de segurança | Concluída | Login, falhas administrativas e mudança de segundo fator geram eventos sem dados sensíveis. |
+| B1.5.6 | Testar e encerrar | Concluída | Papéis, TOTP, reautenticação, auditoria e caminhos de erro possuem cobertura. |
 
 Escopo: endurecer acesso administrativo; não inventar recuperação de TOTP, permissões comerciais, fluxo de reembolso ou políticas de retenção além dos registros previstos.
 
@@ -1194,6 +1194,15 @@ Registro parcial B1.5.1:
 - `AesGcmSecretCipher` usa AES-256-GCM com IV aleatório e tag autenticada; `TOTP_ENCRYPTION_KEY` exige 32 bytes base64 e fica somente em secret de ambiente;
 - migration aplicada e confirmada em PostgreSQL local. Próximas entregas B1.5 consumirão estes campos, sem criar recuperação de TOTP ou permissões comerciais;
 - validação: 12 testes, cobertura 91,66% statements, 85,10% branches, 98,24% funções e 97,89% linhas; lint, build, Prisma validate/generate e audit aprovados.
+
+Registro B1.5.2–B1.5.6:
+
+- `otpauth` implementa TOTP de seis dígitos, período de 30 segundos e janela controlada; SMS não foi introduzido;
+- login administrativo com TOTP ativo exige código válido. Falhas mantêm resposta `UNAUTHENTICATED` e registram somente evento seguro;
+- setup e confirmação estão em `/v1/auth/admin/totp/*`, ambos protegidos por access token e papel `SELLER` ou `SUPERADMIN`; `CUSTOMER` não possui acesso;
+- `POST /v1/auth/reauthenticate` verifica senha e, quando habilitado, TOTP. Casos de uso críticos futuros deverão chamá-lo na mesma operação; não foi criado token de reautenticação persistente sem consumidor concreto;
+- `PrismaSecurityAuditRecorder` persiste somente ação, ator e instante. Eventos atuais: login administrativo, falha TOTP, início/ativação TOTP e reautenticação;
+- validação: 14 testes, cobertura 91,78% statements, 86,33% branches, 98,55% funções e 97,86% linhas; lint, build, Prisma validate/generate e audit aprovados com 0 vulnerabilidades.
 
 ### B1.6 — Quality gate e encerramento
 

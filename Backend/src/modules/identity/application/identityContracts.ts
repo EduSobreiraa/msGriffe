@@ -7,6 +7,9 @@ export interface IdentityUser {
   isActive: boolean
   passwordHash: string
   role: IdentityRole
+  totpEnabledAt?: Date | null
+  totpPendingSecretCiphertext?: string | null
+  totpSecretCiphertext?: string | null
 }
 
 export interface IdentitySession {
@@ -24,12 +27,15 @@ export interface IdentityRepository {
   consumeAccountToken(id: string, consumedAt: Date): Promise<boolean>
   findAccountToken(id: string): Promise<IdentityAccountToken | null>
   findSession(id: string): Promise<IdentitySession | null>
+  findUserById(id: string): Promise<IdentityUser | null>
   findUserByEmail(email: string): Promise<IdentityUser | null>
   revokeSession(id: string, revokedAt: Date): Promise<void>
   revokeUserSessions(userId: string, revokedAt: Date): Promise<void>
   rotateSession(input: { expiresAt: Date; id: string; refreshTokenHash: string; now: Date }): Promise<boolean>
   setEmailVerified(userId: string, verifiedAt: Date): Promise<void>
   setPasswordAndRevokeSessions(input: { passwordHash: string; revokedAt: Date; userId: string }): Promise<void>
+  startTotpSetup(input: { secretCiphertext: string; userId: string }): Promise<void>
+  enableTotp(input: { enabledAt: Date; userId: string }): Promise<boolean>
 }
 
 export type AccountTokenPurpose = 'EMAIL_VERIFICATION' | 'PASSWORD_RESET'
@@ -45,6 +51,15 @@ export interface IdentityAccountToken {
 
 export interface TransactionalEmailSender {
   send(input: { html: string; subject: string; to: string }): Promise<void>
+}
+
+export interface TwoFactorAuthenticator {
+  createSetup(email: string): { secretCiphertext: string; uri: string }
+  verify(secretCiphertext: string, code: string): boolean
+}
+
+export interface SecurityAuditRecorder {
+  record(input: { action: string; actorId: string }): Promise<void>
 }
 
 export interface SecretHasher {
