@@ -13,8 +13,8 @@ function catalogPath(query: CatalogQuery) {
   if (query.search) parameters.set('search', query.search)
   if (query.categorySlug) parameters.set('categorySlug', query.categorySlug)
   if (query.featured !== undefined) parameters.set('featured', String(query.featured))
-  if (query.minimumPrice !== undefined) parameters.set('minimumPrice', String(query.minimumPrice))
-  if (query.maximumPrice !== undefined) parameters.set('maximumPrice', String(query.maximumPrice))
+  if (query.minimumPrice !== undefined) parameters.set('minimumPrice', String(Math.round(query.minimumPrice * 100)))
+  if (query.maximumPrice !== undefined) parameters.set('maximumPrice', String(Math.round(query.maximumPrice * 100)))
 
   return `/v1/catalog/products?${parameters.toString()}`
 }

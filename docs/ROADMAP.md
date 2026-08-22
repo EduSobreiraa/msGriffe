@@ -1233,7 +1233,7 @@ Objetivo: expor catálogo público autoritativo e preparar operação de produto
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| B2.1 | Leitura pública de catálogo | Em andamento | Lista, busca, filtros e detalhe usam preço/estoque reais do PostgreSQL e não expõem variantes inativas. |
+| B2.1 | Leitura pública de catálogo | Concluída em 2026-08-22 | Lista, busca, filtros e detalhe usam preço/estoque reais do PostgreSQL e não expõem variantes inativas. |
 | B2.2 | Escrita operacional de catálogo | Pendente | `SELLER` cria/edita produtos, variantes e categorias com autorização backend e validação de entrada. |
 | B2.3 | Mídia R2 | Pendente | Upload e remoção usam adaptador R2; banco guarda `objectKey`, não URL de provedor. |
 | B2.4 | Preço e disponibilidade | Pendente | Centavos, variante ativa e estoque definem preço/disponibilidade; promoções não são inventadas. |
@@ -1245,10 +1245,10 @@ Objetivo: expor catálogo público autoritativo e preparar operação de produto
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
 | B2.1.1 | Contrato e consulta de catálogo | Concluída | Caso de uso lê somente produtos/categorias/variantes ativos e calcula disponibilidade sem expor estoque. |
-| B2.1.2 | Filtros, busca e paginação | Pendente | Categoria, texto, faixa de preço, ordenação e paginação são validados e determinísticos. |
-| B2.1.3 | Detalhe e categorias públicas | Pendente | Slug inexistente não vaza dados; detalhe exclui variantes inativas. |
-| B2.1.4 | Borda HTTP e mídia | Pendente | Endpoint compatível depende de estratégia pública de imagens R2 ainda não definida. |
-| B2.1.5 | Testes e encerramento | Pendente | Casos de uso e contratos de borda passam quality gate. |
+| B2.1.2 | Filtros, busca e paginação | Concluída | Categoria, texto, faixa de preço, ordenação e paginação são validados e determinísticos. |
+| B2.1.3 | Detalhe e categorias públicas | Concluída | Slug inexistente não vaza dados; detalhe exclui variantes inativas. |
+| B2.1.4 | Borda HTTP e mídia | Concluída | Endpoint compatível resolve somente `objectKey` válido por base pública configurada. |
+| B2.1.5 | Testes e encerramento | Concluída | Casos de uso e contratos de borda passam quality gate. |
 
 Decisões e limites:
 
@@ -1265,6 +1265,120 @@ Registro B2.1.1:
 - detalhe aplica defesa adicional contra variante inativa, mesmo que adaptador a retorne incorretamente;
 - filtros, ordenação e paginação existem no caso de uso, mas validação HTTP e resposta de mídia pública aguardam B2.1.2–B2.1.4;
 - validação parcial: 16 testes, lint e build aprovados.
+
+### B2.1.2 — Filtros, busca e paginação
+
+Estado: **em andamento em 22 de agosto de 2026**.
+
+Objetivo: consolidar a consulta pública de catálogo com filtros, busca, ordenação e paginação validados na borda HTTP e ordenação estável na aplicação.
+
+| ID | Passo | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B2.1.2.1 | Validar consulta HTTP | Concluída | Categoria, busca, destaque, preços, ordenação e paginação rejeitam entradas inválidas e recebem padrões explícitos. |
+| B2.1.2.2 | Garantir ordenação estável | Concluída | Empates de preço, nome ou data possuem critério determinístico adicional. |
+| B2.1.2.3 | Cobrir casos de uso e borda | Concluída | Testes cobrem filtros combinados, limites de paginação, ordenação e falhas de validação. |
+| B2.1.2.4 | Executar quality gate | Concluída | Testes, lint e build passam antes de registrar a conclusão. |
+| B2.1.2.5 | Versionar subfase | Concluída | Commit próprio contém somente mudanças revisadas de B2.1.2. |
+
+Limites:
+
+- a busca permanece pública e limitada ao catálogo ativo;
+- preços são sempre inteiros em centavos;
+- nenhuma regra de promoção, parcelamento, checkout, pedido ou pagamento será adicionada;
+- paginação e ordenação não expõem detalhes do Prisma ou estoque exato.
+
+### B2.1.3 — Detalhe e categorias públicas
+
+Estado: **em andamento em 22 de agosto de 2026**.
+
+Objetivo: expor detalhe público de produto e categorias navegáveis sem revelar produto, variante ou estoque não público.
+
+| ID | Passo | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B2.1.3.1 | Revisar detalhe público | Concluída | Slug inexistente retorna `NOT_FOUND`; variante inativa e estoque exato não são expostos. |
+| B2.1.3.2 | Definir imagem de categoria | Concluída | Fonte autoritativa de `image` para o contrato público está aprovada. |
+| B2.1.3.3 | Implementar leitura de categorias | Concluída | Lista e detalhe retornam somente categorias com produtos públicos e contagem correspondente. |
+| B2.1.3.4 | Cobrir contratos e falhas | Concluída | Testes cobrem lista, slug inexistente, contagem e ausência de dados internos. |
+| B2.1.3.5 | Executar quality gate | Concluída | Testes, lint, build e migration passam. |
+| B2.1.3.6 | Versionar subfase | Concluída | Commit próprio contém somente mudanças revisadas de B2.1.3. |
+
+Limites e decisão:
+
+- `Category.imageObjectKey` será nullable, administrável e persistirá somente a chave de mídia;
+- a borda HTTP resolverá a chave com `MEDIA_PUBLIC_BASE_URL`; sem chave, responderá `image: null`;
+- não será derivada imagem de categoria a partir de produtos, placeholder do frontend ou heurística;
+- não haverá tabela própria de imagem de categoria nesta fase.
+
+Registro parcial:
+
+- migration aditiva `20260823130000_category_image` introduz `Category.imageObjectKey` nullable e preserva categorias existentes;
+- `CatalogService` continua dependente de `CatalogRepository`; Prisma implementa leitura de categorias com ao menos um produto e variante ativos, além da contagem pública correspondente;
+- rotas públicas de categorias resolvem somente chaves presentes pela base de mídia e retornam `image: null` quando não houver chave;
+- adaptador e página do frontend aceitam imagem ausente sem transformar placeholder em dado de categoria;
+- `prisma validate`, geração do cliente, migration deploy/status, testes, lint e builds backend/frontend foram aprovados.
+
+### B2.1.4 — Borda HTTP e mídia
+
+Estado: **em andamento em 22 de agosto de 2026**.
+
+Objetivo: compor rotas públicas de catálogo, traduzir DTOs de aplicação e resolver chaves de mídia exclusivamente na borda HTTP.
+
+| ID | Passo | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B2.1.4.1 | Validar base pública de mídia | Concluída | `MEDIA_PUBLIC_BASE_URL` aceita somente origem HTTPS ou HTTP local, sem credenciais, query ou fragmento. |
+| B2.1.4.2 | Resolver chaves de mídia com segurança | Concluída | Chaves não escapam da base configurada, URLs externas nunca são aceitas e chaves inválidas não são expostas. |
+| B2.1.4.3 | Preservar contratos HTTP públicos | Concluída | Produtos e categorias expõem URL pública ou ausência de imagem, sem `objectKey`, estoque ou Prisma. |
+| B2.1.4.4 | Cobrir composição e borda | Concluída | Rotas dependem somente da aplicação; testes cobrem URLs, ausência de imagem e chaves inválidas. |
+| B2.1.4.5 | Executar quality gate | Concluída | Testes, lint e build passam. |
+| B2.1.4.6 | Versionar subfase | Concluída | Commit próprio contém somente mudanças revisadas de B2.1.4. |
+
+Limites:
+
+- R2, upload, signed URLs e escrita de mídia pertencem a B2.3 e B2.2;
+- domínio e aplicação continuam conhecendo apenas `objectKey`;
+- parcelamento não é dado autoritativo deste catálogo e permanece opcional no contrato HTTP.
+
+Registro parcial:
+
+- `MEDIA_PUBLIC_BASE_URL` aceita origem HTTPS ou HTTP local, sem credenciais, query ou fragmento;
+- somente segmentos relativos válidos formam URLs de mídia; valores vazios, segmentos de navegação e URLs externas não são expostos;
+- `main` compõe Prisma, serviço e aplicação; as rotas dependem apenas da interface de aplicação;
+- contrato público documenta imagem opcional e parcelamento opcional, sem introduzir regra financeira;
+- testes de borda, lint, build e cobertura backend foram aprovados.
+
+### B2.1.5 — Testes e encerramento
+
+Estado: **em andamento em 22 de agosto de 2026**.
+
+Objetivo: validar leitura pública de catálogo ponta a ponta, migrations e contratos sem ampliar domínio comercial.
+
+| ID | Passo | Estado | Critério de aceite |
+| --- | --- | --- | --- |
+| B2.1.5.1 | Validar domínio e aplicação | Concluída | Produtos/categorias ativos, disponibilidade, filtros, ordenação, paginação e ausência de dados internos permanecem cobertos. |
+| B2.1.5.2 | Validar borda e contratos | Concluída | Rotas, mídia pública, falhas HTTP e adaptadores frontend respeitam contratos acordados. |
+| B2.1.5.3 | Validar Prisma e migrations | Concluída | Schema, cliente gerado, migrations e banco local estão sincronizados. |
+| B2.1.5.4 | Executar quality gate final | Concluída | Lint, builds e cobertura backend/frontend passam sem flexibilização. |
+| B2.1.5.5 | Verificar fronteiras | Concluída | Grafo confirma composição sem acoplamento indevido. |
+| B2.1.5.6 | Versionar B2.1 | Concluída | Commit próprio encerra B2.1. |
+
+Limites:
+
+- não serão adicionados escrita comercial, R2, promoção, checkout, pedidos ou pagamentos;
+- resultados de validação não introduzem refatoração fora de defeito demonstrado.
+
+Registro parcial:
+
+- backend: `prisma validate`, geração do cliente, status de migration, lint, build e 27 testes com cobertura aprovados;
+- frontend: lint, build e 149 testes aprovados;
+- teste de jornada pública aguardava de forma não determinística o efeito de metadados após renderizar o produto; a asserção passou a aguardar o efeito, sem alterar comportamento da aplicação;
+- grafo mantém `main` para `createApplication`, rotas para serviço e Prisma para porta; não há importação direta frontend-backend nessa fatia.
+
+Resultado B2.1:
+
+- leitura pública de produtos e categorias está composta de `main` até Prisma sem expor detalhes de infraestrutura;
+- filtros, busca, paginação, detalhe, disponibilidade e mídia pública respeitam limites do catálogo;
+- migrations aditivas de destaque e imagem de categoria foram aplicadas no PostgreSQL local;
+- B2.1 foi encerrada após quality gate e commit próprio; escrita comercial, R2, promoções, carrinho, pedido e pagamento continuam fora da fase.
 
 ### B3 — Clientes, carrinho e cálculo comercial
 

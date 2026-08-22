@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createApplication } from '../../../../app/createApplication.js'
 
-const environment = { accessTokenSecret: 'test-access-token-secret-that-has-at-least-32-characters', accessTokenTtlSeconds: 900, accountUrl: 'https://staging.msgriffe.com.br', corsAllowedOrigins: ['https://staging.msgriffe.com.br'], host: '127.0.0.1', nodeEnvironment: 'test' as const, port: 3000, refreshSessionTtlDays: 14, sessionCookieSameSite: 'lax' as const, sessionCookieSecure: false }
+const environment = { accessTokenSecret: 'test-access-token-secret-that-has-at-least-32-characters', accessTokenTtlSeconds: 900, accountUrl: 'https://staging.msgriffe.com.br', corsAllowedOrigins: ['https://staging.msgriffe.com.br'], host: '127.0.0.1', mediaPublicBaseUrl: 'https://media.msgriffe.com.br', nodeEnvironment: 'test' as const, port: 3000, refreshSessionTtlDays: 14, sessionCookieSameSite: 'lax' as const, sessionCookieSecure: false }
 const session = { accessToken: 'access-token', refreshToken: 'session.secret' }
 
 describe('auth routes', () => {

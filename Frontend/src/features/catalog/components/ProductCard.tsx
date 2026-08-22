@@ -28,7 +28,7 @@ export function ProductCard({
         href={routes.product(product.slug)}
       >
         <ImageWithFallback
-          src={product.image}
+          src={product.image ?? '/images/product-placeholder.svg'}
           alt=""
           loading={imageLoading}
           fetchPriority={imagePriority}
@@ -42,9 +42,11 @@ export function ProductCard({
             <Link href={routes.product(product.slug)}>{product.name}</Link>
           </Heading>
           <div className="product-card__price">{formatCurrency(product.price)}</div>
-          <div className="product-card__installment">
-            {product.installmentCount}x de {formatCurrency(product.installmentValue)}
-          </div>
+          {product.installmentCount !== undefined && product.installmentValue !== undefined && (
+            <div className="product-card__installment">
+              {product.installmentCount}x de {formatCurrency(product.installmentValue)}
+            </div>
+          )}
         </div>
         <IconButton
           className="product-card__bag"

@@ -9,9 +9,9 @@ export interface ProductSummary {
   slug: string
   name: string
   price: number
-  installmentCount: number
-  installmentValue: number
-  image: string
+  installmentCount?: number
+  installmentValue?: number
+  image?: string
   category: ProductCategory
   featured: boolean
 }

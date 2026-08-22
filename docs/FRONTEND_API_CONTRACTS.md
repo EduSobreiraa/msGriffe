@@ -62,8 +62,7 @@ Resposta `200`:
     "slug": "camiseta-boss",
     "name": "Camiseta Boss",
     "priceInCents": 8990,
-    "installment": { "count": 3, "valueInCents": 2997 },
-    "image": "/images/bossshirt.png",
+    "image": "https://media.msgriffe.com.br/catalog/bossshirt.png",
     "category": { "id": "camisetas", "name": "Camisetas", "slug": "camisetas" },
     "featured": true
   }],
@@ -74,6 +73,8 @@ Resposta `200`:
 }
 ```
 
+`installment` é opcional e não será inventado pelo catálogo. `image` é opcional quando o produto não possui imagem pública; quando presente, é URL resolvida de um `objectKey` pela base pública de mídia.
+
 ### `GET /v1/catalog/products/:slug`
 
 Usa formato de produto da lista e acrescenta:
@@ -81,14 +82,14 @@ Usa formato de produto da lista e acrescenta:
 ```json
 {
   "description": "Descrição pública",
-  "images": ["/images/bossshirt.png"],
+  "images": ["https://media.msgriffe.com.br/catalog/bossshirt.png"],
   "variants": [{ "id": "camiseta-boss-preto-p", "color": "Preto", "size": "P", "available": true }]
 }
 ```
 
 ### `GET /v1/catalog/categories` e `GET /v1/catalog/categories/:slug`
 
-Lista responde `{ "items": [...] }`; categoria contém `id`, `name`, `slug`, `image` e `productCount`. URLs de imagem aceitas pelo adaptador atual são caminhos relativos iniciados em `/`; mídia externa exige decisão explícita de CSP e estratégia de imagens.
+Lista responde `{ "items": [...] }`; categoria contém `id`, `name`, `slug`, `image` e `productCount`. `image` pode ser `null` quando a categoria ainda não tiver imagem cadastrada. Quando presente, a API resolve o `objectKey` com a base pública de mídia; o frontend não trata placeholder como dado autoritativo.
 
 ## Contratos posteriores por domínio
 

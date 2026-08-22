@@ -9,6 +9,7 @@ const environment = {
   accountUrl: 'https://staging.msgriffe.com.br',
   corsAllowedOrigins: ['https://staging.msgriffe.com.br'],
   host: '127.0.0.1',
+  mediaPublicBaseUrl: 'https://media.msgriffe.com.br',
   nodeEnvironment: 'test' as const,
   port: 3000,
   refreshSessionTtlDays: 14,

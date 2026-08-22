@@ -8,7 +8,7 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const selectedImage = images[selectedIndex] ?? images[0]
+  const selectedImage = images[selectedIndex] ?? images[0] ?? '/images/product-placeholder.svg'
 
   return (
     <section className="product-gallery" aria-label={`Galeria de ${productName}`}>

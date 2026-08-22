@@ -26,8 +26,24 @@ function integer(value: unknown, minimum = 0): number {
 
 function imagePath(value: unknown): string {
   const path = text(value)
-  if (!path.startsWith('/') || path.startsWith('//')) invalidContract()
-  return path
+  if (path.startsWith('/') && !path.startsWith('//')) return path
+
+  try {
+    const url = new URL(path)
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString()
+  } catch {
+    // A URL inválida é rejeitada abaixo para manter o contrato uniforme.
+  }
+
+  return invalidContract()
+}
+
+function optionalImagePath(value: unknown): string | undefined {
+  return value === undefined ? undefined : imagePath(value)
+}
+
+function optionalNullableImagePath(value: unknown): string | undefined {
+  return value === undefined || value === null ? undefined : imagePath(value)
 }
 
 function productCategory(value: unknown) {
@@ -46,7 +62,8 @@ function productVariants(value: unknown): ProductVariant[] {
 
 export function mapProductSummary(value: unknown): ProductSummary {
   const product = record(value)
-  const installment = record(product.installment)
+  const installment = product.installment === undefined ? undefined : record(product.installment)
+  const image = optionalImagePath(product.image)
   if (typeof product.featured !== 'boolean') invalidContract()
 
   return {
@@ -54,9 +71,11 @@ export function mapProductSummary(value: unknown): ProductSummary {
     slug: text(product.slug),
     name: text(product.name),
     price: integer(product.priceInCents) / 100,
-    installmentCount: integer(installment.count, 1),
-    installmentValue: integer(installment.valueInCents) / 100,
-    image: imagePath(product.image),
+    ...(installment ? {
+      installmentCount: integer(installment.count, 1),
+      installmentValue: integer(installment.valueInCents) / 100,
+    } : {}),
+    ...(image ? { image } : {}),
     category: productCategory(product.category),
     featured: product.featured,
   }
@@ -90,11 +109,12 @@ export function mapCatalogResult(value: unknown): CatalogResult {
 
 export function mapCategory(value: unknown): CategorySummary {
   const category = record(value)
+  const image = optionalNullableImagePath(category.image)
   return {
     id: text(category.id),
     name: text(category.name),
     slug: text(category.slug),
-    image: imagePath(category.image),
+    ...(image ? { image } : {}),
     productCount: integer(category.productCount),
   }
 }

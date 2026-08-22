@@ -1,6 +1,6 @@
 import type { ProductCategory } from './Product'
 
 export interface CategorySummary extends ProductCategory {
-  image: string
+  image?: string
   productCount: number
 }

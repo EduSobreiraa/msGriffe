@@ -1,11 +1,11 @@
 import { ApplicationError } from '../../../shared/errors/ApplicationError.js'
-import type { CatalogProductRecord, CatalogQuery, CatalogRepository } from './catalogContracts.js'
+import type { CatalogCategoryRecord, CatalogProductRecord, CatalogQuery, CatalogRepository } from './catalogContracts.js'
 
 export class CatalogService {
   constructor(private readonly repository: CatalogRepository) {}
 
   async list(query: CatalogQuery) {
-    const products = (await this.repository.listActiveProducts({ categorySlug: query.categorySlug, search: query.search }))
+    const products = (await this.repository.listActiveProducts({ categorySlug: query.categorySlug, featured: query.featured, search: query.search }))
       .map((product) => this.toProductSummary(product))
       .filter((product) => (query.minimumPrice === undefined || product.priceInCents >= query.minimumPrice) && (query.maximumPrice === undefined || product.priceInCents <= query.maximumPrice))
       .sort((left, right) => this.compareProducts(left, right, query.sort))
@@ -26,16 +26,46 @@ export class CatalogService {
     }
   }
 
-  private compareProducts(left: { createdAt: Date; name: string; priceInCents: number }, right: { createdAt: Date; name: string; priceInCents: number }, sort: CatalogQuery['sort']) {
-    if (sort === 'price-asc') return left.priceInCents - right.priceInCents || left.name.localeCompare(right.name)
-    if (sort === 'price-desc') return right.priceInCents - left.priceInCents || left.name.localeCompare(right.name)
-    if (sort === 'name-asc') return left.name.localeCompare(right.name)
-    return right.createdAt.getTime() - left.createdAt.getTime() || left.name.localeCompare(right.name)
+  async listCategories() {
+    return (await this.repository.listPublicCategories()).map((category) => this.toCategorySummary(category))
+  }
+
+  async getCategoryBySlug(slug: string) {
+    const category = await this.repository.findPublicCategoryBySlug(slug)
+    if (!category) throw new ApplicationError('NOT_FOUND', 404)
+    return this.toCategorySummary(category)
+  }
+
+  private compareProducts(left: { createdAt: Date; id: string; name: string; priceInCents: number }, right: { createdAt: Date; id: string; name: string; priceInCents: number }, sort: CatalogQuery['sort']) {
+    if (sort === 'price-asc') return left.priceInCents - right.priceInCents || left.name.localeCompare(right.name) || left.id.localeCompare(right.id)
+    if (sort === 'price-desc') return right.priceInCents - left.priceInCents || left.name.localeCompare(right.name) || left.id.localeCompare(right.id)
+    if (sort === 'name-asc') return left.name.localeCompare(right.name) || left.id.localeCompare(right.id)
+    return right.createdAt.getTime() - left.createdAt.getTime() || left.name.localeCompare(right.name) || left.id.localeCompare(right.id)
   }
 
   private toProductSummary(product: CatalogProductRecord) {
     const variants = product.variants.filter((variant) => variant.isActive)
     const priceInCents = Math.min(...variants.map((variant) => variant.priceInCents))
-    return { available: variants.some((variant) => variant.stock > 0), category: product.category, createdAt: product.createdAt, id: product.id, name: product.name, priceInCents, slug: product.slug }
+    return {
+      available: variants.some((variant) => variant.stock > 0),
+      category: product.category,
+      createdAt: product.createdAt,
+      featured: product.isFeatured,
+      id: product.id,
+      imageObjectKeys: product.images.map((image) => image.objectKey),
+      name: product.name,
+      priceInCents,
+      slug: product.slug,
+    }
+  }
+
+  private toCategorySummary(category: CatalogCategoryRecord) {
+    return {
+      id: category.id,
+      imageObjectKey: category.imageObjectKey,
+      name: category.name,
+      productCount: category.productCount,
+      slug: category.slug,
+    }
   }
 }

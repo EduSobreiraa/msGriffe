@@ -10,6 +10,7 @@ export interface Environment {
   brevoSenderEmail?: string
   corsAllowedOrigins: string[]
   host: string
+  mediaPublicBaseUrl: string
   nodeEnvironment: 'development' | 'production' | 'test'
   port: number
   refreshSessionTtlDays: number
@@ -29,6 +30,17 @@ function parseOrigin(value: string) {
   return url.origin
 }
 
+function parseMediaPublicBaseUrl(value: string) {
+  const url = new URL(value)
+  const isLocalHttp = url.protocol === 'http:' && localHosts.has(url.hostname)
+
+  if ((url.protocol !== 'https:' && !isLocalHttp) || url.username || url.password || url.search || url.hash) {
+    throw new Error('MEDIA_PUBLIC_BASE_URL contém URL inválida.')
+  }
+
+  return url.toString().replace(/\/+$/, '')
+}
+
 export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
   const parsed = z.object({
     ACCESS_TOKEN_SECRET: z.string().min(32),
@@ -38,6 +50,7 @@ export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
     ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
     CORS_ALLOWED_ORIGINS: z.string().min(1),
     HOST: z.string().min(1).default('127.0.0.1'),
+    MEDIA_PUBLIC_BASE_URL: z.string().url(),
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     REFRESH_SESSION_TTL_DAYS: z.coerce.number().int().min(1).max(30).default(14),
@@ -65,6 +78,7 @@ export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
     accessTokenTtlSeconds: parsed.ACCESS_TOKEN_TTL_SECONDS,
     corsAllowedOrigins,
     host: parsed.HOST,
+    mediaPublicBaseUrl: parseMediaPublicBaseUrl(parsed.MEDIA_PUBLIC_BASE_URL),
     nodeEnvironment: parsed.NODE_ENV,
     port: parsed.PORT,
     refreshSessionTtlDays: parsed.REFRESH_SESSION_TTL_DAYS,

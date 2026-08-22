@@ -50,7 +50,7 @@ describe('jornada pública do catálogo', () => {
       await screen.findByRole('heading', { name: 'Camiseta Boss Premium' }),
     ).toBeInTheDocument()
     expect(window.location.pathname).toBe('/produtos/camiseta-boss-premium')
-    expect(document.title).toBe('Camiseta Boss Premium | MS Griffe')
+    await waitFor(() => expect(document.title).toBe('Camiseta Boss Premium | MS Griffe'))
     expect(document.querySelector('script[type="application/ld+json"]')).toHaveTextContent(
       'Camiseta Boss Premium',
     )

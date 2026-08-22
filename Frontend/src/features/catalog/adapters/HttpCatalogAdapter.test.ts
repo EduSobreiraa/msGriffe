@@ -14,9 +14,11 @@ describe('adaptadores HTTP de catálogo', () => {
     const request = vi.fn().mockResolvedValue({ items: [product], page: 1, pageSize: 10, totalItems: 1, totalPages: 1 })
     const adapter = new HttpCatalogAdapter({ request } as ApiClient)
 
-    await expect(adapter.list({ page: 1, pageSize: 10, search: 'boss', sort: 'newest' })).resolves.toMatchObject({
+    await expect(adapter.list({ maximumPrice: 89.9, minimumPrice: 50, page: 1, pageSize: 10, search: 'boss', sort: 'newest' })).resolves.toMatchObject({
       items: [{ name: 'Camiseta Boss', price: 89.9 }], totalItems: 1,
     })
+    expect(request).toHaveBeenCalledWith({ path: expect.stringContaining('maximumPrice=8990') })
+    expect(request).toHaveBeenCalledWith({ path: expect.stringContaining('minimumPrice=5000') })
     expect(request).toHaveBeenCalledWith({ path: expect.stringContaining('search=boss') })
   })
 
@@ -25,9 +27,12 @@ describe('adaptadores HTTP de catálogo', () => {
     await expect(adapter.findBySlug('ausente')).resolves.toBeNull()
   })
 
-  it('rejeita mídia externa e lista categorias pelo mesmo contrato', async () => {
-    const catalog = new HttpCatalogAdapter({ request: vi.fn().mockResolvedValue({ ...product, description: 'Peça', images: ['https://externo.test/a.png'], variants: [] }) })
-    await expect(catalog.findBySlug('camiseta-boss')).rejects.toMatchObject({ code: 'UNEXPECTED' })
+  it('aceita URLs públicas de mídia e parcelamento ausente na API real', async () => {
+    const catalog = new HttpCatalogAdapter({ request: vi.fn().mockResolvedValue({ ...product, description: 'Peça', image: 'https://media.msgriffe.com.br/catalog/boss.jpg', images: ['https://media.msgriffe.com.br/catalog/boss.jpg'], installment: undefined, variants: [] }) })
+    const result = await catalog.findBySlug('camiseta-boss')
+    expect(result).toMatchObject({ image: 'https://media.msgriffe.com.br/catalog/boss.jpg' })
+    expect(result).not.toHaveProperty('installmentCount')
+    expect(result).not.toHaveProperty('installmentValue')
 
     const categories = new HttpCategoryAdapter({ request: vi.fn().mockResolvedValue({ items: [{ ...product.category, image: '/images/bossshirt.png', productCount: 6 }] }) })
     await expect(categories.list()).resolves.toEqual([{ ...product.category, image: '/images/bossshirt.png', productCount: 6 }])

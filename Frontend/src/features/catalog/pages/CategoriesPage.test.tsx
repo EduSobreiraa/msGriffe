@@ -14,12 +14,11 @@ function renderCategories(reader: CategoryReader) {
 
 describe('CategoriesPage', () => {
   it('lista destinos reais e suas contagens', async () => {
-    renderCategories({
+    const { container } = renderCategories({
       findBySlug: vi.fn(),
       list: vi.fn().mockResolvedValue([
         {
           id: 'camisetas',
-          image: '/camiseta.png',
           name: 'Camisetas',
           productCount: 6,
           slug: 'camisetas',
@@ -31,6 +30,7 @@ describe('CategoriesPage', () => {
       'href',
       '/categorias/camisetas',
     )
+    expect(container.querySelector('img')).toBeNull()
   })
 
   it('apresenta estado vazio', async () => {

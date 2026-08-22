@@ -36,7 +36,7 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
         id: product.id,
         slug: product.slug,
         name: product.name,
-        image: product.image,
+        image: product.image ?? '/images/product-placeholder.svg',
         displayPrice: product.price,
       },
       variant: {

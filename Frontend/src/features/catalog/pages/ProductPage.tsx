@@ -48,9 +48,11 @@ export function ProductPage({ params }: ProductPageProps) {
               <p className="product-info__category">{product.category.name}</p>
               <h1 id="product-name">{product.name}</h1>
               <p className="product-info__price">{formatCurrency(product.price)}</p>
-              <p className="product-info__installment">
-                ou {product.installmentCount}x de {formatCurrency(product.installmentValue)}
-              </p>
+              {product.installmentCount !== undefined && product.installmentValue !== undefined && (
+                <p className="product-info__installment">
+                  ou {product.installmentCount}x de {formatCurrency(product.installmentValue)}
+                </p>
+              )}
               <p className="product-info__description">{product.description}</p>
 
               <ProductPurchasePanel product={product} />

@@ -9,6 +9,8 @@ import { PrismaSecurityAuditRecorder } from './modules/identity/infrastructure/p
 import { AesGcmSecretCipher } from './modules/identity/infrastructure/security/AesGcmSecretCipher.js'
 import { JoseAccessTokenIssuer } from './modules/identity/infrastructure/tokens/JoseAccessTokenIssuer.js'
 import { TotpAuthenticator } from './modules/identity/infrastructure/security/TotpAuthenticator.js'
+import { CatalogService } from './modules/catalog/application/CatalogService.js'
+import { PrismaCatalogRepository } from './modules/catalog/infrastructure/persistence/PrismaCatalogRepository.js'
 
 const environment = readEnvironment(process.env)
 const prisma = new PrismaClient()
@@ -25,7 +27,8 @@ const identityService = new IdentityService(
   twoFactorAuthenticator,
   new PrismaSecurityAuditRecorder(prisma),
 )
-const application = await createApplication(environment, { accessTokenVerifier: accessTokenIssuer, identityService })
+const catalogService = new CatalogService(new PrismaCatalogRepository(prisma))
+const application = await createApplication(environment, { accessTokenVerifier: accessTokenIssuer, catalogService, identityService })
 application.addHook('onClose', async () => prisma.$disconnect())
 
 const close = async () => {

@@ -7,11 +7,19 @@ import Fastify, { type FastifyInstance } from 'fastify'
 import { ZodError } from 'zod'
 import type { Environment } from '../config/environment.js'
 import { registerHealthRoutes } from '../modules/health/presentation/http/healthRoutes.js'
+import { registerCatalogRoutes } from '../modules/catalog/presentation/http/catalogRoutes.js'
+import type { CatalogService } from '../modules/catalog/application/CatalogService.js'
 import { registerAuthRoutes, type AuthService } from '../modules/identity/presentation/http/authRoutes.js'
 import type { AccessTokenVerifier } from '../modules/identity/application/identityContracts.js'
 import { ApplicationError } from '../shared/errors/ApplicationError.js'
 
-export async function createApplication(environment: Environment, dependencies?: { accessTokenVerifier: AccessTokenVerifier; identityService: AuthService }): Promise<FastifyInstance> {
+interface ApplicationDependencies {
+  accessTokenVerifier?: AccessTokenVerifier
+  catalogService?: Pick<CatalogService, 'getBySlug' | 'getCategoryBySlug' | 'list' | 'listCategories'>
+  identityService?: AuthService
+}
+
+export async function createApplication(environment: Environment, dependencies?: ApplicationDependencies): Promise<FastifyInstance> {
   const application = Fastify({
     logger: false,
   })
@@ -49,6 +57,7 @@ export async function createApplication(environment: Environment, dependencies?:
   application.setNotFoundHandler((_request, reply) => reply.status(404).send({ error: { code: 'NOT_FOUND' } }))
 
   await application.register(registerHealthRoutes)
-  if (dependencies) await application.register(registerAuthRoutes, { ...dependencies, environment })
+  if (dependencies?.catalogService) await application.register(registerCatalogRoutes, { catalogService: dependencies.catalogService, mediaPublicBaseUrl: environment.mediaPublicBaseUrl })
+  if (dependencies?.accessTokenVerifier && dependencies.identityService) await application.register(registerAuthRoutes, { accessTokenVerifier: dependencies.accessTokenVerifier, environment, identityService: dependencies.identityService })
   return application
 }

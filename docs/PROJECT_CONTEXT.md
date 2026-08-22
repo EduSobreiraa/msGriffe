@@ -183,6 +183,8 @@ O modelo de cupons deverá ficar preparado para:
 
 Preços, parcelamento, promoções e regras finais dos cupons dependem do vendedor.
 
+Para categorias, haverá no máximo uma imagem principal administrável nesta fase. `Category.imageObjectKey` será nullable e armazenará apenas a chave do objeto; a API pública resolverá a chave para URL usando a configuração de mídia. Ausência de imagem não será substituída por imagem derivada de produto ou placeholder como dado autoritativo.
+
 ## 6. WhatsApp
 
 Para o MVP, a integração prevista é um link direto por `wa.me`.
@@ -476,6 +478,7 @@ As regras arquiteturais obrigatórias estão detalhadas em [`ARCHITECTURE_PRINCI
 | 2026-08-20 | 2FA TOTP, retenção, backup, RPO/RTO, observabilidade e alertas críticos foram definidos. |
 | 2026-08-20 | Escopo funcional do MVP definido: checkout pré-pagamento, pedido confirmado após aprovação, estoque por variante, operação `SELLER` e exclusões explícitas. |
 | 2026-08-20 | B0 adota Prisma 6.12 após alerta alto na linha Prisma 7; API Fastify, schema inicial, PostgreSQL local e pipeline de qualidade foram preparados. |
+| 2026-08-22 | Imagem de categoria definida como `imageObjectKey` nullable, administrável e resolvida na borda HTTP; não haverá tabela própria de mídia nesta fase. |
 | 2026-08-20 | Cloudflare Email Routing foi definido para recebimento e Brevo Free para e-mails transacionais essenciais; domínios e CORS por ambiente foram definidos, sem curinga ou preview liberado por padrão. |
 | 2026-08-21 | Backup do MVP definido: `pg_dump` diário, backup do provedor mais cópia R2 criptografada, retenção e limpeza automática de 30 dias, restore mensal, RPO de 24 h e RTO de 4 h. |
 | 2026-08-21 | B1.1 adicionou persistência aditiva para verificação de e-mail, sessões revogáveis e tokens temporários hashados; endpoints e provedores permanecem pendentes. |

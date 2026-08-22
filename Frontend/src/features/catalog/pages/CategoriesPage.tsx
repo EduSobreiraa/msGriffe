@@ -58,13 +58,15 @@ export function CategoriesPage() {
                 href={routes.category(category.slug)}
                 key={category.id}
               >
-                <ImageWithFallback
-                  src={category.image}
-                  alt=""
-                  loading="lazy"
-                  width={720}
-                  height={430}
-                />
+                {category.image && (
+                  <ImageWithFallback
+                    src={category.image}
+                    alt=""
+                    loading="lazy"
+                    width={720}
+                    height={430}
+                  />
+                )}
                 <span className="category-card__overlay">
                   <strong>{category.name}</strong>
                   <small>{category.productCount} produtos</small>
