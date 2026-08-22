@@ -16,6 +16,7 @@ describe('readEnvironment', () => {
       refreshSessionTtlDays: 14,
       sessionCookieSameSite: 'lax',
       sessionCookieSecure: false,
+      totpEncryptionKey: undefined,
     })
   })
 
@@ -25,5 +26,6 @@ describe('readEnvironment', () => {
     expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, CORS_ALLOWED_ORIGINS: 'http://localhost:5173', NODE_ENV: 'production' })).toThrow('HTTPS')
     expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, CORS_ALLOWED_ORIGINS: 'http://localhost:5173', SESSION_COOKIE_SAME_SITE: 'none' })).toThrow('Cookie de sessão')
     expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, BREVO_API_KEY: 'secret', CORS_ALLOWED_ORIGINS: 'http://localhost:5173' })).toThrow('BREVO_API_KEY')
+    expect(() => readEnvironment({ ACCESS_TOKEN_SECRET: secret, CORS_ALLOWED_ORIGINS: 'http://localhost:5173', TOTP_ENCRYPTION_KEY: 'invalid' })).toThrow('TOTP_ENCRYPTION_KEY')
   })
 })

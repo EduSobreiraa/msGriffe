@@ -15,6 +15,7 @@ export interface Environment {
   refreshSessionTtlDays: number
   sessionCookieSameSite: 'lax' | 'none' | 'strict'
   sessionCookieSecure: boolean
+  totpEncryptionKey?: string
 }
 
 function parseOrigin(value: string) {
@@ -42,6 +43,7 @@ export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
     REFRESH_SESSION_TTL_DAYS: z.coerce.number().int().min(1).max(30).default(14),
     SESSION_COOKIE_SAME_SITE: z.enum(['lax', 'none', 'strict']).default('lax'),
     SESSION_COOKIE_SECURE: z.enum(['true', 'false']).optional(),
+    TOTP_ENCRYPTION_KEY: z.string().optional(),
   }).parse(input)
   const corsAllowedOrigins = [...new Set(parsed.CORS_ALLOWED_ORIGINS.split(',').map((origin) => parseOrigin(origin.trim())))]
   const sessionCookieSecure = parsed.SESSION_COOKIE_SECURE ? parsed.SESSION_COOKIE_SECURE === 'true' : parsed.NODE_ENV === 'production'
@@ -53,6 +55,7 @@ export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
     throw new Error('Cookie de sessão exige Secure neste ambiente.')
   }
   if (Boolean(parsed.BREVO_API_KEY) !== Boolean(parsed.BREVO_SENDER_EMAIL)) throw new Error('BREVO_API_KEY e BREVO_SENDER_EMAIL devem ser configurados juntos.')
+  if (parsed.TOTP_ENCRYPTION_KEY && Buffer.from(parsed.TOTP_ENCRYPTION_KEY, 'base64').length !== 32) throw new Error('TOTP_ENCRYPTION_KEY deve conter 32 bytes em base64.')
 
   return {
     accessTokenSecret: parsed.ACCESS_TOKEN_SECRET,
@@ -67,5 +70,6 @@ export function readEnvironment(input: NodeJS.ProcessEnv): Environment {
     refreshSessionTtlDays: parsed.REFRESH_SESSION_TTL_DAYS,
     sessionCookieSameSite: parsed.SESSION_COOKIE_SAME_SITE,
     sessionCookieSecure,
+    totpEncryptionKey: parsed.TOTP_ENCRYPTION_KEY,
   }
 }

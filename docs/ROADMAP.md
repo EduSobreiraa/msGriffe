@@ -1173,11 +1173,13 @@ Registro:
 
 ### B1.5 — Administração reforçada
 
+Estado: **em andamento em 22 de agosto de 2026**.
+
 Plano:
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| B1.5.1 | Modelar TOTP e auditoria de segurança | Pendente | Segredo TOTP permanece protegido em repouso; auditoria não inclui credenciais ou tokens. |
+| B1.5.1 | Modelar TOTP e auditoria de segurança | Concluída | Segredo TOTP permanece protegido em repouso; auditoria não inclui credenciais ou tokens. |
 | B1.5.2 | Exigir segundo fator administrativo | Pendente | `SELLER` e `SUPERADMIN` configurados não obtêm sessão sem TOTP válido; SMS não é usado. |
 | B1.5.3 | Expor setup e confirmação protegidos | Pendente | Setup exige access token e papel administrativo; ativação requer prova TOTP. |
 | B1.5.4 | Criar base reutilizável de reautenticação | Pendente | Credenciais recentes podem ser exigidas por operações críticas futuras sem confiar no frontend. |
@@ -1185,6 +1187,13 @@ Plano:
 | B1.5.6 | Testar e encerrar | Pendente | Papéis, TOTP, reautenticação, auditoria e caminhos de erro possuem cobertura. |
 
 Escopo: endurecer acesso administrativo; não inventar recuperação de TOTP, permissões comerciais, fluxo de reembolso ou políticas de retenção além dos registros previstos.
+
+Registro parcial B1.5.1:
+
+- migration aditiva `20260822115500_administrative_security` inclui segredo TOTP pendente/ativo cifrado no usuário e `SecurityAuditEvent` mínimo, sem payload, senha, token ou segredo;
+- `AesGcmSecretCipher` usa AES-256-GCM com IV aleatório e tag autenticada; `TOTP_ENCRYPTION_KEY` exige 32 bytes base64 e fica somente em secret de ambiente;
+- migration aplicada e confirmada em PostgreSQL local. Próximas entregas B1.5 consumirão estes campos, sem criar recuperação de TOTP ou permissões comerciais;
+- validação: 12 testes, cobertura 91,66% statements, 85,10% branches, 98,24% funções e 97,89% linhas; lint, build, Prisma validate/generate e audit aprovados.
 
 ### B1.6 — Quality gate e encerramento
 
