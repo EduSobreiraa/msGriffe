@@ -34,7 +34,7 @@ Pendente → Em andamento → Concluída
 | F5 — Painel do vendedor | Concluída | Operação administrativa demonstrável. |
 | F6 — Integração preparada e qualidade | Concluída | Contratos estabilizados e frontend pronto para API real. |
 | B0 — Arquitetura e contratos | Concluída | Fundação técnica do backend. |
-| B1 — Identidade e autorização | Pendente | Contas, sessões, papéis e proteção administrativa. |
+| B1 — Identidade e autorização | Concluída em 2026-08-22 | Contas, sessões, papéis e proteção administrativa. |
 | B2 — Catálogo, preços e estoque | Pendente | Domínio comercial e persistência do catálogo. |
 | B3 — Carrinho e cálculo comercial | Pendente | Carrinho, cupons, frete e totais autoritativos. |
 | B4 — Pedidos e Mercado Pago | Pendente | Núcleo transacional da compra. |
@@ -1054,7 +1054,7 @@ Registro:
 
 ### B1 — Identidade, sessões e autorização
 
-Estado: **em andamento em 21 de agosto de 2026**.
+Estado: **concluída em 22 de agosto de 2026**.
 
 Objetivo: implementar identidade e acesso por etapas, mantendo segredos, regras de autorização e integrações fora da borda HTTP e sem antecipar domínios comerciais.
 
@@ -1072,7 +1072,7 @@ Limites da B1:
 | B1.3 | Autorização e proteção de borda | Concluída | Papéis, CSRF e rate limiting protegem mutações e superfícies sensíveis. |
 | B1.4 | Verificação, recuperação e Brevo | Pendente | Fluxos não enumeráveis usam tokens temporários e adaptador de e-mail. |
 | B1.5 | Administração reforçada | Pendente | TOTP, reautenticação e auditoria protegem `SELLER` e `SUPERADMIN`. |
-| B1.6 | Quality gate e encerramento | Pendente | Testes, migrações, segurança, documentação e commit da fase são aprovados. |
+| B1.6 | Quality gate e encerramento | Concluída | Testes, migrações, segurança, documentação e commit da fase são aprovados. |
 
 ### B1.1 — Modelagem de identidade e migration
 
@@ -1206,14 +1206,24 @@ Registro B1.5.2–B1.5.6:
 
 ### B1.6 — Quality gate e encerramento
 
+Estado: **concluída em 22 de agosto de 2026**.
+
 Plano:
 
 | ID | Entrega | Estado | Critério de aceite |
 | --- | --- | --- | --- |
-| B1.6.1 | Revisar migrações e variáveis | Pendente | Schema, migrations, exemplos de ambiente e configuração não expõem segredos. |
-| B1.6.2 | Executar quality gate | Pendente | Testes, cobertura, lint, build, Prisma e auditoria de dependências passam. |
-| B1.6.3 | Validar banco local e borda HTTP | Pendente | Migrações são aplicadas em PostgreSQL isolado e fluxos críticos recebem smoke test. |
-| B1.6.4 | Documentar limites e versionar | Pendente | ROADMAP registra o resultado e um commit exclusivo encerra B1. |
+| B1.6.1 | Revisar migrações e variáveis | Concluída | Schema, migrations, exemplos de ambiente e configuração não expõem segredos. |
+| B1.6.2 | Executar quality gate | Concluída | Testes, cobertura, lint, build, Prisma e auditoria de dependências passam. |
+| B1.6.3 | Validar banco local e borda HTTP | Concluída | Migrações são aplicadas em PostgreSQL isolado e fluxos críticos recebem smoke test. |
+| B1.6.4 | Documentar limites e versionar | Concluída | ROADMAP registra o resultado e um commit exclusivo encerra B1. |
+
+Registro:
+
+- B1 encerra cadastro `CUSTOMER`, hash de senha, sessões revogáveis com refresh cookie, access JWT curto, CSRF, rate limiting, autorização por papel, verificação de e-mail, recuperação, Brevo, TOTP administrativo, reautenticação e auditoria de segurança mínima;
+- migrations `20260821113859_identity_persistence` e `20260822115500_administrative_security` foram aplicadas e confirmadas no PostgreSQL local. Produção e staging devem aplicar somente `prisma migrate deploy` pelo Railway;
+- revisão de secrets encontrou apenas valores locais deliberados em `.env.example`; configurar `ACCESS_TOKEN_SECRET`, `DATABASE_URL`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL` e `TOTP_ENCRYPTION_KEY` exclusivamente nos secrets de cada ambiente antes de ativar recursos correspondentes;
+- quality gate final: 14 testes, cobertura 91,78% statements, 86,33% branches, 98,55% funções e 97,86% linhas; lint, build, Prisma validate/generate, status de migration, audit com 0 vulnerabilidades e smoke HTTP `GET /v1/health` aprovados;
+- limitações intencionais: nenhuma conta administrativa inicial é criada por código, secrets/provedores remotos não foram configurados, e recuperação administrativa controlada por `SUPERADMIN` requer procedimento operacional antes do go-live. Catálogo, carrinho, checkout, pagamento, pedidos e operação comercial continuam fora da B1.
 
 ### B2 — Catálogo, mídia, preços e estoque
 
