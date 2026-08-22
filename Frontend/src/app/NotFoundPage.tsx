@@ -1,6 +1,6 @@
 import { Link } from 'wouter'
-import { routes } from '../../app/routes'
-import { useDocumentMetadata } from '../hooks/useDocumentMetadata'
+import { useDocumentMetadata } from '../shared/hooks/useDocumentMetadata'
+import { routes } from './routes'
 
 export function NotFoundPage() {
   useDocumentMetadata({

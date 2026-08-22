@@ -1,6 +1,6 @@
 import { Badge } from '../../../shared/components/Badge'
 import { IconButton } from '../../../shared/components/IconButton'
-import { ThemeToggle } from '../../../shared/components/ThemeToggle'
+import { ThemeToggle } from '../../../app/theme/ThemeToggle'
 import { useMobileMenu } from '../hooks/useMobileMenu'
 import { PrimaryNavigation } from './PrimaryNavigation'
 import { Link, useLocation } from 'wouter'

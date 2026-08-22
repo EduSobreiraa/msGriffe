@@ -1,5 +1,5 @@
-import { useTheme } from '../../app/theme/useTheme'
-import { IconButton } from './IconButton'
+import { IconButton } from '../../shared/components/IconButton'
+import { useTheme } from './useTheme'
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()

@@ -13,7 +13,7 @@ import { OrderDetailPage, OrdersPage } from '../features/account/pages/OrdersPag
 import { PasswordRecoveryPage } from '../features/account/pages/PasswordRecoveryPage'
 import { AdminCatalogPage, AdminCustomersPage, AdminDashboardPage, AdminOrderDetailPage, AdminOrdersPage, AdminPromotionsPage, AdminSettingsPage } from '../features/admin/pages/AdminPages'
 import { HomePage } from '../features/storefront/pages/HomePage'
-import { NotFoundPage } from '../shared/pages/NotFoundPage'
+import { NotFoundPage } from './NotFoundPage'
 import { routes } from './routes'
 
 export function AppRoutes() {
